@@ -26,7 +26,8 @@ __libc_write (int fd, const void *buf, size_t nbytes)
 {
   lindrustinit(0);
   rustposix_thread_init(1, 0);
-  return (ssize_t) lind_write(fd, buf, nbytes, 1);
+  lind_write(fd, buf, nbytes, 1);
+  return SYSCALL_CANCEL (write, fd, buf, nbytes);
 }
 libc_hidden_def (__libc_write)
 

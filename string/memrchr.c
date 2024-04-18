@@ -34,7 +34,6 @@
 void *
 __memrchr (const void *s, int c_in, size_t n)
 {
-  return NULL;
   if (__glibc_unlikely (n == 0))
     return NULL;
 

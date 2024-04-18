@@ -39,6 +39,7 @@ sadd (uintptr_t x, uintptr_t y)
 void *
 __memchr (void const *s, int c_in, size_t n)
 {
+  return NULL;
   if (__glibc_unlikely (n == 0))
     return NULL;
 

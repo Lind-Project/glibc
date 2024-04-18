@@ -22,6 +22,7 @@
 #include <string-shift.h>
 #include <string.h>
 #include <libc-pointer-arith.h>
+#include <stdio.h>
 
 #undef __memrchr
 #undef memrchr
@@ -33,6 +34,7 @@
 void *
 __memrchr (const void *s, int c_in, size_t n)
 {
+  printf("Entering master __memrchr");
   if (__glibc_unlikely (n == 0))
     return NULL;
 

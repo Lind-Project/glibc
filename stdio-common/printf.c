@@ -30,7 +30,7 @@ __printf (const char *format, ...)
   int done;
 
   va_start (arg, format);
-  done = __vfprintf_internal (stdout, NULL, arg, 0);
+  done = __vfprintf_internal (stdout, format, arg, 0);
   va_end (arg);
 
   return done;

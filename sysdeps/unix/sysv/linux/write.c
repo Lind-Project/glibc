@@ -18,12 +18,15 @@
 
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include "lind_platform.h"
 
 /* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
 ssize_t
 __libc_write (int fd, const void *buf, size_t nbytes)
 {
-  return SYSCALL_CANCEL (write, fd, buf, nbytes);
+  lindrustinit(0);
+  rustposix_thread_init(1, 0);
+  return lind_write(fd, buf, nbytes, 1);
 }
 libc_hidden_def (__libc_write)
 

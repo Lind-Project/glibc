@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+# Since we are taking Linux glibc as a starting point we need the
+# Linux kernel headers.  In the long term we will need Linux's errno
+# numbers, but probably nothing more.
+rm -rf kernel-headers
+mkdir kernel-headers
+cp -a /usr/include/asm /usr/include/asm-generic /usr/include/linux \
+    kernel-headers/
+
+BUILDDIR=build
+mkdir -p $BUILDDIR
+cd $BUILDDIR
+../configure --prefix=/usr --host=x86_64-linux-gnu \
+    CFLAGS=" -fstrict-aliasing -O2 -g -mno-tls-direct-seg-refs" \
+    --with-headers=`pwd`/../kernel-headers --enable-kernel=2.2.0
+#    --disable-shared

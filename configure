@@ -6208,6 +6208,8 @@ for b in $base ''; do
   done
 done
 
+echo "Final list of sysnames: $sysnames"
+
 # If the assembler supports gnu_indirect_function symbol type and the
 # architecture supports multi-arch, we enable multi-arch by default.
 case $sysnames in

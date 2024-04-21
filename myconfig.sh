@@ -15,5 +15,5 @@ mkdir -p $BUILDDIR
 cd $BUILDDIR
 ../configure --prefix=/usr --host=x86_64-linux-gnu \
     CFLAGS=" -fstrict-aliasing -O2 -g -mno-tls-direct-seg-refs" \
-    --with-headers=`pwd`/../kernel-headers --enable-kernel=2.2.0
+#    --with-headers=`pwd`/../kernel-headers --enable-kernel=2.2.0
 #    --disable-shared

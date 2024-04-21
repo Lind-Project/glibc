@@ -6208,8 +6208,6 @@ for b in $base ''; do
   done
 done
 
-echo "Final list of sysnames: $sysnames"
-
 # If the assembler supports gnu_indirect_function symbol type and the
 # architecture supports multi-arch, we enable multi-arch by default.
 case $sysnames in
@@ -6312,6 +6310,8 @@ Implies_before='$Implies_before' Implies_after='$Implies_after'" >&2
   sysnames="`echo $Implies $* $Implies_before $parent $Implies_after`"
   test -n "$sysnames" && set $sysnames
 done
+
+echo "Sysdeps paths used: $sysnames"
 
 # Add the default directories.
 default_sysnames="sysdeps/generic"

@@ -6311,11 +6311,11 @@ Implies_before='$Implies_before' Implies_after='$Implies_after'" >&2
   test -n "$sysnames" && set $sysnames
 done
 
-echo "Sysdeps paths used: $sysnames"
-
 # Add the default directories.
 default_sysnames="sysdeps/generic"
 sysnames="$names $default_sysnames"
+
+echo "Sysdeps paths used: $sysnames"
 
 # The other names were emitted during the scan.
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $default_sysnames" >&5

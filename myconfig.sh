@@ -13,7 +13,7 @@ set -e
 BUILDDIR=build
 mkdir -p $BUILDDIR
 cd $BUILDDIR
-../configure --prefix=/sysroot-coulson --host=x86_64-lind-gnu \
+../configure --prefix=/sysroot-coulson --host=x86_64-linux-gnu \
     CFLAGS=" -fstrict-aliasing -O2 -g -mno-tls-direct-seg-refs" \
 #    --with-headers=`pwd`/../kernel-headers --enable-kernel=2.2.0
 #    --disable-shared

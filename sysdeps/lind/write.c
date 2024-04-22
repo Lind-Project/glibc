@@ -1,6 +1,7 @@
 
 #include <unistd.h>
 #include <stdio.h>
+#include <errno.h>
 
 /* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
 ssize_t

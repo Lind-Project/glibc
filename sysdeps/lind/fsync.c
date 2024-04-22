@@ -1,4 +1,6 @@
+
 #include <unistd.h>
+#include <errno.h>
 
 /* Make all changes done to FD actually appear on disk.  */
 int

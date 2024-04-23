@@ -15,5 +15,8 @@ mkdir -p $BUILDDIR
 cd $BUILDDIR
 ../configure --prefix=/sysroot-coulson --host=i686-linux-gnu --build=i686-linux-gnu\
     CFLAGS=" -fstrict-aliasing -O2 -g -mno-tls-direct-seg-refs" \
+    CC="gcc -m32" CXX="g++ -m32" \
+    CFLAGS="-O2 -march=i686" \
+    CXXFLAGS="-O2 -march=i686"
 #    --with-headers=`pwd`/../kernel-headers --enable-kernel=2.2.0
 #    --disable-shared

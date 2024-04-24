@@ -1,10 +1,3 @@
-ifeq ($(subdir),string)
-gen-as-const-headers += locale-defines.sym
-CFLAGS-varshift.c += -msse4
-CFLAGS-strcspn-c.c += -msse4
-CFLAGS-strpbrk-c.c += -msse4
-CFLAGS-strspn-c.c += -msse4
-endif
 
 ifeq ($(subdir),wcsmbs)
 sysdep_routines += wcscmp-sse2 wcscmp-c wcslen-sse2 wcslen-c \

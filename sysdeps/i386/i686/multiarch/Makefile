@@ -11,7 +11,6 @@ sysdep_routines += memset-sse2 memcpy-ssse3 mempcpy-ssse3 \
 		   strncpy-sse2 stpcpy-sse2 stpncpy-sse2 strcat-ssse3 \
 		   strcat-sse2 strncat-ssse3 strncat-sse2 strncat-c \
 		   strchr-sse2 strrchr-sse2 strchr-sse2-bsf strrchr-sse2-bsf \
-		   memchr-sse2 memchr-sse2-bsf \
 		   memrchr-sse2 memrchr-sse2-bsf memrchr-c \
 		   rawmemchr-sse2 rawmemchr-sse2-bsf \
 		   strnlen-sse2 strnlen-c \
@@ -22,7 +21,7 @@ sysdep_routines += memset-sse2 memcpy-ssse3 mempcpy-ssse3 \
 		   mempcpy-sse2-unaligned memmove-sse2-unaligned \
 		   strcspn-c strpbrk-c strspn-c \
 		   rawmemchr-ia32 \
-		   memchr-ia32 memcmp-ia32 memcpy-ia32 memmove-ia32 \
+		memcmp-ia32 memcpy-ia32 memmove-ia32 \
 		   mempcpy-ia32 memset-ia32 strcat-ia32 strchr-ia32 \
 		   strrchr-ia32 strcpy-ia32 strcmp-ia32 strcspn-ia32 \
 		   strpbrk-ia32 strspn-ia32 strlen-ia32 stpcpy-ia32 \

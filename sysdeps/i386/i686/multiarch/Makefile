@@ -1,4 +1,5 @@
 ifeq ($(subdir),string)
+@echo "Hello from Coulson"
 gen-as-const-headers += locale-defines.sym
 sysdep_routines += memset-sse2 memcpy-ssse3 mempcpy-ssse3 \
 		   memmove-ssse3 memcpy-ssse3-rep mempcpy-ssse3-rep \
@@ -22,7 +23,7 @@ sysdep_routines += memset-sse2 memcpy-ssse3 mempcpy-ssse3 \
 		   mempcpy-sse2-unaligned memmove-sse2-unaligned \
 		   strcspn-c strpbrk-c strspn-c \
 		   rawmemchr-ia32 \
-		   memcmp-ia32 memcpy-ia32 memmove-ia32 \
+		   memchr-ia32 memcmp-ia32 memcpy-ia32 memmove-ia32 \
 		   mempcpy-ia32 memset-ia32 strcat-ia32 strchr-ia32 \
 		   strrchr-ia32 strcpy-ia32 strcmp-ia32 strcspn-ia32 \
 		   strpbrk-ia32 strspn-ia32 strlen-ia32 stpcpy-ia32 \

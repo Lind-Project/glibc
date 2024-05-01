@@ -23,3 +23,4 @@ ENTRY(__ieee754_acos)
 	ret
 END (__ieee754_acos)
 libm_alias_finite (__ieee754_acos, __acos)
+

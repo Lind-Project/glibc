@@ -37,16 +37,6 @@
       __asm __volatile ("" : : "f" (x));				\
   } while (0)
 #else
-# define math_opt_barrier(x)						\
-  ({ __typeof (x) __x;							\
-     if (__builtin_types_compatible_p (__typeof (x), _Float128))	\
-       {								\
-	 __x = (x);							\
-	 __asm ("" : "+m" (__x));					\
-       }								\
-     else								\
-       __asm ("" : "=t" (__x) : "0" (x));				\
-     __x; })
 # define math_force_eval(x)						\
   do {									\
     __typeof (x) __x = (x);						\

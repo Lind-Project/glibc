@@ -1,4 +1,4 @@
-/* Truncate float value.
+/* Truncate long double value.
    Copyright (C) 1997-2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,22 +16,11 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <machine/asm.h>
-#include <libm-alias-float.h>
+//#include <libm-alias-ldouble.h>
+#include <math.h>  // Include the math library for truncl()
 
-ENTRY(__truncf)
-	flds	4(%esp)
-	subl	$32, %esp
-	cfi_adjust_cfa_offset (32)
-	fnstenv	4(%esp)
-	movl	$0xc00, %edx
-	orl	4(%esp), %edx
-	movl	%edx, (%esp)
-	fldcw	(%esp)
-	frndint
-	fldenv	4(%esp)
-	addl	$32, %esp
-	cfi_adjust_cfa_offset (-32)
-	ret
-END(__truncf)
-libm_alias_float (__trunc, trunc)
+long double Mytruncl(long double x) {
+    return truncl(x);  // Use the standard library function truncl()
+}
+
+

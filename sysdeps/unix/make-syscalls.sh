@@ -272,7 +272,7 @@ while read file srcfile caller syscall args strong weak; do
 	 echo '#define SYSCALL_SYMBOL $strong'; \\
 	 echo '#define SYSCALL_NOERRNO $noerrno'; \\
 	 echo '#define SYSCALL_ERRVAL $errval'; \\
-	 echo '#include <syscall-template.S>'; \\"
+	 echo '#include <syscall-template.c>'; \\"
   ;;
   esac
 

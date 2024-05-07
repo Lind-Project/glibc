@@ -86,7 +86,10 @@ endif
 
 # This is the end of the pipeline for compiling the syscall stubs.
 # The stdin is assembler with cpp using sysdep.h macros.
-compile-syscall = $(COMPILE.S) -o $@ -x assembler-with-cpp - \
+# compile-syscall = $(COMPILE.S) -o $@ -x assembler-with-cpp - \
+# 			       $(compile-mkdep-flags)
+
+compile-syscall = $(COMPILE.c) -o $@ -x c - \
 			       $(compile-mkdep-flags)
 
 ifndef avoid-generated

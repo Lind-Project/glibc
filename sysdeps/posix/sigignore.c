@@ -32,5 +32,7 @@ sigignore (int sig)
   __sigemptyset (&act.sa_mask);
   act.sa_flags = 0;
 
+  // return MAKE_SYSCALL(13, "syscall|sigaction", (uint16_t), (uint64_t)(uintptr_t) &act, (uint64_t) NULL, NOTUSED, NOTUSED, NOTUSED);
+
   return __sigaction (sig, &act, NULL);
 }

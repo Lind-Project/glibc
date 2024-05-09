@@ -1,4 +1,5 @@
-/* Copyright (C) 2015-2024 Free Software Foundation, Inc.
+/* Duplicate a file descriptor.  Linux version.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -12,24 +13,16 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
+   License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sys/socket.h>
-#include <sysdep-cancel.h>
-#include <socketcall.h>
-#include <syscall-template.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sysdep.h>
 
 int
-__libc_accept (int fd, __SOCKADDR_ARG addr, socklen_t *len)
+__dup3 (int fd, int fd2, int flags)
 {
-#ifdef __ASSUME_ACCEPT_SYSCALL
-  return SYSCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
-#elif defined __ASSUME_ACCEPT4_SYSCALL
-  return SYSCALL_CANCEL (accept4, fd, addr.__sockaddr__, len, 0);
-#else
-  return SOCKETCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
-#endif
+  return 0;
 }
-weak_alias (__libc_accept, accept)
-libc_hidden_def (accept)
+// weak_alias(__GI___dup3, __dup3)

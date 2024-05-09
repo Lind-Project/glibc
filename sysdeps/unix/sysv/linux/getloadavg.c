@@ -32,15 +32,18 @@
 int
 getloadavg (double loadavg[], int nelem)
 {
-  struct sysinfo info;
+  // Dennis Edit
+  return 0;
 
-  if (__sysinfo (&info) != 0)
-    return -1;
+  // struct sysinfo info;
 
-  nelem = CLAMP (nelem, 0, array_length (info.loads));
+  // if (__sysinfo (&info) != 0)
+  //   return -1;
 
-  for (int i = 0; i < nelem; i++)
-    loadavg[i] = (double) info.loads[i] / SYSINFO_LOADS_SCALE;
+  // nelem = CLAMP (nelem, 0, array_length (info.loads));
 
-  return nelem;
+  // for (int i = 0; i < nelem; i++)
+  //   loadavg[i] = (double) info.loads[i] / SYSINFO_LOADS_SCALE;
+
+  // return nelem;
 }

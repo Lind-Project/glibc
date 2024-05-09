@@ -27,4 +27,7 @@ __dup (int fd)
 {
   return 0;
 }
-// weak_alias(__GI___dup, __dup)
+
+int dup (int fd) {
+    return __dup(fd);
+}

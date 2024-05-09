@@ -1,13 +1,13 @@
 #include <unistd.h>
 
-pid_t
-__getpid (void)
+__uid_t
+__getuid (void)
 {
   return 0;
 }
 
-pid_t
-getpid (void)
+__uid_t
+getuid (void)
 {
   return 0;
 }

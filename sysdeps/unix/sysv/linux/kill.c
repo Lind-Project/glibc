@@ -26,3 +26,9 @@ __kill (__pid_t a,  int b)
   return 0;
 }
 
+int
+kill (__pid_t a,  int b)
+{
+  return 0;
+}
+

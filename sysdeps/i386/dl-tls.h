@@ -28,9 +28,9 @@ typedef struct dl_tls_index
 #ifdef SHARED
 /* This is the prototype for the GNU version.  */
 extern void *___tls_get_addr (tls_index *ti)
-     __attribute__ ((__regparm__ (1)));
+     __attribute__ ();
 extern void *___tls_get_addr_internal (tls_index *ti)
-     __attribute__ ((__regparm__ (1))) attribute_hidden;
+     __attribute__ () attribute_hidden;
 rtld_hidden_proto (___tls_get_addr)
 rtld_hidden_def (___tls_get_addr)
 

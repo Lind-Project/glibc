@@ -49,7 +49,7 @@
 
 #ifndef __x86_64__
 /* Extra attributes for the cleanup functions.  */
-# define __cleanup_fct_attribute __attribute__ ()
+# define __cleanup_fct_attribute __attribute__
 #endif
 
 #endif	/* bits/pthreadtypes.h */

@@ -265,17 +265,18 @@ tls_fill_user_desc (union user_desc_init *desc,
 #define THREAD_GSCOPE_FLAG_UNUSED 0
 #define THREAD_GSCOPE_FLAG_USED   1
 #define THREAD_GSCOPE_FLAG_WAIT   2
-#define THREAD_GSCOPE_RESET_FLAG() \
-  do									      \
-    { int __res;							      \
-      asm volatile ("xchgl %0, %%gs:%P1"				      \
-		    : "=r" (__res)					      \
-		    : "i" (offsetof (struct pthread, header.gscope_flag)),    \
-		      "0" (THREAD_GSCOPE_FLAG_UNUSED));			      \
-      if (__res == THREAD_GSCOPE_FLAG_WAIT)				      \
-	lll_futex_wake (&THREAD_SELF->header.gscope_flag, 1, LLL_PRIVATE);    \
-    }									      \
-  while (0)
+#include <stdatomic.h>
+
+#define THREAD_GSCOPE_RESET_FLAG()                                       \
+  do                                                                     \
+    {                                                                    \
+      int __res = atomic_exchange_explicit(&THREAD_SELF->header.gscope_flag, \
+                                           THREAD_GSCOPE_FLAG_UNUSED,     \
+                                           memory_order_acq_rel);        \
+      if (__res == THREAD_GSCOPE_FLAG_WAIT)                              \
+        lll_futex_wake(&THREAD_SELF->header.gscope_flag, 1, LLL_PRIVATE); \
+    } while (0)
+    
 #define THREAD_GSCOPE_SET_FLAG() \
   THREAD_SETMEM (THREAD_SELF, header.gscope_flag, THREAD_GSCOPE_FLAG_USED)
 

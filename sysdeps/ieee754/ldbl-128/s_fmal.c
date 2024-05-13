@@ -260,7 +260,7 @@ __fmal (_Float128 x, _Float128 y, _Float128 z)
       feupdateenv (&env);
       /* Ensure the following computations are performed in default rounding
 	 mode instead of just reusing the round to zero computation.  */
-      asm volatile ("" : "=m" (u) : "m" (u));
+    //   asm volatile ("" : "=m" (u) : "m" (u));
       /* If a1 + u.d is exact, the only rounding happens during
 	 scaling down.  */
       if (j == 0)

@@ -60,7 +60,7 @@
 	C code, hand-optimized a little bit.
 
 ptrdiff_t
-__attribute__ ((__regparm__ (1)))
+__attribute__ ()
 _dl_tlsdesc_dynamic (struct tlsdesc *tdp)
 {
   struct tlsdesc_dynamic_arg *td = tdp->arg;

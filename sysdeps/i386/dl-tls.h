@@ -50,7 +50,7 @@ __tls_get_addr (tls_index *ti)
 
 /* Prepare using the definition of __tls_get_addr in the generic
    version of this file.  */
-# define __tls_get_addr __attribute__ ((__regparm__ (1))) ___tls_get_addr
+# define __tls_get_addr __attribute__ () ___tls_get_addr
 strong_alias (___tls_get_addr, ___tls_get_addr_internal)
 #else
 

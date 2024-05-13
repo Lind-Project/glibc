@@ -121,7 +121,7 @@ _dl_tlsdesc_undefweak:
 	   object referenced by the argument.
 
 	   ptrdiff_t
-	   __attribute__ ()
+	   __attribute__ ((__regparm__ (1)))
 	   _dl_tlsdesc_dynamic (struct tlsdesc *tdp)
 	   {
 	     struct tlsdesc_dynamic_arg *td = tdp->arg;

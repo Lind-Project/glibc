@@ -16,5 +16,5 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-extern long long audit1_test (int, int, int) __attribute__ ();
-extern float audit2_test (int, int, int) __attribute__ ();
+extern long long audit1_test (int, int, int);
+extern float audit2_test (int, int, int);

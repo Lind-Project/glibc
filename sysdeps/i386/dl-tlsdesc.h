@@ -23,7 +23,7 @@
 /* Type used to represent a TLS descriptor in the GOT.  */
 struct tlsdesc
 {
-  ptrdiff_t __attribute__ ((regparm (1))) (*entry) (struct tlsdesc *);
+  ptrdiff_t (*entry) (struct tlsdesc *);
   void *arg;
 };
 
@@ -41,7 +41,7 @@ struct tlsdesc_dynamic_arg
   size_t gen_count;
 };
 
-extern ptrdiff_t attribute_hidden __attribute__ ((regparm (1)))
+extern ptrdiff_t
   _dl_tlsdesc_return (struct tlsdesc *),
   _dl_tlsdesc_undefweak (struct tlsdesc *);
 
@@ -49,7 +49,7 @@ extern ptrdiff_t attribute_hidden __attribute__ ((regparm (1)))
 extern void *_dl_make_tlsdesc_dynamic (struct link_map *map,
 				       size_t ti_offset) attribute_hidden;
 
-extern ptrdiff_t attribute_hidden __attribute__ ((regparm (1)))
+extern ptrdiff_t
   _dl_tlsdesc_dynamic (struct tlsdesc *);
 # endif
 

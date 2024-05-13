@@ -235,8 +235,7 @@
 
 #else	/* !__ASSEMBLER__ */
 
-extern int __syscall_error (int)
-  attribute_hidden __attribute__ ((__regparm__ (1)));
+extern int __syscall_error (int);
 
 /* Six-argument syscalls use an out-of-line helper, because an inline
    asm using all registers apart from %esp cannot work reliably and

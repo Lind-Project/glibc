@@ -20,7 +20,6 @@
 #include "tst-audit3.h"
 
 long long
-__attribute__ ((regparm(3)))
 audit1_test (int i, int j, int k)
 {
   if (i != 1 || j != 2 || k != 3)
@@ -29,7 +28,6 @@ audit1_test (int i, int j, int k)
 }
 
 float
-__attribute__ ((regparm(3)))
 audit2_test (int i, int j, int k)
 {
   if (i != 1 || j != 2 || k != 3)

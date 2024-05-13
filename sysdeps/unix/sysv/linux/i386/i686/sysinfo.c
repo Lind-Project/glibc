@@ -3,6 +3,7 @@
 int
 __GI___sysinfo (struct sysinfo *__info)
 {
+
   return 0;
 }
 

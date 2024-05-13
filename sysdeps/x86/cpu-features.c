@@ -164,7 +164,6 @@ update_active (struct cpu_features *cpu_features)
       unsigned int xcrlow;
       unsigned int xcrhigh;
       CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10);
-      asm ("xgetbv" : "=a" (xcrlow), "=d" (xcrhigh) : "c" (0));
       /* Is YMM and XMM state usable?  */
       if ((xcrlow & (bit_YMM_state | bit_XMM_state))
 	  == (bit_YMM_state | bit_XMM_state))

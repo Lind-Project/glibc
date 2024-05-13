@@ -162,7 +162,11 @@ kill_func (char **argv)
     {
       pid_t pid;
       if (strcmp (argv[i], "$$") == 0)
-	pid = getpid ();
+      
+  // Dennis Edit
+	pid = 0;
+  // pid = getpid ();
+
       else
 	pid = atoi (argv[i]);
       kill (pid, signum);

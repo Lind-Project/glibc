@@ -38,7 +38,6 @@ __times (struct tms *buf)
 #define touch(v) \
       do {								      \
 	clock_t temp = v;						      \
-	asm volatile ("" : "+r" (temp));				      \
 	v = temp;							      \
       } while (0)
       touch (buf->tms_utime);

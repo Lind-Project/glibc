@@ -31,12 +31,8 @@
 #  define PTR_DEMANGLE(reg)     ror $2*LP_SIZE+1, reg;                       \
                                 xor __pointer_chk_guard_local(%rip), reg
 # else
-#  define PTR_MANGLE(reg)       asm ("xor __pointer_chk_guard_local(%%rip), %0\n" \
-                                     "rol $2*" LP_SIZE "+1, %0"                   \
-                                     : "=r" (reg) : "0" (reg))
-#  define PTR_DEMANGLE(reg)     asm ("ror $2*" LP_SIZE "+1, %0\n"                 \
-                                     "xor __pointer_chk_guard_local(%%rip), %0"   \
-                                     : "=r" (reg) : "0" (reg))
+#  define PTR_MANGLE(reg)      
+#  define PTR_DEMANGLE(reg)     
 # endif
 #else
 # ifdef __ASSEMBLER__
@@ -45,16 +41,8 @@
 #  define PTR_DEMANGLE(reg)     ror $2*LP_SIZE+1, reg;                        \
                                 xor %fs:POINTER_GUARD, reg
 # else
-#  define PTR_MANGLE(var)       asm ("xor %%fs:%c2, %0\n"                     \
-                                     "rol $2*" LP_SIZE "+1, %0"               \
-                                     : "=r" (var)                             \
-                                     : "0" (var),                             \
-                                       "i" (POINTER_GUARD))
-#  define PTR_DEMANGLE(var)     asm ("ror $2*" LP_SIZE "+1, %0\n"             \
-                                     "xor %%fs:%c2, %0"                       \
-                                     : "=r" (var)                             \
-                                     : "0" (var),                             \
-                                       "i" (POINTER_GUARD))
+#  define PTR_MANGLE(var)       
+#  define PTR_DEMANGLE(var)     
 # endif
 #endif
 

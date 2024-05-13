@@ -28,7 +28,6 @@ fill_stack (void)
 {
   char buffer[65536];
   memset (buffer, 0xc0, sizeof (buffer));
-  asm ("" ::: "memory");
 }
 
 static int

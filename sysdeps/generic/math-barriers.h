@@ -29,9 +29,16 @@
    expression evaluations with respect to accesses to the
    floating-point environment.  */
 
-#define math_opt_barrier(x)					\
-  ({ __typeof (x) __x = (x); __asm ("" : "+m" (__x)); __x; })
-#define math_force_eval(x)						\
-  ({ __typeof (x) __x = (x); __asm __volatile__ ("" : : "m" (__x)); })
+#define math_opt_barrier(x)                \
+  ({ __typeof (x) __x = (x);               \
+     volatile __typeof (__x) *__px = &__x; \
+     *__px = __x;                          \
+     __x; })
+
+#define math_force_eval(x)                        \
+  do {                                            \
+    volatile __typeof (x) __x = (x);              \
+    (void)__x;                                    \
+  } while (0)
 
 #endif /* math-barriers.h */

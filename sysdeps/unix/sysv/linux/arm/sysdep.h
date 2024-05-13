@@ -328,26 +328,18 @@ __local_syscall_error:						\
 # undef INTERNAL_SYSCALL_RAW
 # define INTERNAL_SYSCALL_RAW(name, nr, args...)		\
   ({								\
-      register int _a1 asm ("a1");				\
+      register int _a1;				\
       int _nametmp = name;					\
       LOAD_ARGS_##nr (args)					\
-      register int _name asm ("ip") = _nametmp;			\
-      asm volatile ("bl      __libc_do_syscall"			\
-                    : "=r" (_a1)				\
-                    : "r" (_name) ASM_ARGS_##nr			\
-                    : "memory", "lr");				\
+      register int _name = _nametmp;			\
       _a1; })
 #else /* ARM */
 # undef INTERNAL_SYSCALL_RAW
 # define INTERNAL_SYSCALL_RAW(name, nr, args...)		\
   ({								\
-       register int _a1 asm ("r0"), _nr asm ("r7");		\
+       register int _a1, _nr;		\
        LOAD_ARGS_##nr (args)					\
        _nr = name;						\
-       asm volatile ("swi	0x0	@ syscall " #name	\
-		     : "=r" (_a1)				\
-		     : "r" (_nr) ASM_ARGS_##nr			\
-		     : "memory");				\
        _a1; })
 #endif
 
@@ -374,33 +366,33 @@ __local_syscall_error:						\
 #define LOAD_ARGS_2(a1, a2)			\
   int _a2tmp = (int) (a2);			\
   LOAD_ARGS_1 (a1)				\
-  register int _a2 asm ("a2") = _a2tmp;
+  register int _a2 = _a2tmp;
 #define ASM_ARGS_2	ASM_ARGS_1, "r" (_a2)
 #define LOAD_ARGS_3(a1, a2, a3)			\
   int _a3tmp = (int) (a3);			\
   LOAD_ARGS_2 (a1, a2)				\
-  register int _a3 asm ("a3") = _a3tmp;
+  register int _a3 = _a3tmp;
 #define ASM_ARGS_3	ASM_ARGS_2, "r" (_a3)
 #define LOAD_ARGS_4(a1, a2, a3, a4)		\
   int _a4tmp = (int) (a4);			\
   LOAD_ARGS_3 (a1, a2, a3)			\
-  register int _a4 asm ("a4") = _a4tmp;
+  register int _a4 = _a4tmp;
 #define ASM_ARGS_4	ASM_ARGS_3, "r" (_a4)
 #define LOAD_ARGS_5(a1, a2, a3, a4, a5)		\
   int _v1tmp = (int) (a5);			\
   LOAD_ARGS_4 (a1, a2, a3, a4)			\
-  register int _v1 asm ("v1") = _v1tmp;
+  register int _v1 = _v1tmp;
 #define ASM_ARGS_5	ASM_ARGS_4, "r" (_v1)
 #define LOAD_ARGS_6(a1, a2, a3, a4, a5, a6)	\
   int _v2tmp = (int) (a6);			\
   LOAD_ARGS_5 (a1, a2, a3, a4, a5)		\
-  register int _v2 asm ("v2") = _v2tmp;
+  register int _v2 = _v2tmp;
 #define ASM_ARGS_6	ASM_ARGS_5, "r" (_v2)
 #ifndef __thumb__
 # define LOAD_ARGS_7(a1, a2, a3, a4, a5, a6, a7)	\
   int _v3tmp = (int) (a7);				\
   LOAD_ARGS_6 (a1, a2, a3, a4, a5, a6)			\
-  register int _v3 asm ("v3") = _v3tmp;
+  register int _v3 = _v3tmp;
 # define ASM_ARGS_7	ASM_ARGS_6, "r" (_v3)
 #endif
 

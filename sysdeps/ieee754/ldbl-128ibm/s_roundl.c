@@ -27,7 +27,8 @@
 #include <float.h>
 #include <ieee754.h>
 
-double round (double) asm ("__round");
+double round (double);
+// double round (double) asm ("__round");
 
 
 long double

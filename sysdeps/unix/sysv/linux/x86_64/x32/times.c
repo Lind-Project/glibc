@@ -24,12 +24,7 @@
 ({									\
     unsigned long long int resultvar;					\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1)						\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long long int) resultvar;						\
 })
 

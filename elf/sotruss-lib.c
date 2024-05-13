@@ -76,7 +76,11 @@ init (void)
   /* Determine whether this process is supposed to be traced and if
      yes, whether we should print into a file.  */
   const char *which_process = getenv ("SOTRUSS_WHICH");
-  pid_t pid = getpid ();
+
+  // Dennis Edit
+  pid_t pid = 0;
+  // pid_t pid = getpid ();
+
   int out_fd = -1;
   if (match_pid (pid, which_process))
     {
@@ -253,7 +257,10 @@ print_enter (uintptr_t *refcook, uintptr_t *defcook, const char *symname,
   char buf[3 * sizeof (pid_t) + 3];
   buf[0] = '\0';
   if (print_pid)
-    snprintf (buf, sizeof (buf), "%5ld: ", (long int) getpid ());
+
+    // Dennis Edit
+    snprintf (buf, sizeof (buf), "%5ld: ", (long int) 0);
+    // snprintf (buf, sizeof (buf), "%5ld: ", (long int) getpid ());
 
   fprintf (out_file, "%s%15s -> %-15s:%s%s(0x%lx, 0x%lx, 0x%lx)\n",
 	   buf, (char *) *refcook, (char *) *defcook,
@@ -340,7 +347,10 @@ print_exit (uintptr_t *refcook, uintptr_t *defcook, const char *symname,
   char buf[3 * sizeof (pid_t) + 3];
   buf[0] = '\0';
   if (print_pid)
-    snprintf (buf, sizeof (buf), "%5ld: ", (long int) getpid ());
+
+    // Dennis Edit
+    snprintf (buf, sizeof (buf), "%5ld: ", (long int) 0);
+    // snprintf (buf, sizeof (buf), "%5ld: ", (long int) getpid ());
 
   fprintf (out_file, "%s%15s -> %-15s:%s%s - 0x%lx\n",
 	   buf, (char *) *refcook, (char *) *defcook, " ", symname, reg);

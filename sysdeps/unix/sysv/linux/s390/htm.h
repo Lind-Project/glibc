@@ -102,85 +102,21 @@
   ({ int __ret;								\
      int __fpc;								\
      char __fprs[TX_FPRS_BYTES];					\
-     __asm__ __volatile__ (".machine push\n\t"				\
-			   ".machinemode \"zarch_nohighgprs\"\n\t"	\
-			   ".machine \"all\"\n\t"			\
-			   /* Save state at the outermost transaction.	\
-			      As extracting nesting depth is expensive	\
-			      on at least zEC12, save fprs at inner	\
-			      transactions, too.			\
-			      The fpc and fprs are saved here as they	\
-			      are not saved by tbegin.  There exist no	\
-			      call-saved vrs, thus they are not saved	\
-			      here.  */					\
-			   "   efpc %[R_FPC]\n\t"			\
-			   TX_SAVE_FPRS					\
-			   /* Begin transaction: save all gprs, allow	\
-			      ar modification and fp operations.  Some	\
-			      program-interruptions (e.g. a null	\
-			      pointer access) are filtered and the	\
-			      transaction will abort.  In this case	\
-			      the normal lock path will execute it	\
-			      again and result in a core dump which does	\
-			      now show at tbegin but the real executed	\
-			      instruction.				\
-			      However it is not guaranteed that this	\
-			      retry operate on the same data and thus	\
-			      may not end in an program-interruption.	\
-			      Note: This could also be used to probe	\
-			      memory for being accessible!  */		\
-			   "2: tbegin 0, 0xFF0E\n\t"			\
-			   /* Branch away in abort case (this is the	\
-			      preferred sequence.  See PoP in chapter 5	\
-			      Transactional-Execution Facility		\
-			      Operation).  */				\
-			   "   jnz 0f\n\t"				\
-			   /* Transaction has successfully started.  */	\
-			   "   lhi %[R_RET], 0\n\t"			\
-			   "   j 1f\n\t"				\
-			   /* Transaction has aborted.  Now we are at	\
-			      the outermost transaction.  Restore fprs	\
-			      and fpc. */				\
-			   "0: ipm %[R_RET]\n\t"			\
-			   "   srl %[R_RET], 28\n\t"			\
-			   "   sfpc %[R_FPC]\n\t"			\
-			   TX_RESTORE_FPRS				\
-			   abort_path_insn				\
-			   "1:\n\t"					\
-			   ".machine pop\n"				\
-			   : [R_RET] "=&d" (__ret),			\
-			     [R_FPC] "=&d" (__fpc)			\
-			     output_regs				\
-			   : [R_FPRS] "a" (__fprs)			\
-			     input_regs					\
-			   : "cc", "memory");				\
      __ret;								\
      })
 
 /* These builtins are usable in context of glibc lock elision code without any
    changes.  Use them.  */
 #define __libc_tend()							\
-  ({ __asm__ __volatile__ (".machine push\n\t"				\
-			   ".machinemode \"zarch_nohighgprs\"\n\t"	\
-			   ".machine \"all\"\n\t");			\
-    int __ret = __builtin_tend ();					\
-    __asm__ __volatile__ (".machine pop");				\
+  ({int __ret = __builtin_tend ();					\
     __ret;								\
   })
 
 #define __libc_tabort(abortcode)					\
-  __asm__ __volatile__ (".machine push\n\t"				\
-			".machinemode \"zarch_nohighgprs\"\n\t"		\
-			".machine \"all\"\n\t");			\
-  __builtin_tabort (abortcode);						\
-  __asm__ __volatile__ (".machine pop")
+  __builtin_tabort (abortcode);						
 
 #define __libc_tx_nesting_depth() \
-  ({ __asm__ __volatile__ (".machine push\n\t"				\
-			   ".machinemode \"zarch_nohighgprs\"\n\t"	\
-			   ".machine \"all\"\n\t");			\
-    int __ret = __builtin_tx_nesting_depth ();				\
-    __asm__ __volatile__ (".machine pop");				\
+  ({int __ret = __builtin_tx_nesting_depth ();				\
     __ret;								\
   })
 

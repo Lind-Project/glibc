@@ -34,13 +34,5 @@ __swapcontext (ucontext_t *oucp, const ucontext_t *ucp)
   return 0;
 }
 
-asm ("							\n\
-	.text						\n\
-	.type	__swapcontext_ret, #function		\n\
-__swapcontext_ret:					\n\
-	return	%i7 + 8					\n\
-	 clr	%o0					\n\
-	.size	__swapcontext_ret, .-__swapcontext_ret	\n\
-     ");
 
 weak_alias (__swapcontext, swapcontext)

@@ -25,9 +25,11 @@
 int
 __dup (int fd)
 {
+
   return 0;
 }
 
 int dup (int fd) {
-    return __dup(fd);
+
+  return __dup(fd);
 }

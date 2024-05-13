@@ -131,15 +131,7 @@ extern long int __syscall_error (long int neg_errno);
 	  {								\
 	    long int _sc_ret = (long int) number;			\
 	    LOAD_ARGS_##nr (args)					\
-	    register long int __sc_ret __asm__ ("r11") = _sc_ret;	\
-	    __asm__ __volatile__ ("l.sys 1\n\t"				\
-				  " l.nop\n\t"				\
-				  : "+r" (__sc_ret)			\
-				  : ASM_ARGS_##nr			\
-				  : ASM_CLOBBERS_##nr			\
-				    "r12", "r13", "r15", "r17", "r19",	\
-				    "r21", "r23", "r25", "r27", "r29",	\
-				    "r31", "memory");			\
+	    register long int __sc_ret = _sc_ret;	\
 	    __sys_result = __sc_ret;					\
 	  }								\
 	  (long int) __sys_result; })
@@ -154,42 +146,42 @@ extern long int __syscall_error (long int neg_errno);
 
 #define LOAD_ARGS_1(a) \
   long int _a = (long int)(a);                             \
-  register long int __a __asm__ ("r3") = _a;
+  register long int __a  = _a;
 #define ASM_ARGS_1 "r" (__a)
 #define ASM_CLOBBERS_1  "r4", ASM_CLOBBERS_2
 
 #define LOAD_ARGS_2(a, b) \
   long int _b = (long int)(b);                             \
   LOAD_ARGS_1 (a)                                          \
-  register long int __b __asm__ ("r4") = _b;
+  register long int __b = _b;
 #define ASM_ARGS_2 ASM_ARGS_1, "r" (__b)
 #define ASM_CLOBBERS_2  "r5", ASM_CLOBBERS_3
 
 #define LOAD_ARGS_3(a, b, c) \
   long int _c = (long int)(c);                             \
   LOAD_ARGS_2 (a, b)                                       \
-  register long int __c __asm__ ("r5") = _c;
+  register long int __c = _c;
 #define ASM_ARGS_3 ASM_ARGS_2, "r" (__c)
 #define ASM_CLOBBERS_3  "r6", ASM_CLOBBERS_4
 
 #define LOAD_ARGS_4(a, b, c, d) \
     LOAD_ARGS_3 (a, b, c)                                  \
   long int _d = (long int)(d);                             \
-  register long int __d __asm__ ("r6") = _d;
+  register long int __d  = _d;
 #define ASM_ARGS_4 ASM_ARGS_3, "r" (__d)
 #define ASM_CLOBBERS_4  "r7", ASM_CLOBBERS_5
 
 #define LOAD_ARGS_5(a, b, c, d, e) \
   long int _e = (long int)(e);                             \
   LOAD_ARGS_4 (a, b, c, d)                                 \
-  register long int __e __asm__ ("r7") = _e;
+  register long int __e = _e;
 #define ASM_ARGS_5 ASM_ARGS_4, "r" (__e)
 #define ASM_CLOBBERS_5  "r8", ASM_CLOBBERS_6
 
 #define LOAD_ARGS_6(a, b, c, d, e, f) \
   long int _f = (long int)(f);                             \
   LOAD_ARGS_5 (a, b, c, d, e)                              \
-  register long int __f __asm__ ("r8") = _f;
+  register long int __f = _f;
 #define ASM_ARGS_6 ASM_ARGS_5, "r" (__f)
 #define ASM_CLOBBERS_6
 

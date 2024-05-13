@@ -24,24 +24,9 @@
 int
 __feholdexcept (fenv_t *envp)
 {
-  /* Store the environment.  Recall that fnstenv has a side effect of
-     masking all exceptions.  Then clear all exceptions.  */
-  __asm__ volatile ("fnstenv %0; fnclex" : "=m" (*envp));
-
-  /* If the CPU supports SSE we set the MXCSR as well.  */
-  if (CPU_FEATURE_USABLE (SSE))
-    {
-      unsigned int xwork;
-
-      /* Get the current control word.  */
-      __asm__ ("stmxcsr %0" : "=m" (envp->__eip));
-
-      /* Set all exceptions to non-stop and clear them.  */
-      xwork = (envp->__eip | 0x1f80) & ~0x3f;
-
-      __asm__ ("ldmxcsr %0" : : "m" (*&xwork));
-    }
-
+  #include <stdlib.h>
+  // removed in-line asm
+  exit(EXIT_FAILURE);
   return 0;
 }
 libm_hidden_def (__feholdexcept)

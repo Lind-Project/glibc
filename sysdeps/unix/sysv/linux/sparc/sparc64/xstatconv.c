@@ -79,7 +79,6 @@ __xstat32_conv (int vers, struct stat64 *sbuf, struct stat *buf)
      rather than struct stat64.  But it is the same size as
      struct kernel_stat64, so use this hack so that we can reuse
      i386 {,f,l}xstat{,at}.c routines.  */
-  __asm ("" : "=r" (kbuf) : "0" (sbuf));
   assert (sizeof (struct stat) == sizeof (struct stat64));
   assert (sizeof (struct stat64) >= sizeof (struct kernel_stat64));
 

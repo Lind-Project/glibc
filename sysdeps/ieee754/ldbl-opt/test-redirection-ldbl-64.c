@@ -29,7 +29,7 @@
 #endif
 
 #define MATH_REDIRX(function, to) \
-  extern typeof (function) function __asm__ ("" # to);
+  extern typeof (function) *function##_ptr = &to;
 #define MATH_REDIR(function) MATH_REDIRX (function, __ ## function)
 
 #if __HAVE_FLOAT32

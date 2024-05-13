@@ -371,15 +371,6 @@ L(pre_end):					ASM_LINE_SEP	\
 		PIC_REG_DEF						\
 		LOAD_REGS_##nr						\
 		/* FIXME: HACK save/load r19 around syscall */		\
-		asm volatile(						\
-			SAVE_ASM_PIC					\
-			"	ble  0x100(%%sr2, %%r0)\n"		\
-			"	ldi %1, %%r20\n"			\
-			LOAD_ASM_PIC					\
-			: "=r" (__res)					\
-			: "i" (SYS_ify(name)) PIC_REG_USE ASM_ARGS_##nr	\
-			: "memory", CALL_CLOB_REGS CLOB_ARGS_##nr	\
-		);							\
 		__sys_res = (long)__res;				\
 	}								\
 	__sys_res;							\
@@ -397,15 +388,6 @@ L(pre_end):					ASM_LINE_SEP	\
 		PIC_REG_DEF						\
 		LOAD_REGS_##nr						\
 		/* FIXME: HACK save/load r19 around syscall */		\
-		asm volatile(						\
-			SAVE_ASM_PIC					\
-			"	ble  0x100(%%sr2, %%r0)\n"		\
-			"	copy %1, %%r20\n"			\
-			LOAD_ASM_PIC					\
-			: "=r" (__res)					\
-			: "r" (name) PIC_REG_USE ASM_ARGS_##nr		\
-			: "memory", CALL_CLOB_REGS CLOB_ARGS_##nr	\
-		);							\
 		__sys_res = (long)__res;				\
 	}								\
 	__sys_res;							\
@@ -417,37 +399,37 @@ L(pre_end):					ASM_LINE_SEP	\
   register unsigned long __x26 = (unsigned long)(a1);			\
   LOAD_ARGS_0()
 #define LOAD_REGS_1							\
-  register unsigned long __r26 __asm__("r26") = __x26;			\
+  register unsigned long __r26  = __x26;			\
   LOAD_REGS_0
 #define LOAD_ARGS_2(a1,a2)						\
   register unsigned long __x25 = (unsigned long)(a2);			\
   LOAD_ARGS_1(a1)
 #define LOAD_REGS_2							\
-  register unsigned long __r25 __asm__("r25") = __x25;			\
+  register unsigned long __r25  = __x25;			\
   LOAD_REGS_1
 #define LOAD_ARGS_3(a1,a2,a3)						\
   register unsigned long __x24 = (unsigned long)(a3);			\
   LOAD_ARGS_2(a1,a2)
 #define LOAD_REGS_3							\
-  register unsigned long __r24 __asm__("r24") = __x24;			\
+  register unsigned long __r24 = __x24;			\
   LOAD_REGS_2
 #define LOAD_ARGS_4(a1,a2,a3,a4)					\
   register unsigned long __x23 = (unsigned long)(a4);			\
   LOAD_ARGS_3(a1,a2,a3)
 #define LOAD_REGS_4							\
-  register unsigned long __r23 __asm__("r23") = __x23;			\
+  register unsigned long __r23  = __x23;			\
   LOAD_REGS_3
 #define LOAD_ARGS_5(a1,a2,a3,a4,a5)					\
   register unsigned long __x22 = (unsigned long)(a5);			\
   LOAD_ARGS_4(a1,a2,a3,a4)
 #define LOAD_REGS_5							\
-  register unsigned long __r22 __asm__("r22") = __x22;			\
+  register unsigned long __r22  = __x22;			\
   LOAD_REGS_4
 #define LOAD_ARGS_6(a1,a2,a3,a4,a5,a6)					\
   register unsigned long __x21 = (unsigned long)(a6);			\
   LOAD_ARGS_5(a1,a2,a3,a4,a5)
 #define LOAD_REGS_6							\
-  register unsigned long __r21 __asm__("r21") = __x21;			\
+  register unsigned long __r21 = __x21;			\
   LOAD_REGS_5
 
 /* Even with zero args we use r20 for the syscall number */

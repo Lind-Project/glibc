@@ -34,8 +34,6 @@
 					- sp_saved)			\
 		    < ss.ss_size)))					\
 	  __fortify_fail ("longjmp causes uninitialized stack frame");	\
-	asm volatile ("move %0, %1" : "=r" (env) : "r" (env_save));	\
-	asm volatile ("move %0, %1" : "=r" (val) : "r" (val_save));	\
       }									\
   } while (0)
 #include <__longjmp.c>

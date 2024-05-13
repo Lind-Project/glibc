@@ -41,10 +41,10 @@
 
 #define __arch_compare_and_exchange_val_32_acq(mem, newval, oldval)	\
   ({									\
-     register int r2 asm ("r2");					\
-     register int* r4 asm ("r4") = (int*)(mem);				\
-     register int r5 asm ("r5");					\
-     register int r6 asm ("r6") = (int)(newval);			\
+     register int r2 ;					\
+     register int* r4 = (int*)(mem);				\
+     register int r5 ;					\
+     register int r6  = (int)(newval);			\
      int retval, orig_oldval = (int)(oldval);				\
      long kernel_cmpxchg = 0x1004;					\
      while (1)								\
@@ -54,11 +54,7 @@
 	   {								\
 	     retval = r5;						\
 	     break;							\
-	   }								\
-	 asm volatile ("callr %1\n"					\
-		       : "=r" (r2)					\
-		       : "r" (kernel_cmpxchg), "r" (r4), "r" (r5), "r" (r6) \
-		       : "ra", "memory");				\
+	   }										\
 	 if (!r2) { retval = orig_oldval; break; }			\
        }								\
      (__typeof (*(mem))) retval;					\
@@ -66,18 +62,14 @@
 
 #define __arch_compare_and_exchange_bool_32_acq(mem, newval, oldval)	\
   ({									\
-     register int r2 asm ("r2");					\
-     register int *r4 asm ("r4") = (int*)(mem);				\
-     register int r5 asm ("r5") = (int)(oldval);			\
-     register int r6 asm ("r6") = (int)(newval);			\
+     register int r2 ;					\
+     register int *r4  = (int*)(mem);				\
+     register int r5 = (int)(oldval);			\
+     register int r6  = (int)(newval);			\
      long kernel_cmpxchg = 0x1004;					\
-     asm volatile ("callr %1\n"						\
-		   : "=r" (r2)						\
-		   : "r" (kernel_cmpxchg), "r" (r4), "r" (r5), "r" (r6) \
-		   : "ra", "memory");					\
      r2;								\
   })
 
-#define atomic_full_barrier()  ({ asm volatile ("sync"); })
+#define atomic_full_barrier()  ({ })
 
 #endif /* _NIOS2_ATOMIC_MACHINE_H */

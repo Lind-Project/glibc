@@ -233,11 +233,7 @@ SYSCALL_ERROR_LABEL:							      \
 	  before the call used registers are set.  */	\
        LOAD_ARGS_##nr (args)				\
        LOAD_REGS_##nr					\
-       register int _d0 asm ("%d0") = name;		\
-       asm volatile ("trap #0"				\
-		     : "=d" (_d0)			\
-		     : "0" (_d0) ASM_ARGS_##nr		\
-		     : "memory");			\
+       register int _d0 = name;			\
        _sys_result = _d0;				\
      }							\
      (int) _sys_result; })
@@ -251,42 +247,42 @@ SYSCALL_ERROR_LABEL:							      \
   LOAD_ARGS_0 ()				\
   int __arg1 = (int) (a1);
 #define LOAD_REGS_1				\
-  register int _d1 asm ("d1") = __arg1;		\
+  register int _d1 = __arg1;		\
   LOAD_REGS_0
 #define ASM_ARGS_1	ASM_ARGS_0, "d" (_d1)
 #define LOAD_ARGS_2(a1, a2)			\
   LOAD_ARGS_1 (a1)				\
   int __arg2 = (int) (a2);
 #define LOAD_REGS_2				\
-  register int _d2 asm ("d2") = __arg2;		\
+  register int _d2 = __arg2;		\
   LOAD_REGS_1
 #define ASM_ARGS_2	ASM_ARGS_1, "d" (_d2)
 #define LOAD_ARGS_3(a1, a2, a3)			\
   LOAD_ARGS_2 (a1, a2)				\
   int __arg3 = (int) (a3);
 #define LOAD_REGS_3				\
-  register int _d3 asm ("d3") = __arg3;		\
+  register int _d3 = __arg3;		\
   LOAD_REGS_2
 #define ASM_ARGS_3	ASM_ARGS_2, "d" (_d3)
 #define LOAD_ARGS_4(a1, a2, a3, a4)		\
   LOAD_ARGS_3 (a1, a2, a3)			\
   int __arg4 = (int) (a4);
 #define LOAD_REGS_4				\
-  register int _d4 asm ("d4") = __arg4;		\
+  register int _d4  = __arg4;		\
   LOAD_REGS_3
 #define ASM_ARGS_4	ASM_ARGS_3, "d" (_d4)
 #define LOAD_ARGS_5(a1, a2, a3, a4, a5)		\
   LOAD_ARGS_4 (a1, a2, a3, a4)			\
   int __arg5 = (int) (a5);
 #define LOAD_REGS_5				\
-  register int _d5 asm ("d5") = __arg5;		\
+  register int _d5  = __arg5;		\
   LOAD_REGS_4
 #define ASM_ARGS_5	ASM_ARGS_4, "d" (_d5)
 #define LOAD_ARGS_6(a1, a2, a3, a4, a5, a6)	\
   LOAD_ARGS_5 (a1, a2, a3, a4, a5)		\
   int __arg6 = (int) (a6);
 #define LOAD_REGS_6				\
-  register int _a0 asm ("a0") = __arg6;		\
+  register int _a0  = __arg6;		\
   LOAD_REGS_5
 #define ASM_ARGS_6	ASM_ARGS_5, "a" (_a0)
 

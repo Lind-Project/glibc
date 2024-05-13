@@ -33,7 +33,6 @@
     {									\
       uintptr_t cur_sp;							\
       uintptr_t new_sp = env->__gregs[9];				\
-      __asm__ ("lgr %0, %%r15" : "=r" (cur_sp));			\
       new_sp ^= guard;							\
       if (new_sp < cur_sp)						\
 	{								\

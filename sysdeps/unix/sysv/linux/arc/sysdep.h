@@ -147,16 +147,10 @@ hidden_proto (__syscall_error)
 # define INTERNAL_SYSCALL_NCS(number, nr_args, args...)	\
   ({								\
     /* Per ABI, r0 is 1st arg and return reg.  */		\
-    register long int __ret __asm__("r0");			\
-    register long int _sys_num __asm__("r8");			\
+    register long int __ret;			\
+    register long int _sys_num;			\
 								\
     LOAD_ARGS_##nr_args (number, args)				\
-								\
-    __asm__ volatile (						\
-                      ARC_TRAP_INSN				\
-                      : "+r" (__ret)				\
-                      : "r"(_sys_num) ASM_ARGS_##nr_args	\
-                      : "memory");				\
                                                                 \
     __ret; })
 
@@ -164,7 +158,7 @@ hidden_proto (__syscall_error)
 # define INTERNAL_SYSCALL(name, nr, args...) 	\
   INTERNAL_SYSCALL_NCS(__NR_##name, nr, args)
 
-/* Macros for setting up inline __asm__ input regs.  */
+/* Macros for setting up inline input regs.  */
 # define ASM_ARGS_0
 # define ASM_ARGS_1	ASM_ARGS_0, "r" (__ret)
 # define ASM_ARGS_2	ASM_ARGS_1, "r" (_arg2)
@@ -192,32 +186,32 @@ hidden_proto (__syscall_error)
 # define LOAD_ARGS_2(nm, arg1, arg2)			\
   long int _tmp2 = (long int) (arg2);			\
   LOAD_ARGS_1 (nm, arg1)				\
-  register long int _arg2 __asm__ ("r1") = _tmp2;
+  register long int _arg2  = _tmp2;
 
 # define LOAD_ARGS_3(nm, arg1, arg2, arg3)		\
   long int _tmp3 = (long int) (arg3);			\
   LOAD_ARGS_2 (nm, arg1, arg2)				\
-  register long int _arg3 __asm__ ("r2") = _tmp3;
+  register long int _arg3  = _tmp3;
 
 #define LOAD_ARGS_4(nm, arg1, arg2, arg3, arg4)		\
   long int _tmp4 = (long int) (arg4);			\
   LOAD_ARGS_3 (nm, arg1, arg2, arg3)			\
-  register long int _arg4 __asm__ ("r3") = _tmp4;
+  register long int _arg4 = _tmp4;
 
 # define LOAD_ARGS_5(nm, arg1, arg2, arg3, arg4, arg5)	\
   long int _tmp5 = (long int) (arg5);			\
   LOAD_ARGS_4 (nm, arg1, arg2, arg3, arg4)		\
-  register long int _arg5 __asm__ ("r4") = _tmp5;
+  register long int _arg5  = _tmp5;
 
 # define LOAD_ARGS_6(nm,  arg1, arg2, arg3, arg4, arg5, arg6)\
   long int _tmp6 = (long int) (arg6);			\
   LOAD_ARGS_5 (nm, arg1, arg2, arg3, arg4, arg5)	\
-  register long int _arg6 __asm__ ("r5") = _tmp6;
+  register long int _arg6 = _tmp6;
 
 # define LOAD_ARGS_7(nm, arg1, arg2, arg3, arg4, arg5, arg6, arg7)\
   long int _tmp7 = (int) (arg7);				\
   LOAD_ARGS_6 (nm, arg1, arg2, arg3, arg4, arg5, arg6)	\
-  register long int _arg7 __asm__ ("r6") = _tmp7;
+  register long int _arg7  = _tmp7;
 
 # undef HAVE_INTERNAL_BRK_ADDR_SYMBOL
 # define HAVE_INTERNAL_BRK_ADDR_SYMBOL  1

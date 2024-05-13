@@ -4,6 +4,7 @@
 int
 __GI___mprotect (int fd, const void *buf, size_t nbytes)
 {
+
   return 0;
 }
 

@@ -134,7 +134,9 @@ static const long double C[] = {
 /* Avoid local PLT entry use from (int) roundl (...) being converted
    to a call to lroundl in the case of 32-bit long and roundl not
    inlined.  */
-long int lroundl (long double) asm ("__lroundl");
+long int lroundl (long double);
+
+// long int lroundl (long double) asm ("__lroundl");
 
 long double
 __ieee754_expl (long double x)

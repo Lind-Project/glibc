@@ -1,0 +1,29 @@
+{
+    "files.associations": {
+        "cmath": "c",
+        "complex": "c",
+        "*.tbl": "c",
+        "math_config.h": "c",
+        "syscall-template.h": "c",
+        "shlib-compat.h": "c",
+        "sigsetops.h": "c",
+        "socketcall.h": "c",
+        "sysdep-cancel.h": "c",
+        "sysdep.h": "c",
+        "fcntl.h": "c",
+        "sysinfo.h": "c",
+        "kernel.h": "c",
+        "types.h": "c",
+        "stdlib.h": "c",
+        "ratio": "cpp",
+        "typeinfo": "c",
+        "cstdlib": "c",
+        "ieee754.h": "c",
+        "dl-procinfo.h": "c",
+        "unistd.h": "c",
+        "fenv.h": "c",
+        "functional": "c",
+        "kernel_sigaction.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

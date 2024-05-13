@@ -24,36 +24,9 @@
 int
 __feclearexcept (int excepts)
 {
-  fenv_t temp;
-
-  /* Mask out unsupported bits/exceptions.  */
-  excepts &= FE_ALL_EXCEPT;
-
-  /* Bah, we have to clear selected exceptions.  Since there is no
-     `fldsw' instruction we have to do it the hard way.  */
-  __asm__ ("fnstenv %0" : "=m" (*&temp));
-
-  /* Clear the relevant bits.  */
-  temp.__status_word &= excepts ^ FE_ALL_EXCEPT;
-
-  /* Put the new data in effect.  */
-  __asm__ ("fldenv %0" : : "m" (*&temp));
-
-  /* If the CPU supports SSE, we clear the MXCSR as well.  */
-  if (CPU_FEATURE_USABLE (SSE))
-    {
-      unsigned int xnew_exc;
-
-      /* Get the current MXCSR.  */
-      __asm__ ("stmxcsr %0" : "=m" (*&xnew_exc));
-
-      /* Clear the relevant bits.  */
-      xnew_exc &= ~excepts;
-
-      /* Put the new data in effect.  */
-      __asm__ ("ldmxcsr %0" : : "m" (*&xnew_exc));
-    }
-
+  #include <stdlib.h>
+  // removed in-line asm
+  exit(EXIT_FAILURE);
   /* Success.  */
   return 0;
 }

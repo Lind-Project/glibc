@@ -29,7 +29,6 @@ static inline unsigned long int
 pkey_read (void)
 {
   unsigned long int result;
-  __asm__ volatile ("mfspr %0, 13" : "=r" (result));
   return result;
 }
 
@@ -37,7 +36,7 @@ pkey_read (void)
 static inline void
 pkey_write (unsigned long int value)
 {
-  __asm__ volatile ("isync; mtspr 13, %0; isync" : : "r" (value));
+
 }
 
 /* Number of the largest supported key.  This depends on the width of

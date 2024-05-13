@@ -172,9 +172,7 @@
   ({ long _sys_result;						\
      {								\
        LOAD_ARGS_##nr (args)					\
-       register long _x8 asm ("x8") = (name);			\
-       asm volatile ("svc	0	// syscall " # name     \
-		     : "=r" (_x0) : "r"(_x8) ASM_ARGS_##nr : "memory");	\
+       register long _x8 = (name);			\
        _sys_result = _x0;					\
      }								\
      _sys_result; })
@@ -188,7 +186,7 @@
 	INTERNAL_SYSCALL_RAW(__ARM_NR_##name, nr, args)
 
 # define LOAD_ARGS_0()				\
-  register long _x0 asm ("x0");
+  register long _x0;
 # define LOAD_ARGS_1(x0)			\
   long _x0tmp = (long) (x0);			\
   LOAD_ARGS_0 ()				\
@@ -196,27 +194,27 @@
 # define LOAD_ARGS_2(x0, x1)			\
   long _x1tmp = (long) (x1);			\
   LOAD_ARGS_1 (x0)				\
-  register long _x1 asm ("x1") = _x1tmp;
+  register long _x1 = _x1tmp;
 # define LOAD_ARGS_3(x0, x1, x2)		\
   long _x2tmp = (long) (x2);			\
   LOAD_ARGS_2 (x0, x1)				\
-  register long _x2 asm ("x2") = _x2tmp;
+  register long _x2 = _x2tmp;
 # define LOAD_ARGS_4(x0, x1, x2, x3)		\
   long _x3tmp = (long) (x3);			\
   LOAD_ARGS_3 (x0, x1, x2)			\
-  register long _x3 asm ("x3") = _x3tmp;
+  register long _x3 = _x3tmp;
 # define LOAD_ARGS_5(x0, x1, x2, x3, x4)	\
   long _x4tmp = (long) (x4);			\
   LOAD_ARGS_4 (x0, x1, x2, x3)			\
-  register long _x4 asm ("x4") = _x4tmp;
+  register long _x4 = _x4tmp;
 # define LOAD_ARGS_6(x0, x1, x2, x3, x4, x5)	\
   long _x5tmp = (long) (x5);			\
   LOAD_ARGS_5 (x0, x1, x2, x3, x4)		\
-  register long _x5 asm ("x5") = _x5tmp;
+  register long _x5 = _x5tmp;
 # define LOAD_ARGS_7(x0, x1, x2, x3, x4, x5, x6)\
   long _x6tmp = (long) (x6);			\
   LOAD_ARGS_6 (x0, x1, x2, x3, x4, x5)		\
-  register long _x6 asm ("x6") = _x6tmp;
+  register long _x6 = _x6tmp;
 
 # define ASM_ARGS_0
 # define ASM_ARGS_1	, "r" (_x0)

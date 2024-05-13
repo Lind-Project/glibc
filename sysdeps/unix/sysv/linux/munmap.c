@@ -6,11 +6,13 @@
 int
 __GI___munmap (uint64_t stack, uint64_t stack_size)
 {
+
   return 0;
 }
 
 int munmap (uint64_t stack, uint64_t stack_size)
 {
+
   return 0;
 }
 

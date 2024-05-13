@@ -24,7 +24,8 @@
 #include <float.h>
 #include <ieee754.h>
 
-double ceil (double) asm ("__ceil");
+double ceil (double);
+// double ceil (double) asm ("__ceil");
 
 
 long double

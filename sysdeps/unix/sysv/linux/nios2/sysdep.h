@@ -149,12 +149,8 @@
 	  before the call-used registers are set.  */		\
        LOAD_ARGS_##nr (args)					\
        LOAD_REGS_##nr						\
-       register int _r2 asm ("r2") = (int)(name);               \
-       register int _err asm ("r7");                            \
-       asm volatile ("trap"                                     \
-                     : "+r" (_r2), "=r" (_err)                  \
-                     : ASM_ARGS_##nr				\
-                     : __SYSCALL_CLOBBERS);                     \
+       register int _r2  = (int)(name);               \
+       register int _err ;                            \
        _sys_result = _err != 0 ? -_r2 : _r2;                    \
      }                                                          \
      (int) _sys_result; })
@@ -174,42 +170,42 @@
   LOAD_ARGS_0 ()				\
   int __arg1 = (int) (a1);
 #define LOAD_REGS_1				\
-  register int _r4 asm ("r4") = __arg1;		\
+  register int _r4  = __arg1;		\
   LOAD_REGS_0
 #define ASM_ARGS_1                  "r" (_r4)
 #define LOAD_ARGS_2(a1, a2)			\
   LOAD_ARGS_1 (a1)				\
   int __arg2 = (int) (a2);
 #define LOAD_REGS_2				\
-  register int _r5 asm ("r5") = __arg2;		\
+  register int _r5  = __arg2;		\
   LOAD_REGS_1
 #define ASM_ARGS_2      ASM_ARGS_1, "r" (_r5)
 #define LOAD_ARGS_3(a1, a2, a3)			\
   LOAD_ARGS_2 (a1, a2)				\
   int __arg3 = (int) (a3);
 #define LOAD_REGS_3				\
-  register int _r6 asm ("r6") = __arg3;		\
+  register int _r6  = __arg3;		\
   LOAD_REGS_2
 #define ASM_ARGS_3      ASM_ARGS_2, "r" (_r6)
 #define LOAD_ARGS_4(a1, a2, a3, a4)		\
   LOAD_ARGS_3 (a1, a2, a3)			\
   int __arg4 = (int) (a4);
 #define LOAD_REGS_4				\
-  register int _r7 asm ("r7") = __arg4;		\
+  register int _r7  = __arg4;		\
   LOAD_REGS_3
 #define ASM_ARGS_4      ASM_ARGS_3, "r" (_r7)
 #define LOAD_ARGS_5(a1, a2, a3, a4, a5)		\
   LOAD_ARGS_4 (a1, a2, a3, a4)			\
   int __arg5 = (int) (a5);
 #define LOAD_REGS_5				\
-  register int _r8 asm ("r8") = __arg5;		\
+  register int _r8 = __arg5;		\
   LOAD_REGS_4
 #define ASM_ARGS_5      ASM_ARGS_4, "r" (_r8)
 #define LOAD_ARGS_6(a1, a2, a3, a4, a5, a6)	\
   LOAD_ARGS_5 (a1, a2, a3, a4, a5)		\
   int __arg6 = (int) (a6);
 #define LOAD_REGS_6			    \
-  register int _r9 asm ("r9") = __arg6;     \
+  register int _r9 = __arg6;     \
   LOAD_REGS_5
 #define ASM_ARGS_6      ASM_ARGS_5, "r" (_r9)
 

@@ -33,16 +33,8 @@
 #  define PTR_DEMANGLE(reg)     rorl $9, reg;                                 \
                                 xorl %gs:POINTER_GUARD, reg
 # else
-#  define PTR_MANGLE(var)       asm ("xorl %%gs:%c2, %0\n"                    \
-                                     "roll $9, %0"                            \
-                                     : "=r" (var)                             \
-                                     : "0" (var),                             \
-                                       "i" (POINTER_GUARD))
-#  define PTR_DEMANGLE(var)     asm ("rorl $9, %0\n"                          \
-                                     "xorl %%gs:%c2, %0"                      \
-                                     : "=r" (var)                             \
-                                     : "0" (var),                             \
-                                       "i" (POINTER_GUARD))
+#  define PTR_MANGLE(var)       
+#  define PTR_DEMANGLE(var)    
 # endif
 #endif
 

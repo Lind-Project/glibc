@@ -13,7 +13,7 @@ set -e
 BUILDDIR=build
 mkdir -p $BUILDDIR
 cd $BUILDDIR
-../configure --prefix=/sysroot-coulson --host=i686-linux-gnu --build=i686-linux-gnu\
+../configure --disable-werror --disable-profile --prefix=/home/dennis/Documents/Just-One-Turtle/glibc/target --host=i686-linux-gnu --build=i686-linux-gnu \
     CFLAGS=" -O2 -march=i686 -g" \
     CC="gcc -m32" CXX="g++ -m32" \
     CFLAGS="-O2 -march=i686" \

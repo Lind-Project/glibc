@@ -56,6 +56,5 @@ __setfpucw (fpu_control_t fpu_control)
 
   /* Install everything.  */
   __fpu_control = fc;
-  asm volatile ("mt_fpcr %0" : : "f"(fpcr));
   __ieee_set_fp_control(swcr);
 }

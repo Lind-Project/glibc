@@ -22,7 +22,7 @@
 #define __longjmp ____longjmp_chk
 #define CHECK_SP(sp)							\
   do {									\
-    register unsigned long this_sp asm ("r30");				\
+    register unsigned long this_sp;				\
     /* The stack grows up, therefore frames that were created and then	\
        destroyed must all have stack values higher than ours.  */	\
     if ((unsigned long) (sp) > this_sp)					\

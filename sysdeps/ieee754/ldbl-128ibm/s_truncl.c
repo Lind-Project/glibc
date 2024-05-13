@@ -24,9 +24,13 @@
 #include <float.h>
 #include <ieee754.h>
 
-double ceil (double) asm ("__ceil");
-double floor (double) asm ("__floor");
-double trunc (double) asm ("__trunc");
+double ceil (double);
+double floor (double);
+double trunc (double);
+
+// double ceil (double) asm ("__ceil");
+// double floor (double) asm ("__floor");
+// double trunc (double) asm ("__trunc");
 
 
 long double

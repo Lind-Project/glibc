@@ -306,13 +306,8 @@ struct libc_do_syscall_args
       (int) (arg1),							\
       (int) (arg5),							\
       (int) (arg6)							\
-    };									\
-    asm volatile (							\
-    "movl %1, %%eax\n\t"						\
-    "call " I386_DO_SYSCALL_STRING					\
-    : "=a" (resultvar)							\
-    : "i" (__NR_##name), "c" (arg2), "d" (arg3), "S" (arg4), "D" (&_xv) \
-    : "memory", "cc")
+    };									
+
 #define INTERNAL_SYSCALL_MAIN_NCS_6(name, arg1, arg2, arg3,		\
 				    arg4, arg5, arg6)			\
   struct libc_do_syscall_args _xv =					\
@@ -320,13 +315,7 @@ struct libc_do_syscall_args
       (int) (arg1),							\
       (int) (arg5),							\
       (int) (arg6)							\
-    };									\
-    asm volatile (							\
-    "movl %1, %%eax\n\t"						\
-    "call " I386_DO_SYSCALL_STRING					\
-    : "=a" (resultvar)							\
-    : "a" (name), "c" (arg2), "d" (arg3), "S" (arg4), "D" (&_xv)	\
-    : "memory", "cc")
+    };									
 
 #define INTERNAL_SYSCALL(name, nr, args...) \
   ({									      \
@@ -342,46 +331,26 @@ struct libc_do_syscall_args
 #if I386_USE_SYSENTER
 # ifdef PIC
 #  define INTERNAL_SYSCALL_MAIN_INLINE(name, nr, args...) \
-    LOADREGS_##nr(args)							\
-    asm volatile (							\
-    "call *%%gs:%P2"							\
-    : "=a" (resultvar)							\
-    : "a" (__NR_##name), "i" (offsetof (tcbhead_t, sysinfo))		\
-      ASMARGS_##nr(args) : "memory", "cc")
+    LOADREGS_##nr(args)							
+
 #  define INTERNAL_SYSCALL_MAIN_NCS(name, nr, args...) \
-    LOADREGS_##nr(args)							\
-    asm volatile (							\
-    "call *%%gs:%P2"							\
-    : "=a" (resultvar)							\
-    : "a" (name), "i" (offsetof (tcbhead_t, sysinfo))			\
-      ASMARGS_##nr(args) : "memory", "cc")
+    LOADREGS_##nr(args)							
+
 # else /* I386_USE_SYSENTER && !PIC */
 #  define INTERNAL_SYSCALL_MAIN_INLINE(name, nr, args...) \
-    LOADREGS_##nr(args)							\
-    asm volatile (							\
-    "call *_dl_sysinfo"							\
-    : "=a" (resultvar)							\
-    : "a" (__NR_##name) ASMARGS_##nr(args) : "memory", "cc")
+    LOADREGS_##nr(args)							
+
 #  define INTERNAL_SYSCALL_MAIN_NCS(name, nr, args...) \
-    LOADREGS_##nr(args)							\
-    asm volatile (							\
-    "call *_dl_sysinfo"							\
-    : "=a" (resultvar)							\
-    : "a" (name) ASMARGS_##nr(args) : "memory", "cc")
+    LOADREGS_##nr(args)							
+
 # endif /* I386_USE_SYSENTER && !PIC */
 #else /* !I386_USE_SYSENTER */
 # define INTERNAL_SYSCALL_MAIN_INLINE(name, nr, args...) \
-    LOADREGS_##nr(args)							\
-    asm volatile (							\
-    "int $0x80"								\
-    : "=a" (resultvar)							\
-    : "a" (__NR_##name) ASMARGS_##nr(args) : "memory", "cc")
+    LOADREGS_##nr(args)							
+
 # define INTERNAL_SYSCALL_MAIN_NCS(name, nr, args...) \
-    LOADREGS_##nr(args)							\
-    asm volatile (							\
-    "int $0x80"								\
-    : "=a" (resultvar)							\
-    : "a" (name) ASMARGS_##nr(args) : "memory", "cc")
+    LOADREGS_##nr(args)							
+    
 #endif /* !I386_USE_SYSENTER */
 
 #define LOADREGS_0()

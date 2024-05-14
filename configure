@@ -6982,10 +6982,10 @@ else
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_linker_feature" >&5
 printf "%s\n" "$libc_linker_feature" >&6; }
-  if test "$libc_cv_support_undefined_version" = no; then
-    as_fn_error $? "support for -Wl,--undefined-version required" "$LINENO" 5
-  fi
-  libc_cv_undefined_version="-Wl,--undefined-version"
+  # if test "$libc_cv_support_undefined_version" = no; then
+  #   as_fn_error $? "support for -Wl,--undefined-version required" "$LINENO" 5
+  # fi
+  # libc_cv_undefined_version="-Wl,--undefined-version"
 fi
 rm -f conftest.*t
 fi

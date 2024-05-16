@@ -134,8 +134,7 @@ union user_desc_init
   ({ int __seg; __asm ("movw %%gs, %w0" : "=q" (__seg)); __seg & 0xffff; })
 # endif
 # ifndef TLS_SET_GS
-#  define TLS_SET_GS(val) \
-  __asm ("movw %w0, %%gs" :: "q" (val))
+#  define TLS_SET_GS(val)
 # endif
 
 #ifdef NEED_DL_SYSINFO

@@ -31,7 +31,7 @@
 #endif
 
 #include <device-nrs.h>
-#include <not-cancel.h>
+// #include <not-cancel.h>
 
 
 /* Should other OSes (e.g., Hurd) have different versions which can
@@ -39,7 +39,8 @@
 static void
 check_one_fd (int fd, int mode)
 {
-  if (__builtin_expect (__fcntl64_nocancel (fd, F_GETFD), 0) == -1
+  // if (__builtin_expect (__fcntl64_nocancel (fd, F_GETFD), 0) == -1
+  if (__builtin_expect (0, 0) == -1
       && errno == EBADF)
     {
       const char *name;
@@ -60,7 +61,8 @@ check_one_fd (int fd, int mode)
       /* Something is wrong with this descriptor, it's probably not
 	 opened.  Open /dev/null so that the SUID program we are
 	 about to start does not accidentally use this descriptor.  */
-      int nullfd = __open_nocancel (name, mode, 0);
+      // int nullfd = __open_nocancel (name, mode, 0);
+      int nullfd = 0;
 
       /* We are very paranoid here.  With all means we try to ensure
 	 that we are actually opening the /dev/null device and nothing

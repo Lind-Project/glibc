@@ -20,13 +20,13 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sysdep.h>
+// #include <sysdep.h>
 #include <fpu_control.h>
 #include <sys/param.h>
 #include <sys/types.h>
-#include <libc-internal.h>
+// #include <libc-internal.h>
 
-#include <ldsodefs.h>
+// #include <ldsodefs.h>
 
 /* Remember the command line argument and environment contents for
    later calls of initializers for dynamic libraries.  */
@@ -65,10 +65,10 @@ _init_first (int argc, char **argv, char **envp)
 #ifndef SHARED
   /* First the initialization which normally would be done by the
      dynamic linker.  */
-  _dl_non_dynamic_init ();
+  // _dl_non_dynamic_init ();
 #endif
 
-  __init_misc (argc, argv, envp);
+  // __init_misc (argc, argv, envp);
 }
 
 /* This function is defined here so that if this file ever gets into

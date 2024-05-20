@@ -439,9 +439,9 @@ for linking")
   __hidden_proto_alias (name, , alias, ##attrs)
 #  define hidden_tls_proto(name, attrs...) \
   __hidden_proto (name, __thread, __GI_##name, ##attrs)
-#  define __hidden_proto(name, thread, internal, attrs...)	     \
-  extern thread __typeof (name) name __asm__ (__hidden_asmname (#internal)) \
-  __hidden_proto_hiddenattr (attrs);
+// #  define __hidden_proto(name, thread, internal, attrs...)	     \
+//   extern thread __typeof (name) name __asm__ (__hidden_asmname (#internal)) \
+//   __hidden_proto_hiddenattr (attrs);
 #  define __hidden_proto_alias(name, thread, internal, attrs...)	     \
   extern thread __typeof (name) internal __hidden_proto_hiddenattr (attrs);
 #  define __hidden_asmname(name) \
@@ -450,12 +450,12 @@ for linking")
 #  define __hidden_asmname2(prefix, name) #prefix name
 #  define __hidden_ver1(local, internal, name) \
   __hidden_ver2 (, local, internal, name)
-#  define __hidden_ver2(thread, local, internal, name)			\
-  extern thread __typeof (name) __EI_##name \
-    __asm__(__hidden_asmname (#internal));  \
-  extern thread __typeof (name) __EI_##name \
-    __attribute__((alias (__hidden_asmname (#local))))	\
-    __attribute_copy__ (name)
+// #  define __hidden_ver2(thread, local, internal, name)			\
+//   extern thread __typeof (name) __EI_##name \
+//     __asm__(__hidden_asmname (#internal));  \
+//   extern thread __typeof (name) __EI_##name \
+//     __attribute__((alias (__hidden_asmname (#local))))	\
+//     __attribute_copy__ (name)
 #  define hidden_ver(local, name)	__hidden_ver1(local, __GI_##name, name);
 #  define hidden_def(name)		__hidden_ver1(__GI_##name, name, name);
 #  define hidden_def_alias(name, internal) \

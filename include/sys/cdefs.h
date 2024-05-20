@@ -27,7 +27,7 @@ rtld_hidden_proto (__chk_fail)
 
 # undef __LDBL_REDIR_DECL
 # define __LDBL_REDIR_DECL(func) \
-   extern __typeof(func) func __asm (__ASMNAME ("__GI____ieee128_" #func));
+   extern __typeof(func) func;
 
 # undef libc_hidden_ldbl_proto
 # define libc_hidden_ldbl_proto(func, attrs...) \
@@ -36,7 +36,7 @@ rtld_hidden_proto (__chk_fail)
 
 # undef __LDBL_REDIR2_DECL
 # define __LDBL_REDIR2_DECL(func) \
-   extern __typeof(__ ## func) __ ## func __asm (__ASMNAME ("__GI____ieee128___" #func));
+   extern __typeof(__ ## func) __ ## func;
 
 #endif
 

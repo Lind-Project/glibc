@@ -26,8 +26,7 @@
 #  ifdef SHARED
 #   define stdio_hidden_ldbl_proto(p, f) __LDBL_REDIR2_DECL (f)
 #  else
-#   define stdio_hidden_ldbl_proto(p, f) \
-  extern __typeof (p ## f) p ## f __asm (#p __ASMNAME (#f "ieee128"));
+#   define stdio_hidden_ldbl_proto(p, f)
 #  endif
 # elif __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
 #  define stdio_hidden_ldbl_proto(p,f) __LDBL_REDIR1_DECL (p ## f, p ## f ## ieee128)

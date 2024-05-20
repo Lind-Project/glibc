@@ -138,11 +138,11 @@ libm_hidden_proto (fabsf128)
 # if !(defined __FINITE_MATH_ONLY__ && __FINITE_MATH_ONLY__ > 0)
 #  ifndef NO_MATH_REDIRECT
 /* Declare some functions for use within GLIBC.  Compilers typically
-   inline those functions as a single instruction.  Use an asm to
+   inline those functions as a single instruction.  Use an  to
    avoid use of PLTs if it doesn't.  */
 #   define MATH_REDIRECT(FUNC, PREFIX, ARGS)			\
-  float (FUNC ## f) (ARGS (float)) asm (PREFIX #FUNC "f");	\
-  double (FUNC) (ARGS (double)) asm (PREFIX #FUNC );		\
+  float (FUNC ## f) (ARGS (float));	\
+  double (FUNC) (ARGS (double));		\
   MATH_REDIRECT_LDBL (FUNC, PREFIX, ARGS)			\
   MATH_REDIRECT_F128 (FUNC, PREFIX, ARGS)
 #   if defined __NO_LONG_DOUBLE_MATH 				\
@@ -150,11 +150,11 @@ libm_hidden_proto (fabsf128)
 #    define MATH_REDIRECT_LDBL(FUNC, PREFIX, ARGS)
 #   else
 #    define MATH_REDIRECT_LDBL(FUNC, PREFIX, ARGS)			\
-  long double (FUNC ## l) (ARGS (long double)) asm (PREFIX #FUNC "l");
+  long double (FUNC ## l) (ARGS (long double));
 #   endif
 #   if __HAVE_DISTINCT_FLOAT128
 #    define MATH_REDIRECT_F128(FUNC, PREFIX, ARGS)			\
-  _Float128 (FUNC ## f128) (ARGS (_Float128)) asm (PREFIX #FUNC "f128");
+  _Float128 (FUNC ## f128) (ARGS (_Float128));
 #   else
 #    define MATH_REDIRECT_F128(FUNC, PREFIX, ARGS)
 #   endif

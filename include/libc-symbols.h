@@ -207,8 +207,7 @@
 /* When a reference to SYMBOL is encountered, the linker will emit a
    warning message MSG.  */
 /* We want the .gnu.warning.SYMBOL section to be unallocated.  */
-#define __make_section_unallocated(section_string)	\
-  asm (".section " section_string "\n\t.previous");
+#define __make_section_unallocated(section_string)
 
 /* Tacking on "\n\t#" to the section name makes gcc put it's bogus
    section attributes on what looks like a comment to the assembler.  */
@@ -254,17 +253,9 @@ for linking")
    .size C_SYMBOL_NAME (symbol), s_size ASM_LINE_SEP
 #else /* Not __ASSEMBLER__.  */
 # ifdef HAVE_ASM_SET_DIRECTIVE
-#  define declare_object_symbol_alias_1(symbol, original, size) \
-     asm (".global " __SYMBOL_PREFIX # symbol "\n" \
-	  ".type " __SYMBOL_PREFIX # symbol ", %object\n" \
-	  ".set " __SYMBOL_PREFIX #symbol ", " __SYMBOL_PREFIX original "\n" \
-	  ".size " __SYMBOL_PREFIX #symbol ", " #size "\n");
+#  define declare_object_symbol_alias_1(symbol, original, size) 
 # else
-#  define declare_object_symbol_alias_1(symbol, original, size) \
-     asm (".global " __SYMBOL_PREFIX # symbol "\n" \
-	  ".type " __SYMBOL_PREFIX # symbol ", %object\n" \
-	  __SYMBOL_PREFIX #symbol " = " __SYMBOL_PREFIX original "\n" \
-	  ".size " __SYMBOL_PREFIX #symbol ", " #size "\n");
+#  define declare_object_symbol_alias_1(symbol, original, size) 
 # endif /* HAVE_ASM_SET_DIRECTIVE */
 #endif /* __ASSEMBLER__ */
 
@@ -484,8 +475,7 @@ for linking")
   extern __typeof (name) internal __attribute__ ((alias (#local)))	\
     __attribute_copy__ (name);						\
   __hidden_nolink3 (local, internal, #name "@" #version)
-#  define __hidden_nolink3(local, internal, vername) \
-  __asm__ (".symver " #internal ", " vername);
+#  define __hidden_nolink3(local, internal, vername)
 # else
 /* For assembly, we need to do the opposite of what we do in C:
    in assembly gcc __REDIRECT stuff is not in place, so functions
@@ -692,9 +682,8 @@ for linking")
 
 # define __ifunc_args(type_name, name, expr, init, ...)			\
   extern __typeof (type_name) name;					\
-  __typeof (type_name) *name##_ifunc (__VA_ARGS__) __asm__ (#name);	\
-  __ifunc_resolver (type_name, name, expr, init, , __VA_ARGS__)		\
- __asm__ (".type " #name ", %gnu_indirect_function");
+  __typeof (type_name) *name##_ifunc (__VA_ARGS__);	\
+  __ifunc_resolver (type_name, name, expr, init, , __VA_ARGS__)	
 
 # define __ifunc_args_hidden(type_name, name, expr, init, ...)		\
   extern __typeof (type_name) __libc_##name;				\

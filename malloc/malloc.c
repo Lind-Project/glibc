@@ -1335,8 +1335,9 @@ checked_request2size (size_t req) __nonnull (1)
      a constant literal.  */
   if (__glibc_unlikely (mtag_enabled))
     {
-      /* Ensure this is not evaluated if !mtag_enabled, see gcc PR 99551.  */
-      asm ("");
+      // /* Ensure this is not evaluated if !mtag_enabled, see gcc PR 99551.  */
+      // /* can we do this in other way, my pal? */
+      // asm ("");
 
       req = (req + (__MTAG_GRANULE_SIZE - 1)) &
 	    ~(size_t)(__MTAG_GRANULE_SIZE - 1);

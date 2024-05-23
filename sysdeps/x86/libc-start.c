@@ -25,11 +25,11 @@
    PIE.  */
 # include <startup.h>
 # include <ldsodefs.h>
-# include <cpu-features.c>
+// # include <cpu-features.c>
 
 extern struct cpu_features _dl_x86_cpu_features;
 
-# define ARCH_INIT_CPU_FEATURES() init_cpu_features (&_dl_x86_cpu_features)
+# define ARCH_INIT_CPU_FEATURES()
 
 #endif /* !SHARED */
-#include <csu/libc-start.c>
+// #include <csu/libc-start.c>

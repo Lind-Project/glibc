@@ -4,28 +4,28 @@
 #ifndef _ISOMAC
 /* Now define the internal interfaces.  */
 extern int __open64 (const char *__file, int __oflag, ...);
-libc_hidden_proto (__open64)
+// libc_hidden_proto (__open64)
 extern int __libc_open64 (const char *file, int oflag, ...);
 extern int __libc_open (const char *file, int oflag, ...);
-libc_hidden_proto (__libc_open)
+// libc_hidden_proto (__libc_open)
 extern int __libc_fcntl (int fd, int cmd, ...);
-libc_hidden_proto (__libc_fcntl)
+// libc_hidden_proto (__libc_fcntl)
 extern int __fcntl64_nocancel_adjusted (int fd, int cmd, void *arg)
    attribute_hidden;
 extern int __libc_fcntl64 (int fd, int cmd, ...);
-libc_hidden_proto (__libc_fcntl64)
+// libc_hidden_proto (__libc_fcntl64)
 extern int __open (const char *__file, int __oflag, ...);
-libc_hidden_proto (__open)
+// libc_hidden_proto (__open)
 extern int __fcntl (int __fd, int __cmd, ...);
-libc_hidden_proto (__fcntl)
+// libc_hidden_proto (__fcntl)
 extern int __fcntl64 (int __fd, int __cmd, ...) attribute_hidden;
-libc_hidden_proto (__fcntl64)
+// libc_hidden_proto (__fcntl64)
 extern int __openat (int __fd, const char *__file, int __oflag, ...)
   __nonnull ((2));
-libc_hidden_proto (__openat)
+// libc_hidden_proto (__openat)
 extern int __openat64 (int __fd, const char *__file, int __oflag, ...)
   __nonnull ((2));
-libc_hidden_proto (__openat64)
+// libc_hidden_proto (__openat64)
 
 extern int __open_2 (const char *__path, int __oflag);
 extern int __open64_2 (const char *__path, int __oflag);

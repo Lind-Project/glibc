@@ -17,7 +17,7 @@
 # define __nonnull(params)
 
 extern void __chk_fail (void) __attribute__ ((__noreturn__));
-libc_hidden_proto (__chk_fail)
+// libc_hidden_proto (__chk_fail)
 rtld_hidden_proto (__chk_fail)
 
 /* If we are using redirects internally to support long double,
@@ -31,8 +31,7 @@ rtld_hidden_proto (__chk_fail)
 
 # undef libc_hidden_ldbl_proto
 # define libc_hidden_ldbl_proto(func, attrs...) \
-   extern __typeof(func) ___ieee128_ ## func; \
-   libc_hidden_proto (___ieee128_ ## func, ##attrs);
+   extern __typeof(func) ___ieee128_ ## func; 
 
 # undef __LDBL_REDIR2_DECL
 # define __LDBL_REDIR2_DECL(func) \

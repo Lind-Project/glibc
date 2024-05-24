@@ -23,7 +23,7 @@
 #include <atomic.h>
 
 #ifndef atomic_full_barrier
-# define atomic_full_barrier() __asm ("" ::: "memory")
+# define atomic_full_barrier()
 #endif
 
 #ifndef atomic_read_barrier

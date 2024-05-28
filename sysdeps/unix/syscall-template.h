@@ -6,7 +6,7 @@
 #define NOTUSED 0xdeadbeefdeadbeefULL
 
 #define MAKE_SYSCALL(syscallnum, callname, arg1, arg2, arg3, arg4, arg5, arg6) \
-    syscall(syscallnum, (uint64_t)(arg1), (uint64_t)(arg2), (uint64_t)(arg3), \
-                 (uint64_t)(arg4), (uint64_t)(arg5), (uint64_t)(arg6))
+    syscall(syscallnum, (unsigned long long)(callname), (unsigned long long)(arg1), (unsigned long long)(arg2), (unsigned long long)(arg3), \
+                 (unsigned long long)(arg4), (unsigned long long)(arg5), (unsigned long long)(arg6))
 
 

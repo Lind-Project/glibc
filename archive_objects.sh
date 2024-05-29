@@ -6,6 +6,7 @@ src_dir="./build"
 # Define paths for copying additional resources
 include_source_dir="/sysroot-coulson/include"
 crt1_source_path="/lind-glibc/replace-sysroot/replace/sysroot/lib/wasm32-wasi/crt1.o"
+lind_syscall_path="/glibc/lind_syscall/lind_syscall.o" # Path to the lind_syscall.o file
 
 # Define the output archive and sysroot directory
 output_archive="sysroot/lib/wasm32-wasi/libc.a"
@@ -16,6 +17,9 @@ rm -rf "$sysroot_dir"
 
 # Find all .o files recursively in the source directory, ignoring stamp.o
 object_files=$(find "$src_dir" -type f -name "*.o" ! -name "stamp.o")
+
+# Add the lind_syscall.o file to the list of object files
+object_files="$object_files $lind_syscall_path"
 
 # Check if object files were found
 if [ -z "$object_files" ]; then

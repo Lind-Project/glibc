@@ -16,7 +16,7 @@ sysroot_dir="sysroot"
 rm -rf "$sysroot_dir"
 
 # Find all .o files recursively in the source directory, ignoring stamp.o
-object_files=$(find "$src_dir" -type f -name "*.o" ! -name "stamp.o")
+object_files=$(find "$src_dir" -type f -name "*.o" ! \( -name "stamp.o" -o -name "argp-pvh.o" -o -name "repertoire.o" \))
 
 # Add the lind_syscall.o file to the list of object files
 object_files="$object_files $lind_syscall_path"

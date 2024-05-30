@@ -40,9 +40,10 @@
 
 #define PACKAGE _libc_intl_domainname
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Function to print some extra text in the help message.  */
 static char *more_help (int key, const char *text, void *input);
@@ -142,73 +143,73 @@ do_pt_chown (void)
 }
 
 
-int
-main (int argc, char *argv[])
-{
-  uid_t euid = geteuid ();
-  uid_t uid = getuid ();
-  int remaining;
-  sigset_t signalset;
+// int
+// main (int argc, char *argv[])
+// {
+//   uid_t euid = geteuid ();
+//   uid_t uid = getuid ();
+//   int remaining;
+//   sigset_t signalset;
 
-  /* Clear any signal mask from the parent process.  */
-  sigemptyset (&signalset);
-  sigprocmask (SIG_SETMASK, &signalset, NULL);
+//   /* Clear any signal mask from the parent process.  */
+//   sigemptyset (&signalset);
+//   sigprocmask (SIG_SETMASK, &signalset, NULL);
 
-  if (argc == 1 && euid == 0)
-    {
-#ifdef HAVE_LIBCAP
-  /* Drop privileges.  */
-      if (uid != euid)
-	{
-	  static const cap_value_t cap_list[] =
-	    { CAP_CHOWN, CAP_FOWNER	};
-# define ncap_list (sizeof (cap_list) / sizeof (cap_list[0]))
-	  cap_t caps = cap_init ();
-	  if (caps == NULL)
-	    return FAIL_ENOMEM;
+//   if (argc == 1 && euid == 0)
+//     {
+// #ifdef HAVE_LIBCAP
+//   /* Drop privileges.  */
+//       if (uid != euid)
+// 	{
+// 	  static const cap_value_t cap_list[] =
+// 	    { CAP_CHOWN, CAP_FOWNER	};
+// # define ncap_list (sizeof (cap_list) / sizeof (cap_list[0]))
+// 	  cap_t caps = cap_init ();
+// 	  if (caps == NULL)
+// 	    return FAIL_ENOMEM;
 
-	  /* There is no reason why these should not work.  */
-	  cap_set_flag (caps, CAP_PERMITTED, ncap_list, cap_list, CAP_SET);
-	  cap_set_flag (caps, CAP_EFFECTIVE, ncap_list, cap_list, CAP_SET);
+// 	  /* There is no reason why these should not work.  */
+// 	  cap_set_flag (caps, CAP_PERMITTED, ncap_list, cap_list, CAP_SET);
+// 	  cap_set_flag (caps, CAP_EFFECTIVE, ncap_list, cap_list, CAP_SET);
 
-	  int res = cap_set_proc (caps);
+// 	  int res = cap_set_proc (caps);
 
-	  cap_free (caps);
+// 	  cap_free (caps);
 
-	  if (__glibc_unlikely (res != 0))
-	    return FAIL_EXEC;
-	}
-#endif
+// 	  if (__glibc_unlikely (res != 0))
+// 	    return FAIL_EXEC;
+// 	}
+// #endif
 
-      /* Normal invocation of this program is with no arguments and
-	 with privileges.  */
-      return do_pt_chown ();
-    }
+//       /* Normal invocation of this program is with no arguments and
+// 	 with privileges.  */
+//       return do_pt_chown ();
+//     }
 
-  /* We aren't going to be using privileges, so drop them right now. */
-  setuid (uid);
+//   /* We aren't going to be using privileges, so drop them right now. */
+//   setuid (uid);
 
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
 
-  /* Set the text message domain.  */
-  textdomain (PACKAGE);
+//   /* Set the text message domain.  */
+//   textdomain (PACKAGE);
 
-  /* parse and process arguments.  */
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* parse and process arguments.  */
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  if (remaining < argc)
-    {
-      /* We should not be called with any non-option parameters.  */
-      error (0, 0, gettext ("too many arguments"));
-      argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
-		 program_invocation_short_name);
-      return EXIT_FAILURE;
-    }
+//   if (remaining < argc)
+//     {
+//       /* We should not be called with any non-option parameters.  */
+//       error (0, 0, gettext ("too many arguments"));
+//       argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
+// 		 program_invocation_short_name);
+//       return EXIT_FAILURE;
+//     }
 
-  /* Check if we are properly installed.  */
-  if (euid != 0)
-    error (FAIL_EXEC, 0, gettext ("needs to be installed setuid `root'"));
+//   /* Check if we are properly installed.  */
+//   if (euid != 0)
+//     error (FAIL_EXEC, 0, gettext ("needs to be installed setuid `root'"));
 
-  return EXIT_SUCCESS;
-}
+//   return EXIT_SUCCESS;
+// }

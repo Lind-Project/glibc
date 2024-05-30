@@ -100,10 +100,10 @@ struct name_info
   } *other_conv_list;
 };
 
-
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Short description of program.  */
 static const char doc[] = N_("\

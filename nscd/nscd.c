@@ -93,9 +93,9 @@ static int check_pid (const char *file);
 static int write_pid (const char *file);
 static int monitor_child (int fd);
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Function to print some extra text in the help message.  */
 static char *more_help (int key, const char *text, void *input);
@@ -137,199 +137,199 @@ static struct argp argp =
 static bool get_stats;
 static int parent_fd = -1;
 
-int
-main (int argc, char **argv)
-{
-  int remaining;
+// int
+// main (int argc, char **argv)
+// {
+//   int remaining;
 
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
-  /* Set the text message domain.  */
-  textdomain (PACKAGE);
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
+//   /* Set the text message domain.  */
+//   textdomain (PACKAGE);
 
-  /* Determine if the kernel has SELinux support.  */
-  nscd_selinux_enabled (&selinux_enabled);
+//   /* Determine if the kernel has SELinux support.  */
+//   nscd_selinux_enabled (&selinux_enabled);
 
-  /* Parse and process arguments.  */
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  if (remaining != argc)
-    {
-      error (0, 0, gettext ("wrong number of arguments"));
-      argp_help (&argp, stdout, ARGP_HELP_SEE, program_invocation_short_name);
-      exit (1);
-    }
+//   if (remaining != argc)
+//     {
+//       error (0, 0, gettext ("wrong number of arguments"));
+//       argp_help (&argp, stdout, ARGP_HELP_SEE, program_invocation_short_name);
+//       exit (1);
+//     }
 
-  /* Print the contents of the indicated cache file.  */
-  if (print_cache != NULL)
-    /* Does not return.  */
-    nscd_print_cache (print_cache);
+//   /* Print the contents of the indicated cache file.  */
+//   if (print_cache != NULL)
+//     /* Does not return.  */
+//     nscd_print_cache (print_cache);
 
-  /* Read the configuration file.  */
-  if (nscd_parse_file (conffile, dbs) != 0)
-    /* We couldn't read the configuration file.  We don't start the
-       server.  */
-    error (EXIT_FAILURE, 0,
-	   _("failure while reading configuration file; this is fatal"));
+//   /* Read the configuration file.  */
+//   if (nscd_parse_file (conffile, dbs) != 0)
+//     /* We couldn't read the configuration file.  We don't start the
+//        server.  */
+//     error (EXIT_FAILURE, 0,
+// 	   _("failure while reading configuration file; this is fatal"));
 
-  /* Do we only get statistics?  */
-  if (get_stats)
-    /* Does not return.  */
-    receive_print_stats ();
+//   /* Do we only get statistics?  */
+//   if (get_stats)
+//     /* Does not return.  */
+//     receive_print_stats ();
 
-  /* Check if we are already running. */
-  if (check_pid (_PATH_NSCDPID))
-    error (EXIT_FAILURE, 0, _("already running"));
+//   /* Check if we are already running. */
+//   if (check_pid (_PATH_NSCDPID))
+//     error (EXIT_FAILURE, 0, _("already running"));
 
-  /* Remember when we started.  */
-  start_time = time (NULL);
+//   /* Remember when we started.  */
+//   start_time = time (NULL);
 
-  /* Determine page size.  */
-  pagesize_m1 = getpagesize () - 1;
+//   /* Determine page size.  */
+//   pagesize_m1 = getpagesize () - 1;
 
-  if (run_mode == RUN_DAEMONIZE || run_mode == RUN_FOREGROUND)
-    {
-      int i;
-      pid_t pid;
+//   if (run_mode == RUN_DAEMONIZE || run_mode == RUN_FOREGROUND)
+//     {
+//       int i;
+//       pid_t pid;
 
-      /* Behave like a daemon.  */
-      if (run_mode == RUN_DAEMONIZE)
-	{
-	  int fd[2];
+//       /* Behave like a daemon.  */
+//       if (run_mode == RUN_DAEMONIZE)
+// 	{
+// 	  int fd[2];
 
-	  if (pipe (fd) != 0)
-	    error (EXIT_FAILURE, errno,
-		   _("cannot create a pipe to talk to the child"));
+// 	  if (pipe (fd) != 0)
+// 	    error (EXIT_FAILURE, errno,
+// 		   _("cannot create a pipe to talk to the child"));
 
-	  pid = fork ();
-	  if (pid == -1)
-	    error (EXIT_FAILURE, errno, _("cannot fork"));
-	  if (pid != 0)
-	    {
-	      /* The parent only reads from the child.  */
-	      close (fd[1]);
-	      exit (monitor_child (fd[0]));
-	    }
-	  else
-	    {
-	      /* The child only writes to the parent.  */
-	      close (fd[0]);
-	      parent_fd = fd[1];
-	    }
-	}
+// 	  pid = fork ();
+// 	  if (pid == -1)
+// 	    error (EXIT_FAILURE, errno, _("cannot fork"));
+// 	  if (pid != 0)
+// 	    {
+// 	      /* The parent only reads from the child.  */
+// 	      close (fd[1]);
+// 	      exit (monitor_child (fd[0]));
+// 	    }
+// 	  else
+// 	    {
+// 	      /* The child only writes to the parent.  */
+// 	      close (fd[0]);
+// 	      parent_fd = fd[1];
+// 	    }
+// 	}
 
-      int nullfd = open (_PATH_DEVNULL, O_RDWR);
-      if (nullfd != -1)
-	{
-	  struct stat64 st;
+//       int nullfd = open (_PATH_DEVNULL, O_RDWR);
+//       if (nullfd != -1)
+// 	{
+// 	  struct stat64 st;
 
-	  if (fstat64 (nullfd, &st) == 0 && S_ISCHR (st.st_mode) != 0
-#if defined DEV_NULL_MAJOR && defined DEV_NULL_MINOR
-	      && st.st_rdev == makedev (DEV_NULL_MAJOR, DEV_NULL_MINOR)
-#endif
-	      )
-	    {
-	      /* It is the /dev/null special device alright.  */
-	      (void) dup2 (nullfd, STDIN_FILENO);
-	      (void) dup2 (nullfd, STDOUT_FILENO);
-	      (void) dup2 (nullfd, STDERR_FILENO);
+// 	  if (fstat64 (nullfd, &st) == 0 && S_ISCHR (st.st_mode) != 0
+// #if defined DEV_NULL_MAJOR && defined DEV_NULL_MINOR
+// 	      && st.st_rdev == makedev (DEV_NULL_MAJOR, DEV_NULL_MINOR)
+// #endif
+// 	      )
+// 	    {
+// 	      /* It is the /dev/null special device alright.  */
+// 	      (void) dup2 (nullfd, STDIN_FILENO);
+// 	      (void) dup2 (nullfd, STDOUT_FILENO);
+// 	      (void) dup2 (nullfd, STDERR_FILENO);
 
-	      if (nullfd > 2)
-		close (nullfd);
-	    }
-	  else
-	    {
-	      /* Ugh, somebody is trying to play a trick on us.  */
-	      close (nullfd);
-	      nullfd = -1;
-	    }
-	}
-      int min_close_fd = nullfd == -1 ? 0 : STDERR_FILENO + 1;
+// 	      if (nullfd > 2)
+// 		close (nullfd);
+// 	    }
+// 	  else
+// 	    {
+// 	      /* Ugh, somebody is trying to play a trick on us.  */
+// 	      close (nullfd);
+// 	      nullfd = -1;
+// 	    }
+// 	}
+//       int min_close_fd = nullfd == -1 ? 0 : STDERR_FILENO + 1;
 
-      DIR *d = opendir ("/proc/self/fd");
-      if (d != NULL)
-	{
-	  struct dirent64 *dirent;
-	  int dfdn = dirfd (d);
+//       DIR *d = opendir ("/proc/self/fd");
+//       if (d != NULL)
+// 	{
+// 	  struct dirent64 *dirent;
+// 	  int dfdn = dirfd (d);
 
-	  while ((dirent = readdir64 (d)) != NULL)
-	    {
-	      char *endp;
-	      long int fdn = strtol (dirent->d_name, &endp, 10);
+// 	  while ((dirent = readdir64 (d)) != NULL)
+// 	    {
+// 	      char *endp;
+// 	      long int fdn = strtol (dirent->d_name, &endp, 10);
 
-	      if (*endp == '\0' && fdn != dfdn && fdn >= min_close_fd
-		  && fdn != parent_fd)
-		close ((int) fdn);
-	    }
+// 	      if (*endp == '\0' && fdn != dfdn && fdn >= min_close_fd
+// 		  && fdn != parent_fd)
+// 		close ((int) fdn);
+// 	    }
 
-	  closedir (d);
-	}
-      else
-	for (i = min_close_fd; i < getdtablesize (); i++)
-	  if (i != parent_fd)
-	    close (i);
+// 	  closedir (d);
+// 	}
+//       else
+// 	for (i = min_close_fd; i < getdtablesize (); i++)
+// 	  if (i != parent_fd)
+// 	    close (i);
 
-      setsid ();
+//       setsid ();
 
-      if (chdir ("/") != 0)
-	do_exit (EXIT_FAILURE, errno,
-		 _("cannot change current working directory to \"/\""));
+//       if (chdir ("/") != 0)
+// 	do_exit (EXIT_FAILURE, errno,
+// 		 _("cannot change current working directory to \"/\""));
 
-      openlog ("nscd", LOG_CONS | LOG_ODELAY, LOG_DAEMON);
+//       openlog ("nscd", LOG_CONS | LOG_ODELAY, LOG_DAEMON);
 
-      if (write_pid (_PATH_NSCDPID) < 0)
-	dbg_log ("%s: %s", _PATH_NSCDPID, strerror (errno));
+//       if (write_pid (_PATH_NSCDPID) < 0)
+// 	dbg_log ("%s: %s", _PATH_NSCDPID, strerror (errno));
 
-      if (!init_logfile ())
-	dbg_log (_("Could not create log file"));
+//       if (!init_logfile ())
+// 	dbg_log (_("Could not create log file"));
 
-      /* Ignore job control signals.  */
-      signal (SIGTTOU, SIG_IGN);
-      signal (SIGTTIN, SIG_IGN);
-      signal (SIGTSTP, SIG_IGN);
-    }
-  else
-    /* In debug mode we are not paranoid.  */
-    paranoia = 0;
+//       /* Ignore job control signals.  */
+//       signal (SIGTTOU, SIG_IGN);
+//       signal (SIGTTIN, SIG_IGN);
+//       signal (SIGTSTP, SIG_IGN);
+//     }
+//   else
+//     /* In debug mode we are not paranoid.  */
+//     paranoia = 0;
 
-  signal (SIGINT, termination_handler);
-  signal (SIGQUIT, termination_handler);
-  signal (SIGTERM, termination_handler);
-  signal (SIGPIPE, SIG_IGN);
+//   signal (SIGINT, termination_handler);
+//   signal (SIGQUIT, termination_handler);
+//   signal (SIGTERM, termination_handler);
+//   signal (SIGPIPE, SIG_IGN);
 
-  /* Cleanup files created by a previous 'bind'.  */
-  unlink (_PATH_NSCDSOCKET);
+//   /* Cleanup files created by a previous 'bind'.  */
+//   unlink (_PATH_NSCDSOCKET);
 
-#ifdef HAVE_INOTIFY
-  /* Use inotify to recognize changed files.  */
-  inotify_fd = inotify_init1 (IN_NONBLOCK);
-# ifndef __ASSUME_IN_NONBLOCK
-  if (inotify_fd == -1 && errno == ENOSYS)
-    {
-      inotify_fd = inotify_init ();
-      if (inotify_fd != -1)
-	fcntl (inotify_fd, F_SETFL, O_RDONLY | O_NONBLOCK);
-    }
-# endif
-#endif
+// #ifdef HAVE_INOTIFY
+//   /* Use inotify to recognize changed files.  */
+//   inotify_fd = inotify_init1 (IN_NONBLOCK);
+// # ifndef __ASSUME_IN_NONBLOCK
+//   if (inotify_fd == -1 && errno == ENOSYS)
+//     {
+//       inotify_fd = inotify_init ();
+//       if (inotify_fd != -1)
+// 	fcntl (inotify_fd, F_SETFL, O_RDONLY | O_NONBLOCK);
+//     }
+// # endif
+// #endif
 
-#ifdef USE_NSCD
-  /* Make sure we do not get recursive calls.  */
-  __nss_disable_nscd (register_traced_file);
-#endif
+// #ifdef USE_NSCD
+//   /* Make sure we do not get recursive calls.  */
+//   __nss_disable_nscd (register_traced_file);
+// #endif
 
-  /* Init databases.  */
-  nscd_init ();
+//   /* Init databases.  */
+//   nscd_init ();
 
-  /* Start the SELinux AVC.  */
-  if (selinux_enabled)
-    nscd_avc_init ();
+//   /* Start the SELinux AVC.  */
+//   if (selinux_enabled)
+//     nscd_avc_init ();
 
-  /* Handle incoming requests */
-  start_threads ();
+//   /* Handle incoming requests */
+//   start_threads ();
 
-  return 0;
-}
+//   return 0;
+// }
 
 
 static void __attribute__ ((noreturn))

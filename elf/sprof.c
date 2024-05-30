@@ -64,9 +64,10 @@
 
 extern int __profile_frequency (void);
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 #define OPT_TEST	1
 
@@ -239,100 +240,100 @@ static void generate_call_graph (struct profdata *profdata);
 static void generate_call_pair_list (struct profdata *profdata);
 
 
-int
-main (int argc, char *argv[])
-{
-  const char *shobj;
-  const char *profdata;
-  struct shobj *shobj_handle;
-  struct profdata *profdata_handle;
-  int remaining;
+// int
+// main (int argc, char *argv[])
+// {
+//   const char *shobj;
+//   const char *profdata;
+//   struct shobj *shobj_handle;
+//   struct profdata *profdata_handle;
+//   int remaining;
 
-  setlocale (LC_ALL, "");
+//   setlocale (LC_ALL, "");
 
-  /* Initialize the message catalog.  */
-  textdomain (_libc_intl_domainname);
+//   /* Initialize the message catalog.  */
+//   textdomain (_libc_intl_domainname);
 
-  /* Parse and process arguments.  */
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  if (argc - remaining == 0 || argc - remaining > 2)
-    {
-      /* We need exactly two non-option parameter.  */
-      argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
-		 program_invocation_short_name);
-      exit (1);
-    }
+//   if (argc - remaining == 0 || argc - remaining > 2)
+//     {
+//       /* We need exactly two non-option parameter.  */
+//       argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
+// 		 program_invocation_short_name);
+//       exit (1);
+//     }
 
-  /* Get parameters.  */
-  shobj = argv[remaining];
-  if (argc - remaining == 2)
-    profdata = argv[remaining + 1];
-  else
-    /* No filename for the profiling data given.  We will determine it
-       from the soname of the shobj, later.  */
-    profdata = NULL;
+//   /* Get parameters.  */
+//   shobj = argv[remaining];
+//   if (argc - remaining == 2)
+//     profdata = argv[remaining + 1];
+//   else
+//     /* No filename for the profiling data given.  We will determine it
+//        from the soname of the shobj, later.  */
+//     profdata = NULL;
 
-  /* First see whether we can load the shared object.  */
-  shobj_handle = load_shobj (shobj);
-  if (shobj_handle == NULL)
-    exit (1);
+//   /* First see whether we can load the shared object.  */
+//   shobj_handle = load_shobj (shobj);
+//   if (shobj_handle == NULL)
+//     exit (1);
 
-  /* We can now determine the filename for the profiling data, if
-     nececessary.  */
-  if (profdata == NULL)
-    {
-      char *newp;
-      const char *soname;
-      size_t soname_len;
+//   /* We can now determine the filename for the profiling data, if
+//      nececessary.  */
+//   if (profdata == NULL)
+//     {
+//       char *newp;
+//       const char *soname;
+//       size_t soname_len;
 
-      soname = shobj_handle->soname ?: basename (shobj);
-      soname_len = strlen (soname);
-      newp = (char *) alloca (soname_len + sizeof ".profile");
-      stpcpy (mempcpy (newp, soname, soname_len), ".profile");
-      profdata = newp;
-    }
+//       soname = shobj_handle->soname ?: basename (shobj);
+//       soname_len = strlen (soname);
+//       newp = (char *) alloca (soname_len + sizeof ".profile");
+//       stpcpy (mempcpy (newp, soname, soname_len), ".profile");
+//       profdata = newp;
+//     }
 
-  /* Now see whether the profiling data file matches the given object.   */
-  profdata_handle = load_profdata (profdata, shobj_handle);
-  if (profdata_handle == NULL)
-    {
-      unload_shobj (shobj_handle);
+//   /* Now see whether the profiling data file matches the given object.   */
+//   profdata_handle = load_profdata (profdata, shobj_handle);
+//   if (profdata_handle == NULL)
+//     {
+//       unload_shobj (shobj_handle);
 
-      exit (1);
-    }
+//       exit (1);
+//     }
 
-  read_symbols (shobj_handle);
+//   read_symbols (shobj_handle);
 
-  /* Count the ticks.  */
-  count_total_ticks (shobj_handle, profdata_handle);
+//   /* Count the ticks.  */
+//   count_total_ticks (shobj_handle, profdata_handle);
 
-  /* Count the calls.  */
-  count_calls (shobj_handle, profdata_handle);
+//   /* Count the calls.  */
+//   count_calls (shobj_handle, profdata_handle);
 
-  /* Add the arc information.  */
-  add_arcs (profdata_handle);
+//   /* Add the arc information.  */
+//   add_arcs (profdata_handle);
 
-  /* If no mode is specified fall back to the default mode.  */
-  if (mode == NONE)
-    mode = DEFAULT_MODE;
+//   /* If no mode is specified fall back to the default mode.  */
+//   if (mode == NONE)
+//     mode = DEFAULT_MODE;
 
-  /* Do some work.  */
-  if (mode & FLAT_MODE)
-    generate_flat_profile (profdata_handle);
+//   /* Do some work.  */
+//   if (mode & FLAT_MODE)
+//     generate_flat_profile (profdata_handle);
 
-  if (mode & CALL_GRAPH_MODE)
-    generate_call_graph (profdata_handle);
+//   if (mode & CALL_GRAPH_MODE)
+//     generate_call_graph (profdata_handle);
 
-  if (mode & CALL_PAIRS)
-    generate_call_pair_list (profdata_handle);
+//   if (mode & CALL_PAIRS)
+//     generate_call_pair_list (profdata_handle);
 
-  /* Free the resources.  */
-  unload_shobj (shobj_handle);
-  unload_profdata (profdata_handle);
+//   /* Free the resources.  */
+//   unload_shobj (shobj_handle);
+//   unload_profdata (profdata_handle);
 
-  return 0;
-}
+//   return 0;
+// }
 
 
 /* Handle program arguments.  */

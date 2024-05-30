@@ -111,9 +111,9 @@ static int be_quiet;
 /* Name of output file.  */
 static const char *output_name;
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Definitions of arguments for argp functions.  */
 static const struct argp_option options[] =
@@ -179,185 +179,185 @@ static void reset_file_creation_context (void);
 #include <programs/xmalloc.h>
 
 
-int
-main (int argc, char *argv[])
-{
-  const char *input_name;
-  FILE *input_file;
-  int remaining;
-  int mode = 0644;
+// int
+// main (int argc, char *argv[])
+// {
+//   const char *input_name;
+//   FILE *input_file;
+//   int remaining;
+//   int mode = 0644;
 
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
 
-  /* Set the text message domain.  */
-  textdomain (_libc_intl_domainname);
+//   /* Set the text message domain.  */
+//   textdomain (_libc_intl_domainname);
 
-  /* Initialize local variables.  */
-  input_name = NULL;
+//   /* Initialize local variables.  */
+//   input_name = NULL;
 
-  /* Parse and process arguments.  */
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  /* Determine file names.  */
-  if (do_undo || output_name != NULL)
-    {
-      if (remaining + 1 != argc)
-	{
-	wrong_arguments:
-	  error (0, 0, gettext ("wrong number of arguments"));
-	  argp_help (&argp, stdout, ARGP_HELP_SEE,
-		     program_invocation_short_name);
-	  exit (1);
-	}
-      input_name = argv[remaining];
-    }
-  else
-    {
-      if (remaining + 2 != argc)
-	goto wrong_arguments;
+//   /* Determine file names.  */
+//   if (do_undo || output_name != NULL)
+//     {
+//       if (remaining + 1 != argc)
+// 	{
+// 	wrong_arguments:
+// 	  error (0, 0, gettext ("wrong number of arguments"));
+// 	  argp_help (&argp, stdout, ARGP_HELP_SEE,
+// 		     program_invocation_short_name);
+// 	  exit (1);
+// 	}
+//       input_name = argv[remaining];
+//     }
+//   else
+//     {
+//       if (remaining + 2 != argc)
+// 	goto wrong_arguments;
 
-      input_name = argv[remaining++];
-      output_name = argv[remaining];
-    }
+//       input_name = argv[remaining++];
+//       output_name = argv[remaining];
+//     }
 
-  /* Special handling if we are asked to print the database.  */
-  if (do_undo)
-    {
-      int fd = open (input_name, O_RDONLY);
-      if (fd == -1)
-	error (EXIT_FAILURE, errno, gettext ("cannot open database file `%s'"),
-	       input_name);
+//   /* Special handling if we are asked to print the database.  */
+//   if (do_undo)
+//     {
+//       int fd = open (input_name, O_RDONLY);
+//       if (fd == -1)
+// 	error (EXIT_FAILURE, errno, gettext ("cannot open database file `%s'"),
+// 	       input_name);
 
-      int status = print_database (fd);
+//       int status = print_database (fd);
 
-      close (fd);
+//       close (fd);
 
-      return status;
-    }
+//       return status;
+//     }
 
-  /* Open input file.  */
-  if (strcmp (input_name, "-") == 0 || strcmp (input_name, "/dev/stdin") == 0)
-    input_file = stdin;
-  else
-    {
-      struct stat64 st;
+//   /* Open input file.  */
+//   if (strcmp (input_name, "-") == 0 || strcmp (input_name, "/dev/stdin") == 0)
+//     input_file = stdin;
+//   else
+//     {
+//       struct stat64 st;
 
-      input_file = fopen64 (input_name, "r");
-      if (input_file == NULL)
-	error (EXIT_FAILURE, errno, gettext ("cannot open input file `%s'"),
-	       input_name);
+//       input_file = fopen64 (input_name, "r");
+//       if (input_file == NULL)
+// 	error (EXIT_FAILURE, errno, gettext ("cannot open input file `%s'"),
+// 	       input_name);
 
-      /* Get the access rights from the source file.  The output file should
-	 have the same.  */
-      if (fstat64 (fileno (input_file), &st) >= 0)
-	mode = st.st_mode & ACCESSPERMS;
-    }
+//       /* Get the access rights from the source file.  The output file should
+// 	 have the same.  */
+//       if (fstat64 (fileno (input_file), &st) >= 0)
+// 	mode = st.st_mode & ACCESSPERMS;
+//     }
 
-  /* Start the real work.  */
-  int status = process_input (input_file, input_name, to_lowercase, be_quiet);
+//   /* Start the real work.  */
+//   int status = process_input (input_file, input_name, to_lowercase, be_quiet);
 
-  /* Close files.  */
-  if (input_file != stdin)
-    fclose (input_file);
+//   /* Close files.  */
+//   if (input_file != stdin)
+//     fclose (input_file);
 
-  /* No need to continue when we did not read the file successfully.  */
-  if (status != EXIT_SUCCESS)
-    return status;
+//   /* No need to continue when we did not read the file successfully.  */
+//   if (status != EXIT_SUCCESS)
+//     return status;
 
-  /* Bail out if nothing is to be done.  */
-  if (!any_dbentry)
-    {
-      if (be_quiet)
-	return EXIT_SUCCESS;
-      else
-	error (EXIT_SUCCESS, 0, gettext ("no entries to be processed"));
-    }
+//   /* Bail out if nothing is to be done.  */
+//   if (!any_dbentry)
+//     {
+//       if (be_quiet)
+// 	return EXIT_SUCCESS;
+//       else
+// 	error (EXIT_SUCCESS, 0, gettext ("no entries to be processed"));
+//     }
 
-  /* Compute hash and string tables.  */
-  compute_tables ();
+//   /* Compute hash and string tables.  */
+//   compute_tables ();
 
-  /* Open output file.  This must not be standard output so we don't
-     handle "-" and "/dev/stdout" special.  */
-  char *tmp_output_name;
-  if (asprintf (&tmp_output_name, "%s.XXXXXX", output_name) == -1)
-    error (EXIT_FAILURE, errno, gettext ("cannot create temporary file name"));
+//   /* Open output file.  This must not be standard output so we don't
+//      handle "-" and "/dev/stdout" special.  */
+//   char *tmp_output_name;
+//   if (asprintf (&tmp_output_name, "%s.XXXXXX", output_name) == -1)
+//     error (EXIT_FAILURE, errno, gettext ("cannot create temporary file name"));
 
-  set_file_creation_context (output_name, mode);
-  int fd = mkstemp (tmp_output_name);
-  reset_file_creation_context ();
-  if (fd == -1)
-    error (EXIT_FAILURE, errno, gettext ("cannot create temporary file"));
+//   set_file_creation_context (output_name, mode);
+//   int fd = mkstemp (tmp_output_name);
+//   reset_file_creation_context ();
+//   if (fd == -1)
+//     error (EXIT_FAILURE, errno, gettext ("cannot create temporary file"));
 
-  status = write_output (fd);
+//   status = write_output (fd);
 
-  if (status == EXIT_SUCCESS)
-    {
-      struct stat64 st;
+//   if (status == EXIT_SUCCESS)
+//     {
+//       struct stat64 st;
 
-      if (fstat64 (fd, &st) == 0)
-	{
-	  if ((st.st_mode & ACCESSPERMS) != mode)
-	    /* We ignore problems with changing the mode.  */
-	    fchmod (fd, mode);
-	}
-      else
-	{
-	  error (0, errno, gettext ("cannot stat newly created file"));
-	  status = EXIT_FAILURE;
-	}
-    }
+//       if (fstat64 (fd, &st) == 0)
+// 	{
+// 	  if ((st.st_mode & ACCESSPERMS) != mode)
+// 	    /* We ignore problems with changing the mode.  */
+// 	    fchmod (fd, mode);
+// 	}
+//       else
+// 	{
+// 	  error (0, errno, gettext ("cannot stat newly created file"));
+// 	  status = EXIT_FAILURE;
+// 	}
+//     }
 
-  close (fd);
+//   close (fd);
 
-  if (status == EXIT_SUCCESS)
-    {
-      if (rename (tmp_output_name, output_name) != 0)
-	{
-	  error (0, errno, gettext ("cannot rename temporary file"));
-	  status = EXIT_FAILURE;
-	  goto do_unlink;
-	}
-    }
-  else
-  do_unlink:
-    unlink (tmp_output_name);
+//   if (status == EXIT_SUCCESS)
+//     {
+//       if (rename (tmp_output_name, output_name) != 0)
+// 	{
+// 	  error (0, errno, gettext ("cannot rename temporary file"));
+// 	  status = EXIT_FAILURE;
+// 	  goto do_unlink;
+// 	}
+//     }
+//   else
+//   do_unlink:
+//     unlink (tmp_output_name);
 
-  return status;
-}
+//   return status;
+// }
 
 
-/* Handle program arguments.  */
-static error_t
-parse_opt (int key, char *arg, struct argp_state *state)
-{
-  struct db_option *newp;
+// /* Handle program arguments.  */
+// static error_t
+// parse_opt (int key, char *arg, struct argp_state *state)
+// {
+//   struct db_option *newp;
 
-  switch (key)
-    {
-    case 'f':
-      to_lowercase = 1;
-      break;
-    case 'o':
-      output_name = arg;
-      break;
-    case 'q':
-      be_quiet = 1;
-      break;
-    case 'u':
-      do_undo = 1;
-      break;
-    case 'g':
-      newp = xmalloc (sizeof (*newp));
-      newp->dbid = arg[0];
-      newp->next = db_options;
-      db_options = newp;
-      break;
-    default:
-      return ARGP_ERR_UNKNOWN;
-    }
-  return 0;
-}
+//   switch (key)
+//     {
+//     case 'f':
+//       to_lowercase = 1;
+//       break;
+//     case 'o':
+//       output_name = arg;
+//       break;
+//     case 'q':
+//       be_quiet = 1;
+//       break;
+//     case 'u':
+//       do_undo = 1;
+//       break;
+//     case 'g':
+//       newp = xmalloc (sizeof (*newp));
+//       newp->dbid = arg[0];
+//       newp->next = db_options;
+//       db_options = newp;
+//       break;
+//     default:
+//       return ARGP_ERR_UNKNOWN;
+//     }
+//   return 0;
+// }
 
 
 static char *

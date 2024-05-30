@@ -40,9 +40,10 @@ extern char *program_invocation_short_name;
 /* External functions.  */
 #include <programs/xmalloc.h>
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Function to print some extra text in the help message.  */
 static char *more_help (int key, const char *text, void *input);
@@ -75,129 +76,129 @@ static int get_process_info (const char *exe, int dfd, long int pid);
 static void wait_for_ptrace_stop (long int pid);
 
 
-int
-main (int argc, char *argv[])
-{
-  /* Parse and process arguments.  */
-  int remaining;
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+// int
+// main (int argc, char *argv[])
+// {
+//   /* Parse and process arguments.  */
+//   int remaining;
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  if (remaining != argc - 1)
-    {
-      fprintf (stderr,
-	       gettext ("Exactly one parameter with process ID required.\n"));
-      argp_help (&argp, stderr, ARGP_HELP_SEE, program_invocation_short_name);
-      return 1;
-    }
+//   if (remaining != argc - 1)
+//     {
+//       fprintf (stderr,
+// 	       gettext ("Exactly one parameter with process ID required.\n"));
+//       argp_help (&argp, stderr, ARGP_HELP_SEE, program_invocation_short_name);
+//       return 1;
+//     }
 
-  _Static_assert (sizeof (pid_t) == sizeof (int)
-		  || sizeof (pid_t) == sizeof (long int),
-		  "sizeof (pid_t) != sizeof (int) or sizeof (long int)");
+//   _Static_assert (sizeof (pid_t) == sizeof (int)
+// 		  || sizeof (pid_t) == sizeof (long int),
+// 		  "sizeof (pid_t) != sizeof (int) or sizeof (long int)");
 
-  char *endp;
-  errno = 0;
-  long int pid = strtol (argv[remaining], &endp, 10);
-  if (pid < 0 || (pid == ULONG_MAX && errno == ERANGE) || *endp != '\0'
-      || (sizeof (pid_t) < sizeof (pid) && pid > INT_MAX))
-    error (EXIT_FAILURE, 0, gettext ("invalid process ID '%s'"),
-	   argv[remaining]);
+//   char *endp;
+//   errno = 0;
+//   long int pid = strtol (argv[remaining], &endp, 10);
+//   if (pid < 0 || (pid == ULONG_MAX && errno == ERANGE) || *endp != '\0'
+//       || (sizeof (pid_t) < sizeof (pid) && pid > INT_MAX))
+//     error (EXIT_FAILURE, 0, gettext ("invalid process ID '%s'"),
+// 	   argv[remaining]);
 
-  /* Determine the program name.  */
-  char buf[7 + 3 * sizeof (pid)];
-  snprintf (buf, sizeof (buf), "/proc/%lu", pid);
-  int dfd = open (buf, O_RDONLY | O_DIRECTORY);
-  if (dfd == -1)
-    error (EXIT_FAILURE, errno, gettext ("cannot open %s"), buf);
+//   /* Determine the program name.  */
+//   char buf[7 + 3 * sizeof (pid)];
+//   snprintf (buf, sizeof (buf), "/proc/%lu", pid);
+//   int dfd = open (buf, O_RDONLY | O_DIRECTORY);
+//   if (dfd == -1)
+//     error (EXIT_FAILURE, errno, gettext ("cannot open %s"), buf);
 
-  /* Name of the executable  */
-  struct scratch_buffer exe;
-  scratch_buffer_init (&exe);
-  ssize_t nexe;
-  while ((nexe = readlinkat (dfd, "exe",
-			     exe.data, exe.length)) == exe.length)
-    {
-      if (!scratch_buffer_grow (&exe))
-	{
-	  nexe = -1;
-	  break;
-	}
-    }
-  if (nexe == -1)
-    /* Default stack allocation is at least 1024.  */
-    snprintf (exe.data, exe.length, "<program name undetermined>");
-  else
-    ((char*)exe.data)[nexe] = '\0';
+//   /* Name of the executable  */
+//   struct scratch_buffer exe;
+//   scratch_buffer_init (&exe);
+//   ssize_t nexe;
+//   while ((nexe = readlinkat (dfd, "exe",
+// 			     exe.data, exe.length)) == exe.length)
+//     {
+//       if (!scratch_buffer_grow (&exe))
+// 	{
+// 	  nexe = -1;
+// 	  break;
+// 	}
+//     }
+//   if (nexe == -1)
+//     /* Default stack allocation is at least 1024.  */
+//     snprintf (exe.data, exe.length, "<program name undetermined>");
+//   else
+//     ((char*)exe.data)[nexe] = '\0';
 
-  /* Stop all threads since otherwise the list of loaded modules might
-     change while we are reading it.  */
-  struct thread_list
-  {
-    pid_t tid;
-    struct thread_list *next;
-  } *thread_list = NULL;
+//   /* Stop all threads since otherwise the list of loaded modules might
+//      change while we are reading it.  */
+//   struct thread_list
+//   {
+//     pid_t tid;
+//     struct thread_list *next;
+//   } *thread_list = NULL;
 
-  int taskfd = openat (dfd, "task", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
-  if (taskfd == 1)
-    error (EXIT_FAILURE, errno, gettext ("cannot open %s/task"), buf);
-  DIR *dir = fdopendir (taskfd);
-  if (dir == NULL)
-    error (EXIT_FAILURE, errno, gettext ("cannot prepare reading %s/task"),
-	   buf);
+//   int taskfd = openat (dfd, "task", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+//   if (taskfd == 1)
+//     error (EXIT_FAILURE, errno, gettext ("cannot open %s/task"), buf);
+//   DIR *dir = fdopendir (taskfd);
+//   if (dir == NULL)
+//     error (EXIT_FAILURE, errno, gettext ("cannot prepare reading %s/task"),
+// 	   buf);
 
-  struct dirent *d;
-  while ((d = readdir (dir)) != NULL)
-    {
-      if (! isdigit (d->d_name[0]))
-	continue;
+//   struct dirent *d;
+//   while ((d = readdir (dir)) != NULL)
+//     {
+//       if (! isdigit (d->d_name[0]))
+// 	continue;
 
-      errno = 0;
-      long int tid = strtol (d->d_name, &endp, 10);
-      if (tid < 0 || (tid == ULONG_MAX && errno == ERANGE) || *endp != '\0'
-	  || (sizeof (pid_t) < sizeof (pid) && tid > INT_MAX))
-	error (EXIT_FAILURE, 0, gettext ("invalid thread ID '%s'"),
-	       d->d_name);
+//       errno = 0;
+//       long int tid = strtol (d->d_name, &endp, 10);
+//       if (tid < 0 || (tid == ULONG_MAX && errno == ERANGE) || *endp != '\0'
+// 	  || (sizeof (pid_t) < sizeof (pid) && tid > INT_MAX))
+// 	error (EXIT_FAILURE, 0, gettext ("invalid thread ID '%s'"),
+// 	       d->d_name);
 
-      if (ptrace (PTRACE_ATTACH, tid, NULL, NULL) != 0)
-	{
-	  /* There might be a race between reading the directory and
-	     threads terminating.  Ignore errors attaching to unknown
-	     threads unless this is the main thread.  */
-	  if (errno == ESRCH && tid != pid)
-	    continue;
+//       if (ptrace (PTRACE_ATTACH, tid, NULL, NULL) != 0)
+// 	{
+// 	  /* There might be a race between reading the directory and
+// 	     threads terminating.  Ignore errors attaching to unknown
+// 	     threads unless this is the main thread.  */
+// 	  if (errno == ESRCH && tid != pid)
+// 	    continue;
 
-	  error (EXIT_FAILURE, errno, gettext ("cannot attach to process %lu"),
-		 tid);
-	}
+// 	  error (EXIT_FAILURE, errno, gettext ("cannot attach to process %lu"),
+// 		 tid);
+// 	}
 
-      wait_for_ptrace_stop (tid);
+//       wait_for_ptrace_stop (tid);
 
-      struct thread_list *newp = xmalloc (sizeof (*newp));
-      newp->tid = tid;
-      newp->next = thread_list;
-      thread_list = newp;
-    }
+//       struct thread_list *newp = xmalloc (sizeof (*newp));
+//       newp->tid = tid;
+//       newp->next = thread_list;
+//       thread_list = newp;
+//     }
 
-  closedir (dir);
+//   closedir (dir);
 
-  if (thread_list == NULL)
-    error (EXIT_FAILURE, 0, gettext ("no valid %s/task entries"), buf);
+//   if (thread_list == NULL)
+//     error (EXIT_FAILURE, 0, gettext ("no valid %s/task entries"), buf);
 
-  int status = get_process_info (exe.data, dfd, pid);
+//   int status = get_process_info (exe.data, dfd, pid);
 
-  do
-    {
-      ptrace (PTRACE_DETACH, thread_list->tid, NULL, NULL);
-      struct thread_list *prev = thread_list;
-      thread_list = thread_list->next;
-      free (prev);
-    }
-  while (thread_list != NULL);
+//   do
+//     {
+//       ptrace (PTRACE_DETACH, thread_list->tid, NULL, NULL);
+//       struct thread_list *prev = thread_list;
+//       thread_list = thread_list->next;
+//       free (prev);
+//     }
+//   while (thread_list != NULL);
 
-  close (dfd);
-  scratch_buffer_free (&exe);
+//   close (dfd);
+//   scratch_buffer_free (&exe);
 
-  return status;
-}
+//   return status;
+// }
 
 
 /* Wait for PID to enter ptrace-stop state after being attached.  */

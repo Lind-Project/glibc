@@ -99,9 +99,10 @@ static const char *output_name;
 /* Name of generated C header file.  */
 static const char *header_name;
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 #define OPT_NEW 1
 
@@ -156,46 +157,46 @@ static int open_conversion (const char *codesetp, iconv_t *cd_towcp,
 			    iconv_t *cd_tombp, wchar_t *escape_charp);
 
 
-int
-main (int argc, char *argv[])
-{
-  struct catalog *result;
-  int remaining;
+// int
+// main (int argc, char *argv[])
+// {
+//   struct catalog *result;
+//   int remaining;
 
-  /* Set program name for messages.  */
-  error_print_progname = error_print;
+//   /* Set program name for messages.  */
+//   error_print_progname = error_print;
 
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
 
-  /* Set the text message domain.  */
-  textdomain (PACKAGE);
+//   /* Set the text message domain.  */
+//   textdomain (PACKAGE);
 
-  /* Initialize local variables.  */
-  result = NULL;
+//   /* Initialize local variables.  */
+//   result = NULL;
 
-  /* Parse and process arguments.  */
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  /* Determine output file.  */
-  if (output_name == NULL)
-    output_name = remaining < argc ? argv[remaining++] : "-";
+//   /* Determine output file.  */
+//   if (output_name == NULL)
+//     output_name = remaining < argc ? argv[remaining++] : "-";
 
-  /* Process all input files.  */
-  setlocale (LC_CTYPE, "C");
-  if (remaining < argc)
-    do
-      result = read_input_file (result, argv[remaining]);
-    while (++remaining < argc);
-  else
-    result = read_input_file (NULL, "-");
+//   /* Process all input files.  */
+//   setlocale (LC_CTYPE, "C");
+//   if (remaining < argc)
+//     do
+//       result = read_input_file (result, argv[remaining]);
+//     while (++remaining < argc);
+//   else
+//     result = read_input_file (NULL, "-");
 
-  /* Write out the result.  */
-  if (result != NULL)
-    write_out (result, output_name, header_name);
+//   /* Write out the result.  */
+//   if (result != NULL)
+//     write_out (result, output_name, header_name);
 
-  return error_message_count != 0;
-}
+//   return error_message_count != 0;
+// }
 
 
 /* Handle program arguments.  */

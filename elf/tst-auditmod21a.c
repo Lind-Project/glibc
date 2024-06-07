@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <link.h>
 
-#define tls_ie __attribute__ ((tls_model ("initial-exec")))
+#define tls_ie __attribute__ ((tls_model ("local-exec")))
 
 __thread int tls_var0 tls_ie;
 __thread int tls_var1 tls_ie = 0x10;

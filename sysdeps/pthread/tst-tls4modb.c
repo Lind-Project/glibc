@@ -22,7 +22,7 @@ static int i;
 int bar;
 
 static __thread void *foo [32 / sizeof (void *)]
-  __attribute__ ((tls_model ("initial-exec"), aligned (sizeof (void *))))
+  __attribute__ ((tls_model ("local-exec"), aligned (sizeof (void *))))
   = { &i, &bar };
 
 void

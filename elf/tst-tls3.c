@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-__thread int foo, bar __attribute__ ((tls_model("initial-exec")));
+__thread int foo, bar __attribute__ ((tls_model("local-exec")));
 __thread int baz __attribute__ ((tls_model("local-exec")));
 extern __thread int foo_gd __attribute__ ((alias("foo"), tls_model("global-dynamic")));
 extern __thread int bar_gd __attribute__ ((alias("bar"), tls_model("global-dynamic")));

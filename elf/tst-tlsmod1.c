@@ -3,9 +3,9 @@
 
 __thread int foo, bar __attribute__ ((tls_model("global-dynamic")));
 extern __thread int baz __attribute__ ((tls_model("global-dynamic")));
-extern __thread int foo_ie asm ("foo") __attribute__ ((tls_model("initial-exec")));
-extern __thread int bar_ie asm ("bar") __attribute__ ((tls_model("initial-exec")));
-extern __thread int baz_ie asm ("baz") __attribute__ ((tls_model("initial-exec")));
+extern __thread int foo_ie asm ("foo") __attribute__ ((tls_model("local-exec")));
+extern __thread int bar_ie asm ("bar") __attribute__ ((tls_model("local-exec")));
+extern __thread int baz_ie asm ("baz") __attribute__ ((tls_model("local-exec")));
 
 
 extern int in_dso (void);

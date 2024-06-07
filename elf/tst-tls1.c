@@ -5,10 +5,10 @@
 __thread int foo, bar __attribute__ ((tls_model("local-exec")));
 extern __thread int foo_gd asm ("foo") __attribute__ ((tls_model("global-dynamic")));
 extern __thread int foo_ld asm ("foo") __attribute__ ((tls_model("local-dynamic")));
-extern __thread int foo_ie asm ("foo") __attribute__ ((tls_model("initial-exec")));
+extern __thread int foo_ie asm ("foo") __attribute__ ((tls_model("local-exec")));
 extern __thread int bar_gd asm ("bar") __attribute__ ((tls_model("global-dynamic")));
 extern __thread int bar_ld asm ("bar") __attribute__ ((tls_model("local-dynamic")));
-extern __thread int bar_ie asm ("bar") __attribute__ ((tls_model("initial-exec")));
+extern __thread int bar_ie asm ("bar") __attribute__ ((tls_model("local-exec")));
 
 static int
 do_test (void)

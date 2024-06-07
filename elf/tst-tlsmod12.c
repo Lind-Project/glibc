@@ -1,6 +1,6 @@
 #include "tst-tls10.h"
 
-extern __thread struct A a2 __attribute__((tls_model("initial-exec")));
+extern __thread struct A a2 __attribute__((tls_model("local-exec")));
 
 void
 check1 (void)

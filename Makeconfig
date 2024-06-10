@@ -1024,7 +1024,7 @@ in-module = $(subst -,_,$(firstword $(libof-$(basename $(@F))) \
 
 # Build ld.so, libc.so and libpthread.so with -ftls-model=initial-exec
 tls-model = $(if $(filter libpthread rtld \
-			  libc,$(in-module)),-ftls-model=initial-exec,)
+			  libc,$(in-module)),-ftls-model=local-exec,)
 
 module-cppflags-real = -include $(common-objpfx)libc-modules.h \
 		       -DMODULE_NAME=$(in-module)

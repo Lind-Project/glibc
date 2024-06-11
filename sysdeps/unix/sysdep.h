@@ -115,7 +115,22 @@
 // # define NO_SYSCALL_CANCEL_CHECKING SINGLE_THREAD_P
 // #endif
 
-// #define SYSCALL_CANCEL(...) \
+// Edit: Dennis
+#define SYSCALL_CANCEL(...) \
+  ({									     \
+    long int sc_ret;							     \
+    if (1)					     \
+      sc_ret = INLINE_SYSCALL_CALL (__VA_ARGS__); 			     \
+    else								     \
+      {									     \
+	int sc_cancel_oldtype = LIBC_CANCEL_ASYNC ();			     \
+	sc_ret = INLINE_SYSCALL_CALL (__VA_ARGS__);			     \
+        LIBC_CANCEL_RESET (sc_cancel_oldtype);				     \
+      }									     \
+    sc_ret;								     \
+  })
+
+//   #define SYSCALL_CANCEL(...) \
 //   ({									     \
 //     long int sc_ret;							     \
 //     if (NO_SYSCALL_CANCEL_CHECKING)					     \

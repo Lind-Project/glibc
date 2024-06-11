@@ -2,18 +2,19 @@
 #include <sysdep-cancel.h>
 #include <stdint.h>
 #include <fcntl.h>
+#include <syscall-template.h>
 
 int
-__GI___munmap (uint64_t stack, uint64_t stack_size)
+__GI___munmap (void *addr, size_t len)
 {
-
-  return 0;
+  return MAKE_SYSCALL(22, "syscall|munmap", (uint64_t)(uintptr_t) addr, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+  // return 0;
 }
 
-int munmap (uint64_t stack, uint64_t stack_size)
+int munmap (void *addr, size_t len)
 {
-
-  return 0;
+  return MAKE_SYSCALL(22, "syscall|munmap", (uint64_t)(uintptr_t) addr, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+  // return 0;
 }
 
 weak_alias(__GI___munmap, __munmap)

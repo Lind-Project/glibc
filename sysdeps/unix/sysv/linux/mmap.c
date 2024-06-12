@@ -21,6 +21,7 @@
 #include <sys/mman.h>
 #include <sysdep.h>
 #include <stdint.h>
+#include <syscall-template.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 # include <mmap_internal.h>

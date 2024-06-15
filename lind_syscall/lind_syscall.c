@@ -23,6 +23,6 @@ int __imported_wasi_snapshot_preview1_lind_syscall(unsigned int callnumber, unsi
 int lind_syscall (unsigned int callnumber, unsigned long long callname, unsigned long long arg1, unsigned long long arg2, unsigned long long arg3, unsigned long long arg4, unsigned long long arg5, unsigned long long arg6)
 {
   int ret = 0;
-  __imported_wasi_snapshot_preview1_lind_syscall(callnumber, callname, arg1, arg2, arg3, arg4, arg5, arg6, &ret);
+  __imported_wasi_snapshot_preview1_lind_syscall(callnumber, callname, arg1, arg2, arg3, arg4, arg5, arg6, (unsigned int) &ret);
   return ret;
 }

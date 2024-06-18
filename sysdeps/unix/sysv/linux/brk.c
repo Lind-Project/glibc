@@ -44,7 +44,7 @@ __brk (void *addr)
     return -1;
   }
   
-  unsigned long grow_ret = __builin_wasm_memory_grow(0, (unsigned long)(addr - __curbrk) / PAGESIZE);
+  unsigned long grow_ret = __builtin_wasm_memory_grow(0, (unsigned long)(addr - __curbrk) / PAGESIZE);
   if (grow_ret < 0) {
     __set_errno (ENOMEM);
     return -1;

@@ -38,13 +38,13 @@ __brk (void *addr)
 {
   // Coulnnis: we firstly try if forcing pagesize alignment is okay for glibc
   //           as __builtin_wasm_memory_grow() only support pagesize aligned increments
-  unsigned long cur_brk = __builin_wasm_memroy_size(0) * PAGESIZE;
+  unsigned long cur_brk = __builtin_wasm_memroy_size(0) * PAGESIZE;
   if (addr < cur_brk || addr % PAGESIZE) {
     __set_errno (EINVAL);
     return -1;
   }
   
-  unsigned long grow_ret = __builin_wasm_memory_grow(0, (addr - cur_brk) / PAGESIZE);
+  unsigned long grow_ret = __builin_wasm_memory_grow(0, (unsigned long)(addr - cur_brk) / PAGESIZE);
   if (grow_ret < 0) {
     __set_errno (ENOMEM);
     return -1;

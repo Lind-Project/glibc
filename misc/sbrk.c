@@ -26,55 +26,88 @@
 #include <unistd.h>
 
 /* Defined in brk.c.  */
-extern void *__curbrk;
-extern int __brk (void *addr);
+// extern void *__curbrk;
+// extern int __brk (void *addr);
 
 /* Extend the process's data space by INCREMENT.
    If INCREMENT is negative, shrink data space by - INCREMENT.
    Return start of new space allocated, or -1 for errors.  */
+
+#define PAGESIZE (0x10000)
+
 void *
 __sbrk (intptr_t increment)
 {
-  /* Controls whether __brk (0) is called to read the brk value from
-     the kernel.  */
-  bool update_brk = __curbrk == NULL;
-
-#if defined (SHARED) && ! IS_IN (rtld)
-  if (!__libc_initial)
-    {
-      if (increment != 0)
-	{
-	  /* Do not allow changing the brk from an inner libc because
-	     it cannot be synchronized with the outer libc's brk.  */
-	  __set_errno (ENOMEM);
-	  return (void *) -1;
-	}
-      /* Querying the kernel's brk value from an inner namespace is
-	 fine.  */
-      update_brk = true;
-    }
-#endif
-
-  if (update_brk)
-    if (__brk (0) < 0)		/* Initialize the break.  */
-      return (void *) -1;
-
-  if (increment == 0)
-    return __curbrk;
-
-  void *oldbrk = __curbrk;
-  if (increment > 0
-      ? ((uintptr_t) oldbrk + (uintptr_t) increment < (uintptr_t) oldbrk)
-      : ((uintptr_t) oldbrk < (uintptr_t) -increment))
-    {
-      __set_errno (ENOMEM);
-      return (void *) -1;
+    // sbrk(0) returns the current memory size.
+    if (increment == 0) {
+        // The wasm spec doesn't guarantee that memory.grow of 0 always succeeds.
+        return (void *)(__builtin_wasm_memory_size(0) * PAGESIZE);
     }
 
-  if (__brk (oldbrk + increment) < 0)
-    return (void *) -1;
+    // We only support page-size increments.
+    if (increment % PAGESIZE != 0) {
+        abort();
+    }
 
-  return oldbrk;
+    // WebAssembly doesn't support shrinking linear memory.
+    if (increment < 0) {
+        abort();
+    }
+
+    uintptr_t old = __builtin_wasm_memory_grow(0, (uintptr_t)increment / PAGESIZE);
+
+    if (old == SIZE_MAX) {
+        errno = ENOMEM;
+        return (void *)-1;
+    }
+
+    return (void *)(old * PAGESIZE);
 }
+
+// void *
+// __sbrk (intptr_t increment)
+// {
+//   /* Controls whether __brk (0) is called to read the brk value from
+//      the kernel.  */
+//   bool update_brk = __curbrk == NULL;
+
+// #if defined (SHARED) && ! IS_IN (rtld)
+//   if (!__libc_initial)
+//     {
+//       if (increment != 0)
+// 	{
+// 	  /* Do not allow changing the brk from an inner libc because
+// 	     it cannot be synchronized with the outer libc's brk.  */
+// 	  __set_errno (ENOMEM);
+// 	  return (void *) -1;
+// 	}
+//       /* Querying the kernel's brk value from an inner namespace is
+// 	 fine.  */
+//       update_brk = true;
+//     }
+// #endif
+
+//   if (update_brk)
+//     if (__brk (0) < 0)		/* Initialize the break.  */
+//       return (void *) -1;
+
+//   if (increment == 0)
+//     return __curbrk;
+
+//   void *oldbrk = __curbrk;
+//   if (increment > 0
+//       ? ((uintptr_t) oldbrk + (uintptr_t) increment < (uintptr_t) oldbrk)
+//       : ((uintptr_t) oldbrk < (uintptr_t) -increment))
+//     {
+//       __set_errno (ENOMEM);
+//       return (void *) -1;
+//     }
+
+//   if (__brk (oldbrk + increment) < 0)
+//     return (void *) -1;
+
+//   return oldbrk;
+// }
+
 libc_hidden_def (__sbrk)
 weak_alias (__sbrk, sbrk)

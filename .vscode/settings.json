@@ -23,7 +23,18 @@
         "unistd.h": "c",
         "fenv.h": "c",
         "functional": "c",
-        "kernel_sigaction.h": "c"
+        "kernel_sigaction.h": "c",
+        "*.def": "c",
+        "*.tcc": "c",
+        "istream": "c",
+        "ostream": "c",
+        "system_error": "c",
+        "uio.h": "c",
+        "mman.h": "c",
+        "stdint.h": "c",
+        "chrono": "c",
+        "algorithm": "c",
+        "not-cancel.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

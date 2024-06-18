@@ -60,7 +60,7 @@ __sbrk (intptr_t increment)
         errno = ENOMEM;
         return (void *)-1;
     }
-    __curbrk = (void *)((old + intrement) * PAGESIZE);
+    __curbrk = (void *)((old + increment) * PAGESIZE);
     return (void *)(old * PAGESIZE);
 }
 

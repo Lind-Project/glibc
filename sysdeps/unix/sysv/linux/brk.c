@@ -22,7 +22,7 @@
 #include <brk_call.h>
 
 /* This must be initialized data because commons can't have aliases.  */
-void *__curbrk = 0;
+// void *__curbrk = 0;
 
 #if HAVE_INTERNAL_BRK_ADDR_SYMBOL
 /* Old braindamage in GCC's crtstuff.c requires this symbol in an attempt

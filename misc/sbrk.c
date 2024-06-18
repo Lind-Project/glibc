@@ -46,12 +46,12 @@ __sbrk (intptr_t increment)
 
     // We only support page-size increments.
     if (increment % PAGESIZE != 0) {
-        abort();
+        return -1;
     }
 
     // WebAssembly doesn't support shrinking linear memory.
     if (increment < 0) {
-        abort();
+        return -1;
     }
 
     uintptr_t old = __builtin_wasm_memory_grow(0, (uintptr_t)increment / PAGESIZE);

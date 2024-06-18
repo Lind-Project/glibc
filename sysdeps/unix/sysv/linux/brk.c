@@ -22,7 +22,7 @@
 #include <brk_call.h>
 
 /* This must be initialized data because commons can't have aliases.  */
-// void *__curbrk = 0;
+void *__curbrk = 0;
 
 #if HAVE_INTERNAL_BRK_ADDR_SYMBOL
 /* Old braindamage in GCC's crtstuff.c requires this symbol in an attempt
@@ -38,18 +38,18 @@ __brk (void *addr)
 {
   // Coulnnis: we firstly try if forcing pagesize alignment is okay for glibc
   //           as __builtin_wasm_memory_grow() only support pagesize aligned increments
-  unsigned long cur_brk = __builtin_wasm_memroy_size(0) * PAGESIZE;
+  __curbrk = __builtin_wasm_memroy_size(0) * PAGESIZE;
   if (addr < cur_brk || addr % PAGESIZE) {
     __set_errno (EINVAL);
     return -1;
   }
   
-  unsigned long grow_ret = __builin_wasm_memory_grow(0, (unsigned long)(addr - cur_brk) / PAGESIZE);
+  unsigned long grow_ret = __builin_wasm_memory_grow(0, (unsigned long)(addr - __curbrk) / PAGESIZE);
   if (grow_ret < 0) {
     __set_errno (ENOMEM);
     return -1;
   }
-
+  __curbrk = (void *) addr;
   return 0;
 }
 weak_alias (__brk, brk)

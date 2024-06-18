@@ -26,7 +26,7 @@
 #include <unistd.h>
 
 /* Defined in brk.c.  */
-// extern void *__curbrk;
+extern void *__curbrk;
 // extern int __brk (void *addr);
 
 /* Extend the process's data space by INCREMENT.
@@ -60,7 +60,7 @@ __sbrk (intptr_t increment)
         errno = ENOMEM;
         return (void *)-1;
     }
-
+    __curbrk = (void *)((old + intrement) * PAGESIZE);
     return (void *)(old * PAGESIZE);
 }
 

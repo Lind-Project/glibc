@@ -26,6 +26,9 @@
 #include <unistd.h>
 
 /* Defined in brk.c.  */
+// This is the "virtual brk" exposed to the caller
+// while the actual end of LinearMemory might be a
+// higher address aligned to pages
 extern void *__curbrk;
 // extern int __brk (void *addr);
 
@@ -38,30 +41,39 @@ extern void *__curbrk;
 void *
 __sbrk (intptr_t increment)
 {
+    __curbrk = __builtin_wasm_memory_size(0) * PAGESIZE;
+    
     // sbrk(0) returns the current memory size.
     if (increment == 0) {
         // The wasm spec doesn't guarantee that memory.grow of 0 always succeeds.
-        return (void *)(__builtin_wasm_memory_size(0) * PAGESIZE);
+        return __curbrk;
     }
 
-    // We only support page-size increments.
-    if (increment % PAGESIZE != 0) {
-        return -1;
+    // FIXME: now two threads calling this sbrk simultaneously
+    // will lead to the corruption of __curbrk, so we should move
+    // this implementation into the runtime, and protect the __curbrk
+    // with mutex (i.e.  preventing two sbrk to be executed at the same time)
+
+    void * linear_mem_end = __builtin_wasm_memory_size(0) * PAGESIZE;
+    void * old_break = __curbrk;
+    void * new_break = old_break + increment;
+
+    if (new_break <= linear_mem_end) {
+        // In this case, we don't need to grow linear mem
+        __curbrk = new_break;
+        return old_break;
     }
 
-    // WebAssembly doesn't support shrinking linear memory.
-    if (increment < 0) {
-        return -1;
-    }
+    // Now we need to grow linear mem
+    int new_pages = (new_break - linear_mem_end) / PAGESIZE;
 
-    uintptr_t old = __builtin_wasm_memory_grow(0, (uintptr_t)increment / PAGESIZE);
-
-    if (old == SIZE_MAX) {
+    if (__builtin_wasm_memory_grow(0, new_pages) < 0) {
         errno = ENOMEM;
         return (void *)-1;
     }
-    __curbrk = (void *)((old + increment) * PAGESIZE);
-    return (void *)(old * PAGESIZE);
+
+    __curbrk = new_break;
+    return old_break;
 }
 
 // void *

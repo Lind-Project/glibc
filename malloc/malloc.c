@@ -5795,7 +5795,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
     return EINVAL;
 
 
-  void *address = RETURN_ADDRESS (0);
+  void *address = NULL;
   mem = _mid_memalign (alignment, size, address);
 
   if (mem != NULL)

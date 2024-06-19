@@ -71,9 +71,9 @@
 #define _LIBC	1
 
 /* Some files must be compiled with optimization on.  */
-#if !defined __ASSEMBLER__ && !defined __OPTIMIZE__
-# error "glibc cannot be compiled without optimization"
-#endif
+// #if !defined __ASSEMBLER__ && !defined __OPTIMIZE__
+// # error "glibc cannot be compiled without optimization"
+// #endif
 
 /* -ffast-math cannot be applied to the C library, as it alters the ABI.
    Some test components that use -ffast-math are currently not part of

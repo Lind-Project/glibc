@@ -3545,7 +3545,7 @@ __libc_memalign (size_t alignment, size_t bytes)
   if (!__malloc_initialized)
     ptmalloc_init ();
 
-  void *address = NULL;
+  void *address = (void*)0;;
   return _mid_memalign (alignment, bytes, address);
 }
 libc_hidden_def (__libc_memalign)
@@ -3568,7 +3568,7 @@ aligned_alloc (size_t alignment, size_t bytes)
       return 0;
     }
 
-  void *address = NULL;
+  void *address = (void*)0;;
   return _mid_memalign (alignment, bytes, address);
 }
 
@@ -3668,7 +3668,7 @@ __libc_valloc (size_t bytes)
   if (!__malloc_initialized)
     ptmalloc_init ();
 
-  void *address = NULL;
+  void *address = (void*)0;;
   size_t pagesize = GLRO (dl_pagesize);
   return _mid_memalign (pagesize, bytes, address);
 }
@@ -3679,7 +3679,7 @@ __libc_pvalloc (size_t bytes)
   if (!__malloc_initialized)
     ptmalloc_init ();
 
-  void *address = NULL;
+  void *address = (void*)0;;
   size_t pagesize = GLRO (dl_pagesize);
   size_t rounded_bytes;
   /* ALIGN_UP with overflow check.  */
@@ -5795,7 +5795,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
     return EINVAL;
 
 
-  void *address = NULL;
+  void *address = (void*)0;
   mem = _mid_memalign (alignment, size, address);
 
   if (mem != NULL)

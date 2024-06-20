@@ -18,6 +18,7 @@
 #include <sys/socket.h>
 #include <sysdep-cancel.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
 __libc_connect (int fd, __CONST_SOCKADDR_ARG addr, socklen_t len)

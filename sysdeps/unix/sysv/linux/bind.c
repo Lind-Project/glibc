@@ -17,6 +17,7 @@
 
 #include <sys/socket.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
 __bind (int fd, __CONST_SOCKADDR_ARG addr, socklen_t len)

@@ -17,6 +17,7 @@
 
 #include <sys/socket.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
 __socket (int fd, int type, int domain)

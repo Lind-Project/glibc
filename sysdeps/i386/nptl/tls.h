@@ -231,11 +231,14 @@ tls_fill_user_desc (union user_desc_init *desc,
 #  define THREAD_SELF \
   (*(struct pthread *__seg_gs *) offsetof (struct pthread, header.self))
 # else
-#  define THREAD_SELF \
-  ({ struct pthread *__self;						      \
-     asm ("movl %%gs:%c1,%0" : "=r" (__self)				      \
-	  : "i" (offsetof (struct pthread, header.self)));		      \
-     __self;})
+  // Coulson: of course, there's no %gs register in WASM
+  // Yes, I'm leaving this to the wisdom of later generations
+  #  define THREAD_SELF (void *) 0
+// #  define THREAD_SELF \
+//   ({ struct pthread *__self;						      \
+//      asm ("movl %%gs:%c1,%0" : "=r" (__self)				      \
+// 	  : "i" (offsetof (struct pthread, header.self)));		      \
+//      __self;})
 # endif
 
 /* Magic for libthread_db to know how to do THREAD_SELF.  */

@@ -233,7 +233,7 @@ tls_fill_user_desc (union user_desc_init *desc,
 # else
   // Coulson: of course, there's no %gs register in WASM
   // Yes, I'm leaving this to the wisdom of later generations
-  #  define THREAD_SELF (void *) 0
+  #define THREAD_SELF ((struct pthread *)0)
 // #  define THREAD_SELF \
 //   ({ struct pthread *__self;						      \
 //      asm ("movl %%gs:%c1,%0" : "=r" (__self)				      \

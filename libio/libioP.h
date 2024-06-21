@@ -528,6 +528,7 @@ extern const struct _IO_jump_t __io_vtables[] attribute_hidden;
 #ifdef SHARED
 # define libio_static_fn_required(name)
 #else
+// the asm doesn't make sense for WASM compiler, and not needed
 # define libio_static_fn_required(name)
 // # define libio_static_fn_required(name) __asm (".globl " #name);
 #endif

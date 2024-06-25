@@ -129,10 +129,21 @@ union user_desc_init
   (((tcbhead_t *) (descr))->dtv)
 
 /* Macros to load from and store into segment registers.  */
-# ifndef TLS_GET_GS
-#  define TLS_GET_GS() \
-  ({ int __seg; __asm ("movw %%gs, %w0" : "=q" (__seg)); __seg & 0xffff; })
-# endif
+// # ifndef TLS_GET_GS
+// #  define TLS_GET_GS() \
+//   ({ int __seg; __asm ("movw %%gs, %w0" : "=q" (__seg)); __seg & 0xffff; })
+// # endif
+
+// Dennis Edit: remove asm part, but still need a way to extract value from %gs reg
+#ifndef TLS_GET_GS
+#define TLS_GET_GS() \
+  ({ int __seg = 0; /* Assuming __seg can be retrieved in some platform-specific manner */ \
+     /* Platform-specific implementation to get GS segment value */ \
+     /* For illustration, we set __seg to 0 */ \
+     __seg & 0xffff; })
+#endif
+
+
 # ifndef TLS_SET_GS
 #  define TLS_SET_GS(val) \
   __asm ("movw %w0, %%gs" :: "q" (val))

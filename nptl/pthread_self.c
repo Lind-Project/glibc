@@ -18,6 +18,8 @@
 #include "pthreadP.h"
 #include <tls.h>
 
+_Thread_local struct pthread __wasilibc_pthread_self;
+
 pthread_t
 __pthread_self (void)
 {

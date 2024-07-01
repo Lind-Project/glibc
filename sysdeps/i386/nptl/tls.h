@@ -32,7 +32,7 @@
 
 extern _Thread_local struct pthread __wasilibc_pthread_self;
 
-static inline struct pthread* __get_tp() {
+static inline struct pthread* __get_tp(void) {
   return &__wasilibc_pthread_self;
 }
 
@@ -46,7 +46,7 @@ typedef struct
   uintptr_t sysinfo;
   uintptr_t stack_guard;
   uintptr_t pointer_guard;
-  int gscope_flag;
+  _Atomic int gscope_flag;
   /* Bit 0: X86_FEATURE_1_IBT.
      Bit 1: X86_FEATURE_1_SHSTK.
    */
@@ -296,7 +296,7 @@ tls_fill_user_desc (union user_desc_init *desc,
       if (__res == THREAD_GSCOPE_FLAG_WAIT)                              \
         lll_futex_wake(&THREAD_SELF->header.gscope_flag, 1, LLL_PRIVATE); \
     } while (0)
-    
+
 #define THREAD_GSCOPE_SET_FLAG() \
   THREAD_SETMEM (THREAD_SELF, header.gscope_flag, THREAD_GSCOPE_FLAG_USED)
 

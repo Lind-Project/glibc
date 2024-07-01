@@ -33,18 +33,17 @@
 int
 __libc_open (const char *file, int oflag, ...)
 {
-  return MAKE_SYSCALL(10, "syscall|open", (uint64_t) fd, (uint64_t) AT_FDCWD, (uint64_t) file, (uint64_t) oflag, (uint64_t) mode, NOTUSED);
+  int mode = 0;
 
-  // int mode = 0;
+  if (__OPEN_NEEDS_MODE (oflag))
+    {
+      va_list arg;
+      va_start (arg, oflag);
+      mode = va_arg (arg, int);
+      va_end (arg);
+    }
 
-  // if (__OPEN_NEEDS_MODE (oflag))
-  //   {
-  //     va_list arg;
-  //     va_start (arg, oflag);
-  //     mode = va_arg (arg, int);
-  //     va_end (arg);
-  //   }
-
+  return MAKE_SYSCALL(10, "syscall|open", (uint64_t) file, (uint64_t) oflag, (uint64_t) mode, NOTUSED, NOTUSED, NOTUSED);
   // return SYSCALL_CANCEL (openat, AT_FDCWD, file, oflag, mode);
 }
 libc_hidden_def (__libc_open)

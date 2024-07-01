@@ -18,15 +18,17 @@
 
 #include "pthreadP.h"
 #include "lowlevellock.h"
-#include "hle.h"
+// #include "hle.h"
 
+// Dennis Edit: disable the hardware lock
 int
 __lll_unlock_elision(int *lock, int private)
 {
   /* When the lock was free we're in a transaction.
      When you crash here you unlocked a free lock.  */
   if (*lock == 0)
-    _xend();
+    return 0;
+    // _xend();
   else
     lll_unlock ((*lock), private);
   return 0;

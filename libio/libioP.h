@@ -174,7 +174,8 @@ typedef int (*_IO_pbackfail_t) (FILE *, int);
    It matches the streambuf::xsputn virtual function. */
 typedef size_t (*_IO_xsputn_t) (FILE *FP, const void *DATA,
 				    size_t N);
-#define _IO_XSPUTN(FP, DATA, N) JUMP2 (__xsputn, FP, DATA, N)
+// #define _IO_XSPUTN(FP, DATA, N) JUMP2 (__xsputn, FP, DATA, N)
+#define _IO_XSPUTN(FP, DATA, N) _IO_file_xsputn(FP, DATA, N)
 #define _IO_WXSPUTN(FP, DATA, N) WJUMP2 (__xsputn, FP, DATA, N)
 
 /* The 'xsgetn' hook reads upto N characters into buffer DATA.

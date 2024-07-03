@@ -1241,7 +1241,7 @@ _IO_new_file_xsputn (FILE *f, const void *data, size_t n)
     {
       size_t block_size, do_write;
       /* Next flush the (full) buffer. */
-      // if (_IO_OVERFLOW (f, EOF) == EOF)
+  //     if (_IO_OVERFLOW (f, EOF) == EOF)
 	// /* If nothing else has to be written we must not signal the
 	//    caller that everything has been written.  */
 	// return to_do == 0 ? EOF : n - to_do;

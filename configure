@@ -7274,7 +7274,7 @@ then :
 else $as_nop
   cat > conftest.c <<EOF
 		static const int foo
-		 ((section ("bar"))) = 1;
+		__attribute__ ((section ("bar"))) = 1;
 EOF
 		if ${CC-cc} -S conftest.c -o conftest.s; then
 		  if grep '\.section.*"bar"' conftest.s >/dev/null; then

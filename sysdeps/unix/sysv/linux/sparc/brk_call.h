@@ -25,11 +25,7 @@
 static inline void *
 __brk_call (void *addr)
 {
-  register long int g1 asm ("g1") = __NR_brk;
-  register long int o0 asm ("o0") = (long int) addr;
-  asm volatile ("ta " SYSCALL_NUM
-		: "=r"(o0)
-		: "r"(g1), "0"(o0)
-		: "cc");
+  register long int g1 = __NR_brk;
+  register long int o0 = (long int) addr;
   return (void *) o0;
 }

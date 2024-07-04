@@ -66,7 +66,7 @@ static uint16_t
 get_x87_sw (void)
 {
   uint16_t temp;
-  __asm__ __volatile__ ("fnstsw %0" : "=a" (temp));
+
   return temp;
 }
 
@@ -74,9 +74,9 @@ static void
 set_x87_sw_bits (uint16_t mask, uint16_t bits)
 {
   fenv_t temp;
-  __asm__ __volatile__ ("fnstenv %0" : "=m" (temp));
+
   temp.__status_word = (temp.__status_word & ~mask) | bits;
-  __asm__ __volatile__ ("fldenv %0" : : "m" (temp));
+
 }
 
 static int

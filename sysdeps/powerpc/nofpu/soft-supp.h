@@ -33,12 +33,12 @@ typedef union
 #endif
 
 extern __thread int __sim_exceptions_thread attribute_tls_model_ie;
-libc_hidden_tls_proto (__sim_exceptions_thread, tls_model ("initial-exec"));
+libc_hidden_tls_proto (__sim_exceptions_thread, tls_model ("local-exec"));
 extern __thread int __sim_disabled_exceptions_thread attribute_tls_model_ie;
 libc_hidden_tls_proto (__sim_disabled_exceptions_thread,
-		       tls_model ("initial-exec"));
+		       tls_model ("local-exec"));
 extern __thread int __sim_round_mode_thread attribute_tls_model_ie;
-libc_hidden_tls_proto (__sim_round_mode_thread, tls_model ("initial-exec"));
+libc_hidden_tls_proto (__sim_round_mode_thread, tls_model ("local-exec"));
 
 /* These variables were formerly global, so there are compat symbols
    for global versions as well.  */

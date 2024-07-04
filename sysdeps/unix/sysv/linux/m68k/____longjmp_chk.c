@@ -21,7 +21,7 @@
 #define __longjmp ____longjmp_chk
 #define CHECK_SP(sp)							      \
   do {									      \
-    register unsigned long this_sp asm ("sp");				      \
+    register unsigned long this_sp;				      \
     if ((unsigned long) (sp) < this_sp)					      \
       {									      \
 	stack_t oss;							      \

@@ -71,23 +71,11 @@ void __atomic_link_error (void);
    pointer must be word aligned.  We no longer loop on deadlock.  */
 #define atomic_compare_and_exchange_val_acq(mem, newval, oldval)	\
   ({									\
-     register long lws_errno asm("r21");				\
-     register unsigned long lws_ret asm("r28");				\
-     register unsigned long lws_mem asm("r26") = (unsigned long)(mem);	\
-     register unsigned long lws_old asm("r25") = (unsigned long)(oldval);\
-     register unsigned long lws_new asm("r24") = (unsigned long)(newval);\
-     __asm__ __volatile__(						\
-	"0:					\n\t"			\
-	"ble	" _LWS "(%%sr2, %%r0)		\n\t"			\
-	"ldi	" _LWS_CAS ", %%r20		\n\t"			\
-	"cmpiclr,<> " _ASM_EAGAIN ", %%r21, %%r0\n\t"			\
-	"b,n 0b					\n\t"			\
-	"cmpclr,= %%r0, %%r21, %%r0		\n\t"			\
-	"iitlbp %%r0,(%%sr0, %%r0)		\n\t"			\
-	: "=r" (lws_ret), "=r" (lws_errno)				\
-	: "r" (lws_mem), "r" (lws_old), "r" (lws_new)			\
-	: _LWS_CLOBBER							\
-     );									\
+     register long lws_errno;				\
+     register unsigned long lws_ret ;				\
+     register unsigned long lws_mem  = (unsigned long)(mem);	\
+     register unsigned long lws_old  = (unsigned long)(oldval);\
+     register unsigned long lws_new = (unsigned long)(newval);\
 									\
      (__typeof (oldval)) lws_ret;					\
    })

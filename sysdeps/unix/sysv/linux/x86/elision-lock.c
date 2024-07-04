@@ -19,7 +19,7 @@
 #include <pthread.h>
 #include "pthreadP.h"
 #include "lowlevellock.h"
-#include "hle.h"
+// #include "hle.h"
 #include <elision-conf.h>
 
 #ifndef EXTRAARG
@@ -30,6 +30,11 @@
 #endif
 
 #define aconf __elision_aconf
+
+#define _ABORT_LOCK_BUSY	0xff
+#define _XABORT_RETRY     (1 << 1)
+#define _XABORT_EXPLICIT  (1 << 0)
+#define _XABORT_CODE(x)   (((x) >> 24) & 0xFF)
 
 /* Adaptive lock using transactions.
    By default the lock region is run as a transaction, and when it
@@ -53,16 +58,16 @@ __lll_lock_elision (int *futex, short *adapt_count, EXTRAARG int private)
 	   try_xbegin > 0;
 	   try_xbegin--)
 	{
-	  if ((status = _xbegin()) == _XBEGIN_STARTED)
-	    {
-	      if (*futex == 0)
-		return 0;
+	//   if ((status = _xbegin()) == _XBEGIN_STARTED)
+	//     {
+	//       if (*futex == 0)
+	// 	return 0;
 
-	      /* Lock was busy.  Fall back to normal locking.
-		 Could also _xend here but xabort with 0xff code
-		 is more visible in the profiler.  */
-	      _xabort (_ABORT_LOCK_BUSY);
-	    }
+	//       /* Lock was busy.  Fall back to normal locking.
+	// 	 Could also _xend here but xabort with 0xff code
+	// 	 is more visible in the profiler.  */
+	//       _xabort (_ABORT_LOCK_BUSY);
+	//     }
 
 	  if (!(status & _XABORT_RETRY))
 	    {

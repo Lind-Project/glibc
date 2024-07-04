@@ -401,6 +401,7 @@ TLS_INIT_HELPER
 #endif
 
 /* Helper function for syscall implementation.  */
+// remove in-line asm
 #ifdef DL_SYSINFO_IMPLEMENTATION
 DL_SYSINFO_IMPLEMENTATION
 #endif

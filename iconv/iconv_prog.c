@@ -45,10 +45,10 @@
 
 #define PACKAGE _libc_intl_domainname
 
-
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 #define OPT_VERBOSE	1000
 #define OPT_LIST	'l'
@@ -113,231 +113,231 @@ static int process_file (iconv_t cd, FILE *input, FILE **output,
 static void print_known_names (void);
 
 
-int
-main (int argc, char *argv[])
-{
-  int status = EXIT_SUCCESS;
-  int remaining;
-  __gconv_t cd;
-  struct charmap_t *from_charmap = NULL;
-  struct charmap_t *to_charmap = NULL;
+// int
+// main (int argc, char *argv[])
+// {
+//   int status = EXIT_SUCCESS;
+//   int remaining;
+//   __gconv_t cd;
+//   struct charmap_t *from_charmap = NULL;
+//   struct charmap_t *to_charmap = NULL;
 
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
 
-  /* Set the text message domain.  */
-  textdomain (_libc_intl_domainname);
+//   /* Set the text message domain.  */
+//   textdomain (_libc_intl_domainname);
 
-  /* Parse and process arguments.  */
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  /* List all coded character sets if wanted.  */
-  if (list)
-    {
-      print_known_names ();
-      exit (EXIT_SUCCESS);
-    }
+//   /* List all coded character sets if wanted.  */
+//   if (list)
+//     {
+//       print_known_names ();
+//       exit (EXIT_SUCCESS);
+//     }
 
-  /* POSIX 1003.2b introduces a silly thing: the arguments to -t anf -f
-     can be file names of charmaps.  In this case iconv will have to read
-     those charmaps and use them to do the conversion.  But there are
-     holes in the specification.  There is nothing said that if -f is a
-     charmap filename that -t must be, too.  And vice versa.  There is
-     also no word about the symbolic names used.  What if they don't
-     match?  */
-  if (strchr (from_code, '/') != NULL)
-    /* The from-name might be a charmap file name.  Try reading the
-       file.  */
-    from_charmap = charmap_read (from_code, /*0, 1*/1, 0, 0, 0);
+//   /* POSIX 1003.2b introduces a silly thing: the arguments to -t anf -f
+//      can be file names of charmaps.  In this case iconv will have to read
+//      those charmaps and use them to do the conversion.  But there are
+//      holes in the specification.  There is nothing said that if -f is a
+//      charmap filename that -t must be, too.  And vice versa.  There is
+//      also no word about the symbolic names used.  What if they don't
+//      match?  */
+//   if (strchr (from_code, '/') != NULL)
+//     /* The from-name might be a charmap file name.  Try reading the
+//        file.  */
+//     from_charmap = charmap_read (from_code, /*0, 1*/1, 0, 0, 0);
 
-  if (strchr (to_code, '/') != NULL)
-    /* The to-name might be a charmap file name.  Try reading the
-       file.  */
-    to_charmap = charmap_read (to_code, /*0, 1,*/1, 0, 0, 0);
+//   if (strchr (to_code, '/') != NULL)
+//     /* The to-name might be a charmap file name.  Try reading the
+//        file.  */
+//     to_charmap = charmap_read (to_code, /*0, 1,*/1, 0, 0, 0);
 
 
-  /* At this point we have to handle two cases.  The first one is
-     where a charmap is used for the from- or to-charset, or both.  We
-     handle this special since it is very different from the sane way of
-     doing things.  The other case allows converting using the iconv()
-     function.  */
-  if (from_charmap != NULL || to_charmap != NULL)
-    /* Construct the conversion table and do the conversion.  */
-    status = charmap_conversion (from_code, from_charmap, to_code, to_charmap,
-				 argc, remaining, argv, output_file);
-  else
-    {
-      struct gconv_spec conv_spec;
-      int res;
+//   /* At this point we have to handle two cases.  The first one is
+//      where a charmap is used for the from- or to-charset, or both.  We
+//      handle this special since it is very different from the sane way of
+//      doing things.  The other case allows converting using the iconv()
+//      function.  */
+//   if (from_charmap != NULL || to_charmap != NULL)
+//     /* Construct the conversion table and do the conversion.  */
+//     status = charmap_conversion (from_code, from_charmap, to_code, to_charmap,
+// 				 argc, remaining, argv, output_file);
+//   else
+//     {
+//       struct gconv_spec conv_spec;
+//       int res;
 
-      if (__gconv_create_spec (&conv_spec, from_code, to_code) == NULL)
-        {
-          error (EXIT_FAILURE, errno,
-                 _("failed to start conversion processing"));
-          exit (1);
-        }
+//       if (__gconv_create_spec (&conv_spec, from_code, to_code) == NULL)
+//         {
+//           error (EXIT_FAILURE, errno,
+//                  _("failed to start conversion processing"));
+//           exit (1);
+//         }
 
-      if (omit_invalid)
-        conv_spec.ignore = true;
+//       if (omit_invalid)
+//         conv_spec.ignore = true;
 
-      /* Let's see whether we have these coded character sets.  */
-      res = __gconv_open (&conv_spec, &cd, 0);
+//       /* Let's see whether we have these coded character sets.  */
+//       res = __gconv_open (&conv_spec, &cd, 0);
 
-      __gconv_destroy_spec (&conv_spec);
+//       __gconv_destroy_spec (&conv_spec);
 
-      if (res != __GCONV_OK)
-	{
-	  if (res == __GCONV_NOCONV || res == __GCONV_NODB)
-	    {
-	      /* Try to be nice with the user and tell her which of the
-		 two encoding names is wrong.  This is possible because
-		 all supported encodings can be converted from/to Unicode,
-		 in other words, because the graph of encodings is
-		 connected.  */
-	      bool from_wrong =
-		(iconv_open ("UTF-8", from_code) == (iconv_t) -1
-		 && errno == EINVAL);
-	      bool to_wrong =
-		(iconv_open (to_code, "UTF-8") == (iconv_t) -1
-		 && errno == EINVAL);
-	      const char *from_pretty =
-		(from_code[0] ? from_code : nl_langinfo (CODESET));
-	      const char *to_pretty =
-		(to_code[0] ? to_code : nl_langinfo (CODESET));
+//       if (res != __GCONV_OK)
+// 	{
+// 	  if (res == __GCONV_NOCONV || res == __GCONV_NODB)
+// 	    {
+// 	      /* Try to be nice with the user and tell her which of the
+// 		 two encoding names is wrong.  This is possible because
+// 		 all supported encodings can be converted from/to Unicode,
+// 		 in other words, because the graph of encodings is
+// 		 connected.  */
+// 	      bool from_wrong =
+// 		(iconv_open ("UTF-8", from_code) == (iconv_t) -1
+// 		 && errno == EINVAL);
+// 	      bool to_wrong =
+// 		(iconv_open (to_code, "UTF-8") == (iconv_t) -1
+// 		 && errno == EINVAL);
+// 	      const char *from_pretty =
+// 		(from_code[0] ? from_code : nl_langinfo (CODESET));
+// 	      const char *to_pretty =
+// 		(to_code[0] ? to_code : nl_langinfo (CODESET));
 
-	      if (from_wrong)
-		{
-		  if (to_wrong)
-		    error (0, 0,
-			   _("\
-conversions from `%s' and to `%s' are not supported"),
-			   from_pretty, to_pretty);
-		  else
-		    error (0, 0,
-			   _("conversion from `%s' is not supported"),
-			   from_pretty);
-		}
-	      else
-		{
-		  if (to_wrong)
-		    error (0, 0,
-			   _("conversion to `%s' is not supported"),
-			   to_pretty);
-		  else
-		    error (0, 0,
-			   _("conversion from `%s' to `%s' is not supported"),
-			   from_pretty, to_pretty);
-		}
+// 	      if (from_wrong)
+// 		{
+// 		  if (to_wrong)
+// 		    error (0, 0,
+// 			   _("\
+// conversions from `%s' and to `%s' are not supported"),
+// 			   from_pretty, to_pretty);
+// 		  else
+// 		    error (0, 0,
+// 			   _("conversion from `%s' is not supported"),
+// 			   from_pretty);
+// 		}
+// 	      else
+// 		{
+// 		  if (to_wrong)
+// 		    error (0, 0,
+// 			   _("conversion to `%s' is not supported"),
+// 			   to_pretty);
+// 		  else
+// 		    error (0, 0,
+// 			   _("conversion from `%s' to `%s' is not supported"),
+// 			   from_pretty, to_pretty);
+// 		}
 
-	      argp_help (&argp, stderr, ARGP_HELP_SEE,
-			 program_invocation_short_name);
-	      exit (1);
-	    }
-	  else
-	    error (EXIT_FAILURE, errno,
-		   _("failed to start conversion processing"));
-	}
+// 	      argp_help (&argp, stderr, ARGP_HELP_SEE,
+// 			 program_invocation_short_name);
+// 	      exit (1);
+// 	    }
+// 	  else
+// 	    error (EXIT_FAILURE, errno,
+// 		   _("failed to start conversion processing"));
+// 	}
 
-      /* The output file.  Will be opened when we are ready to produce
-	 output.  */
-      FILE *output = NULL;
+//       /* The output file.  Will be opened when we are ready to produce
+// 	 output.  */
+//       FILE *output = NULL;
 
-      /* Now process the remaining files.  Write them to stdout or the file
-	 specified with the `-o' parameter.  If we have no file given as
-	 the parameter process all from stdin.  */
-      if (remaining == argc)
-	{
-	  if (process_file (cd, stdin, &output, output_file) != 0)
-	    status = EXIT_FAILURE;
-	}
-      else
-	do
-	  {
-#ifdef _POSIX_MAPPED_FILES
-	    struct stat64 st;
-	    char *addr;
-#endif
-	    int fd, ret;
+//       /* Now process the remaining files.  Write them to stdout or the file
+// 	 specified with the `-o' parameter.  If we have no file given as
+// 	 the parameter process all from stdin.  */
+//       if (remaining == argc)
+// 	{
+// 	  if (process_file (cd, stdin, &output, output_file) != 0)
+// 	    status = EXIT_FAILURE;
+// 	}
+//       else
+// 	do
+// 	  {
+// #ifdef _POSIX_MAPPED_FILES
+// 	    struct stat64 st;
+// 	    char *addr;
+// #endif
+// 	    int fd, ret;
 
-	    if (verbose)
-	      fprintf (stderr, "%s:\n", argv[remaining]);
-	    if (strcmp (argv[remaining], "-") == 0)
-	      fd = 0;
-	    else
-	      {
-		fd = open (argv[remaining], O_RDONLY);
+// 	    if (verbose)
+// 	      fprintf (stderr, "%s:\n", argv[remaining]);
+// 	    if (strcmp (argv[remaining], "-") == 0)
+// 	      fd = 0;
+// 	    else
+// 	      {
+// 		fd = open (argv[remaining], O_RDONLY);
 
-		if (fd == -1)
-		  {
-		    error (0, errno, _("cannot open input file `%s'"),
-			   argv[remaining]);
-		    status = EXIT_FAILURE;
-		    continue;
-		  }
-	      }
+// 		if (fd == -1)
+// 		  {
+// 		    error (0, errno, _("cannot open input file `%s'"),
+// 			   argv[remaining]);
+// 		    status = EXIT_FAILURE;
+// 		    continue;
+// 		  }
+// 	      }
 
-#ifdef _POSIX_MAPPED_FILES
-	    /* We have possibilities for reading the input file.  First try
-	       to mmap() it since this will provide the fastest solution.  */
-	    if (fstat64 (fd, &st) == 0
-		&& ((addr = mmap (NULL, st.st_size, PROT_READ, MAP_PRIVATE,
-				  fd, 0)) != MAP_FAILED))
-	      {
-		/* Yes, we can use mmap().  The descriptor is not needed
-		   anymore.  */
-		if (close (fd) != 0)
-		  error (EXIT_FAILURE, errno,
-			 _("error while closing input `%s'"),
-			 argv[remaining]);
+// #ifdef _POSIX_MAPPED_FILES
+// 	    /* We have possibilities for reading the input file.  First try
+// 	       to mmap() it since this will provide the fastest solution.  */
+// 	    if (fstat64 (fd, &st) == 0
+// 		&& ((addr = mmap (NULL, st.st_size, PROT_READ, MAP_PRIVATE,
+// 				  fd, 0)) != MAP_FAILED))
+// 	      {
+// 		/* Yes, we can use mmap().  The descriptor is not needed
+// 		   anymore.  */
+// 		if (close (fd) != 0)
+// 		  error (EXIT_FAILURE, errno,
+// 			 _("error while closing input `%s'"),
+// 			 argv[remaining]);
 
-		ret = process_block (cd, addr, st.st_size, &output,
-				     output_file);
+// 		ret = process_block (cd, addr, st.st_size, &output,
+// 				     output_file);
 
-		/* We don't need the input data anymore.  */
-		munmap ((void *) addr, st.st_size);
+// 		/* We don't need the input data anymore.  */
+// 		munmap ((void *) addr, st.st_size);
 
-		if (ret != 0)
-		  {
-		    status = EXIT_FAILURE;
+// 		if (ret != 0)
+// 		  {
+// 		    status = EXIT_FAILURE;
 
-		    if (ret < 0)
-		      /* We cannot go on with producing output since it might
-			 lead to problem because the last output might leave
-			 the output stream in an undefined state.  */
-		      break;
-		  }
-	      }
-	    else
-#endif	/* _POSIX_MAPPED_FILES */
-	      {
-		/* Read the file in pieces.  */
-		ret = process_fd (cd, fd, &output, output_file);
+// 		    if (ret < 0)
+// 		      /* We cannot go on with producing output since it might
+// 			 lead to problem because the last output might leave
+// 			 the output stream in an undefined state.  */
+// 		      break;
+// 		  }
+// 	      }
+// 	    else
+// #endif	/* _POSIX_MAPPED_FILES */
+// 	      {
+// 		/* Read the file in pieces.  */
+// 		ret = process_fd (cd, fd, &output, output_file);
 
-		/* Now close the file.  */
-		close (fd);
+// 		/* Now close the file.  */
+// 		close (fd);
 
-		if (ret != 0)
-		  {
-		    /* Something went wrong.  */
-		    status = EXIT_FAILURE;
+// 		if (ret != 0)
+// 		  {
+// 		    /* Something went wrong.  */
+// 		    status = EXIT_FAILURE;
 
-		    if (ret < 0)
-		      /* We cannot go on with producing output since it might
-			 lead to problem because the last output might leave
-			 the output stream in an undefined state.  */
-		      break;
-		  }
-	      }
-	  }
-	while (++remaining < argc);
+// 		    if (ret < 0)
+// 		      /* We cannot go on with producing output since it might
+// 			 lead to problem because the last output might leave
+// 			 the output stream in an undefined state.  */
+// 		      break;
+// 		  }
+// 	      }
+// 	  }
+// 	while (++remaining < argc);
 
-      /* Close the output file now.  */
-      if (output != NULL && fclose (output))
-	error (EXIT_FAILURE, errno, _("error while closing output file"));
-    }
+//       /* Close the output file now.  */
+//       if (output != NULL && fclose (output))
+// 	error (EXIT_FAILURE, errno, _("error while closing output file"));
+//     }
 
-  return status;
-}
+//   return status;
+// }
 
 
 /* Handle program arguments.  */

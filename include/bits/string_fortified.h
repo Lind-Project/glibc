@@ -2,7 +2,6 @@
 # if IS_IN(libc) && defined SHARED
 /* Redirect calls from __builtin_stpcpy_chk to internal __stpcpy when building
    with fortify enable.  */
-__asm__ ("stpcpy = __GI___stpcpy");
 # endif
 
 /* Add the internal aliass attribute to symbol before they first usage on the

@@ -178,13 +178,6 @@ extern __typeof (strsep) strsep attribute_hidden;
 #if IS_IN (libc) && !defined NO_MEMPCPY_STPCPY_REDIRECT
 /* Redirect calls to __builtin_mempcpy and __builtin_stpcpy to call
    __mempcpy and __stpcpy if not inlined.  */
-# ifdef SHARED
-__asm__ ("mempcpy = __GI_mempcpy");
-__asm__ ("stpcpy = __GI_stpcpy");
-# else
-__asm__ ("mempcpy = __mempcpy");
-__asm__ ("stpcpy = __stpcpy");
-#endif
 #endif
 
 extern void *__memcpy_chk (void *__restrict __dest,

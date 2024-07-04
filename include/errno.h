@@ -39,7 +39,7 @@ extern int *__errno_location (void) __THROW __attribute_const__
      attribute_hidden
 #  endif
 ;
-libc_hidden_proto (__errno_location)
+// libc_hidden_proto (__errno_location)
 
 #endif /* !_ISOMAC && !__ASSEMBLER__ */
 #endif /* !_ERRNO_H */

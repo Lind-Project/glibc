@@ -89,7 +89,9 @@
 # pragma weak __wprintf_buffer_as_file_xsputn
 #endif
 
-const struct _IO_jump_t __io_vtables[] attribute_relro =
+// Dennis Edit: don't put vtables to relro section 
+// const struct _IO_jump_t __io_vtables[] attribute_relro =
+const struct _IO_jump_t __io_vtables[] =
 {
   /* _IO_str_jumps  */
   [IO_STR_JUMPS] =

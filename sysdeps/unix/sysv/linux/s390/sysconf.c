@@ -78,15 +78,6 @@ get_cache_info (int level, int attr, int type)
 
   /* Check cache topology, if cache is available at this level.  */
   arg = (CACHE_LEVEL_MAX - level) * 8;
-  __asm__ __volatile__ (".machine push\n\t"
-			".machine \"z10\"\n\t"
-			".machinemode \"zarch_nohighgprs\"\n\t"
-			"ecag %0,%%r0,0\n\t"   /* returns 64bit unsigned integer.  */
-			"srlg %0,%0,0(%1)\n\t" /* right align 8bit cache info field.  */
-			".machine pop"
-			: "=&d" (val)
-			: "a" (arg)
-			);
   val &= 0xCUL; /* Extract cache scope information from cache topology summary.
 		   (bits 4-5 of 8bit-field; 00 means cache does not exist).  */
   if (val == 0)
@@ -94,14 +85,6 @@ get_cache_info (int level, int attr, int type)
 
   /* Get cache information for level, attribute and type.  */
   cmd = (attr << 4) | ((level - 1) << 1) | type;
-  __asm__ __volatile__ (".machine push\n\t"
-			".machine \"z10\"\n\t"
-			".machinemode \"zarch_nohighgprs\"\n\t"
-			"ecag %0,%%r0,0(%1)\n\t"
-			".machine pop"
-			: "=d" (val)
-			: "a" (cmd)
-			);
   return val;
 }
 

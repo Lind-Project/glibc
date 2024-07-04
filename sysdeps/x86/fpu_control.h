@@ -99,8 +99,8 @@ typedef unsigned int fpu_control_t __attribute__ ((__mode__ (__HI__)));
    recent hardware nor on x86-64.  Some floating point operations are
    executed in the SSE/SSE2 engines which have their own control and
    status register.  */
-#define _FPU_GETCW(cw) __asm__ __volatile__ ("fnstcw %0" : "=m" (*&cw))
-#define _FPU_SETCW(cw) __asm__ __volatile__ ("fldcw %0" : : "m" (*&cw))
+#define _FPU_GETCW(cw) 
+#define _FPU_SETCW(cw) 
 
 /* Default control word set at startup.  */
 extern fpu_control_t __fpu_control;

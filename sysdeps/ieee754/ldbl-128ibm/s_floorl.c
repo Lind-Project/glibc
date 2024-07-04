@@ -24,7 +24,8 @@
 #include <float.h>
 #include <ieee754.h>
 
-double floor (double) asm ("__floor");
+double floor (double);
+// double floor (double) asm ("__floor");
 
 
 long double

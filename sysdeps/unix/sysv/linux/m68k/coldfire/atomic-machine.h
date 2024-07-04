@@ -37,14 +37,10 @@
     __typeof (mem) _mem = mem;						\
     __typeof (oldval) _oldval = oldval;					\
     __typeof (newval) _newval = newval;					\
-    register uint32_t _d0 asm ("d0") = SYS_ify (atomic_cmpxchg_32);	\
-    register uint32_t *_a0 asm ("a0") = (uint32_t *) _mem;		\
-    register uint32_t _d2 asm ("d2") = (uint32_t) _oldval;		\
-    register uint32_t _d1 asm ("d1") = (uint32_t) _newval;		\
-									\
-    asm ("trap #0"							\
-	 : "+d" (_d0), "+m" (*_a0)					\
-	 : "a" (_a0), "d" (_d2), "d" (_d1));				\
+    register uint32_t _d0  = SYS_ify (atomic_cmpxchg_32);	\
+    register uint32_t *_a0  = (uint32_t *) _mem;		\
+    register uint32_t _d2  = (uint32_t) _oldval;		\
+    register uint32_t _d1  = (uint32_t) _newval;		\
     (__typeof (oldval)) _d0;						\
   })
 

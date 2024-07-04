@@ -18,17 +18,20 @@
 #include <sys/socket.h>
 #include <sysdep-cancel.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
 __libc_accept (int fd, __SOCKADDR_ARG addr, socklen_t *len)
 {
-#ifdef __ASSUME_ACCEPT_SYSCALL
-  return SYSCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
-#elif defined __ASSUME_ACCEPT4_SYSCALL
-  return SYSCALL_CANCEL (accept4, fd, addr.__sockaddr__, len, 0);
-#else
-  return SOCKETCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
-#endif
+// #ifdef __ASSUME_ACCEPT_SYSCALL
+//   return SYSCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
+// #elif defined __ASSUME_ACCEPT4_SYSCALL
+//   return SYSCALL_CANCEL (accept4, fd, addr.__sockaddr__, len, 0);
+// #else
+//   return SOCKETCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
+// #endif
+  // Dennis Edit
+  return MAKE_SYSCALL(40, "syscall|accept", (uint64_t) fd, (uint64_t)(uintptr_t) addr, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__libc_accept, accept)
 libc_hidden_def (accept)

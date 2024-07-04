@@ -65,9 +65,10 @@ static char *more_help (int key, const char *text, void *input);
 /* Prototype for option handler.  */
 static error_t parse_opt (int key, char *arg, struct argp_state *state);
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Data structure to communicate with argp functions.  */
 static struct argp argp =
@@ -76,112 +77,112 @@ static struct argp argp =
 };
 
 
-int
-main (int argc, char *argv[])
-{
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
+// int
+// main (int argc, char *argv[])
+// {
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
 
-  /* Set the text message domain.  */
-  textdomain (PACKAGE);
+//   /* Set the text message domain.  */
+//   textdomain (PACKAGE);
 
-  /* Parse and process arguments.  */
-  int remaining;
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   int remaining;
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  int fd;
-  if (remaining == argc)
-    fd = STDIN_FILENO;
-  else if (remaining + 1 != argc)
-    {
-      argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
-		 program_invocation_short_name);
-      exit (1);
-    }
-  else
-    {
-      /* Open the given file.  */
-      fd = open (argv[remaining], O_RDONLY);
+//   int fd;
+//   if (remaining == argc)
+//     fd = STDIN_FILENO;
+//   else if (remaining + 1 != argc)
+//     {
+//       argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
+// 		 program_invocation_short_name);
+//       exit (1);
+//     }
+//   else
+//     {
+//       /* Open the given file.  */
+//       fd = open (argv[remaining], O_RDONLY);
 
-      if (fd == -1)
-	error (EXIT_FAILURE, errno, _("cannot open input file"));
-    }
+//       if (fd == -1)
+// 	error (EXIT_FAILURE, errno, _("cannot open input file"));
+//     }
 
-  /* Read the first 4-byte word.  It contains the information about
-     the word size and the endianness.  */
-  uint32_t word;
-  if (TEMP_FAILURE_RETRY (read (fd, &word, 4)) != 4)
-    error (EXIT_FAILURE, errno, _("cannot read header"));
+//   /* Read the first 4-byte word.  It contains the information about
+//      the word size and the endianness.  */
+//   uint32_t word;
+//   if (TEMP_FAILURE_RETRY (read (fd, &word, 4)) != 4)
+//     error (EXIT_FAILURE, errno, _("cannot read header"));
 
-  /* Check whether we have to swap the byte order.  */
-  int must_swap = (word & 0x0fffffff) == bswap_32 (0xdeb00000);
-  if (must_swap)
-    word = bswap_32 (word);
+//   /* Check whether we have to swap the byte order.  */
+//   int must_swap = (word & 0x0fffffff) == bswap_32 (0xdeb00000);
+//   if (must_swap)
+//     word = bswap_32 (word);
 
-  /* We have two loops, one for 32 bit pointers, one for 64 bit pointers.  */
-  if (word == 0xdeb00004)
-    {
-      union
-      {
-	uint32_t ptrs[2];
-	char bytes[8];
-      } pair;
+//   /* We have two loops, one for 32 bit pointers, one for 64 bit pointers.  */
+//   if (word == 0xdeb00004)
+//     {
+//       union
+//       {
+// 	uint32_t ptrs[2];
+// 	char bytes[8];
+//       } pair;
 
-      while (1)
-	{
-	  size_t len = sizeof (pair);
-	  size_t n;
+//       while (1)
+// 	{
+// 	  size_t len = sizeof (pair);
+// 	  size_t n;
 
-	  while (len > 0
-		 && (n = TEMP_FAILURE_RETRY (read (fd, &pair.bytes[8 - len],
-						   len))) != 0)
-	    len -= n;
+// 	  while (len > 0
+// 		 && (n = TEMP_FAILURE_RETRY (read (fd, &pair.bytes[8 - len],
+// 						   len))) != 0)
+// 	    len -= n;
 
-	  if (len != 0)
-	    /* Nothing to read.  */
-	    break;
+// 	  if (len != 0)
+// 	    /* Nothing to read.  */
+// 	    break;
 
-	  printf ("this = %#010" PRIx32 ", caller = %#010" PRIx32 "\n",
-		  must_swap ? bswap_32 (pair.ptrs[0]) : pair.ptrs[0],
-		  must_swap ? bswap_32 (pair.ptrs[1]) : pair.ptrs[1]);
-	}
-    }
-  else if (word == 0xdeb00008)
-    {
-      union
-      {
-	uint64_t ptrs[2];
-	char bytes[16];
-      } pair;
+// 	  printf ("this = %#010" PRIx32 ", caller = %#010" PRIx32 "\n",
+// 		  must_swap ? bswap_32 (pair.ptrs[0]) : pair.ptrs[0],
+// 		  must_swap ? bswap_32 (pair.ptrs[1]) : pair.ptrs[1]);
+// 	}
+//     }
+//   else if (word == 0xdeb00008)
+//     {
+//       union
+//       {
+// 	uint64_t ptrs[2];
+// 	char bytes[16];
+//       } pair;
 
-      while (1)
-	{
-	  size_t len = sizeof (pair);
-	  size_t n;
+//       while (1)
+// 	{
+// 	  size_t len = sizeof (pair);
+// 	  size_t n;
 
-	  while (len > 0
-		 && (n = TEMP_FAILURE_RETRY (read (fd, &pair.bytes[8 - len],
-						   len))) != 0)
-	    len -= n;
+// 	  while (len > 0
+// 		 && (n = TEMP_FAILURE_RETRY (read (fd, &pair.bytes[8 - len],
+// 						   len))) != 0)
+// 	    len -= n;
 
-	  if (len != 0)
-	    /* Nothing to read.  */
-	    break;
+// 	  if (len != 0)
+// 	    /* Nothing to read.  */
+// 	    break;
 
-	  printf ("this = %#018" PRIx64 ", caller = %#018" PRIx64 "\n",
-		  must_swap ? bswap_64 (pair.ptrs[0]) : pair.ptrs[0],
-		  must_swap ? bswap_64 (pair.ptrs[1]) : pair.ptrs[1]);
-	}
-    }
-  else
-    /* This should not happen.  */
-    error (EXIT_FAILURE, 0, _("invalid pointer size"));
+// 	  printf ("this = %#018" PRIx64 ", caller = %#018" PRIx64 "\n",
+// 		  must_swap ? bswap_64 (pair.ptrs[0]) : pair.ptrs[0],
+// 		  must_swap ? bswap_64 (pair.ptrs[1]) : pair.ptrs[1]);
+// 	}
+//     }
+//   else
+//     /* This should not happen.  */
+//     error (EXIT_FAILURE, 0, _("invalid pointer size"));
 
-  /* Clean up.  */
-  close (fd);
+//   /* Clean up.  */
+//   close (fd);
 
-  return 0;
-}
+//   return 0;
+// }
 
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)

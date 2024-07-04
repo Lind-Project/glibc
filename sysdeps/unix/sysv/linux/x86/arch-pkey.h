@@ -24,8 +24,7 @@ static inline unsigned int
 pkey_read (void)
 {
   unsigned int result;
-  __asm__ volatile (".byte 0x0f, 0x01, 0xee"
-                    : "=a" (result) : "c" (0) : "rdx");
+
   return result;
 }
 
@@ -33,8 +32,7 @@ pkey_read (void)
 static inline void
 pkey_write (unsigned int value)
 {
-  __asm__ volatile (".byte 0x0f, 0x01, 0xef"
-                    : : "a" (value), "c" (0), "d" (0));
+
 }
 
 #endif /* _ARCH_PKEY_H */

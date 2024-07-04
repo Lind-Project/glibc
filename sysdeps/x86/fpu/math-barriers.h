@@ -20,42 +20,29 @@
 #define X86_MATH_BARRIERS_H 1
 
 #if defined __SSE2_MATH__ && !defined (__clang__)
-# define math_opt_barrier(x)						\
-  ({ __typeof(x) __x;							\
-     if (sizeof (x) <= sizeof (double)					\
-	|| __builtin_types_compatible_p (__typeof (x), _Float128))	\
-       __asm ("" : "=x" (__x) : "0" (x));				\
-     else								\
-       __asm ("" : "=t" (__x) : "0" (x));				\
-     __x; })
-# define math_force_eval(x)						\
-  do {									\
-    if (sizeof (x) <= sizeof (double)					\
-	|| __builtin_types_compatible_p (__typeof (x), _Float128))	\
-      __asm __volatile ("" : : "x" (x));				\
-    else								\
-      __asm __volatile ("" : : "f" (x));				\
+#define math_opt_barrier(x)                   \
+  ({ __typeof(x) __x = (x);                   \
+     volatile __typeof(__x) __volatile_x = __x; \
+     __volatile_x; })
+
+#define math_force_eval(x)                  \
+  do {                                      \
+    volatile __typeof(x) __volatile_x = (x); \
+    (void)__volatile_x;                     \
   } while (0)
+
 #else
-# define math_opt_barrier(x)						\
-  ({ __typeof (x) __x;							\
-     if (__builtin_types_compatible_p (__typeof (x), _Float128))	\
-       {								\
-	 __x = (x);							\
-	 __asm ("" : "+m" (__x));					\
-       }								\
-     else								\
-       __asm ("" : "=t" (__x) : "0" (x));				\
-     __x; })
-# define math_force_eval(x)						\
-  do {									\
-    __typeof (x) __x = (x);						\
-    if (sizeof (x) <= sizeof (double)					\
-	|| __builtin_types_compatible_p (__typeof (x), _Float128))	\
-      __asm __volatile ("" : : "m" (__x));				\
-    else								\
-      __asm __volatile ("" : : "f" (__x));				\
+#define math_opt_barrier(x)                        \
+  ({ __typeof (x) __x = (x);                       \
+     volatile __typeof (__x) __volatile_x = __x;   \
+     __volatile_x; })
+
+#define math_force_eval(x)                        \
+  do {                                            \
+    volatile __typeof (x) __volatile_x = (x);     \
+    (void)__volatile_x;                           \
   } while (0)
+
 #endif
 
 #endif

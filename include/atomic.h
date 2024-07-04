@@ -505,7 +505,7 @@
 #endif
 
 #ifndef atomic_full_barrier
-# define atomic_full_barrier() __asm ("" ::: "memory")
+# define atomic_full_barrier()
 #endif
 
 
@@ -520,8 +520,7 @@
 
 
 #ifndef atomic_forced_read
-# define atomic_forced_read(x) \
-  ({ __typeof (x) __x; __asm ("" : "=r" (__x) : "0" (x)); __x; })
+# define atomic_forced_read(x) 
 #endif
 
 /* This is equal to 1 iff the architecture supports 64b atomic operations.  */
@@ -668,7 +667,6 @@ void __atomic_link_error (void);
 # ifndef atomic_load_relaxed
 #  define atomic_load_relaxed(mem) \
    ({ __typeof ((__typeof (*(mem))) *(mem)) __atg100_val;		      \
-   __asm ("" : "=r" (__atg100_val) : "0" (*(mem)));			      \
    __atg100_val; })
 # endif
 # ifndef atomic_load_acquire

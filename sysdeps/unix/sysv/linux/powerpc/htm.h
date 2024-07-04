@@ -76,45 +76,21 @@
 
 #define _tbegin()			\
   ({ unsigned int __ret;		\
-     asm volatile (			\
-       TBEGIN "\t\n"			\
-       "mfcr   %0\t\n"			\
-       "rlwinm %0,%0,3,1\t\n"		\
-       "xori %0,%0,1\t\n"		\
-       : "=r" (__ret) :			\
-       : "cr0", "memory");		\
      __ret;				\
   })
 
 #define _tend()				\
   ({ unsigned int __ret;		\
-     asm volatile (			\
-       TEND "\t\n"			\
-       "mfcr   %0\t\n"			\
-       "rlwinm %0,%0,3,1\t\n"		\
-       "xori %0,%0,1\t\n"		\
-       : "=r" (__ret) :			\
-       : "cr0", "memory");		\
      __ret;				\
   })
 
 #define _tabort(__code)			\
   ({ unsigned int __ret;		\
-     asm volatile (			\
-       TABORT "\t\n"			\
-       "mfcr   %0\t\n"			\
-       "rlwinm %0,%0,3,1\t\n"		\
-       "xori %0,%0,1\t\n"		\
-       : "=r" (__ret) : "r" (__code)	\
-       : "cr0", "memory");		\
      __ret;				\
   })
 
 #define _texasru()			\
   ({ unsigned long __ret;		\
-     asm volatile (			\
-       "mfspr %0,131\t\n"		\
-       : "=r" (__ret));			\
      __ret;				\
   })
 
@@ -138,21 +114,15 @@
       out the transaction.
       Remove this when glibc drops support for GCC 5.0.  */
 #  define __libc_tbegin(R)			\
-   ({ __asm__ volatile("" ::: "memory");	\
-     unsigned int __ret = __builtin_tbegin (R);	\
-     __asm__ volatile("" ::: "memory");		\
+   ({ unsigned int __ret = __builtin_tbegin (R);	\
      __ret;					\
    })
 #  define __libc_tabort(R)			\
-  ({ __asm__ volatile("" ::: "memory");		\
-    unsigned int __ret = __builtin_tabort (R);	\
-    __asm__ volatile("" ::: "memory");		\
+  ({unsigned int __ret = __builtin_tabort (R);	\
     __ret;					\
   })
 #  define __libc_tend(R)			\
-   ({ __asm__ volatile("" ::: "memory");	\
-     unsigned int __ret = __builtin_tend (R);	\
-     __asm__ volatile("" ::: "memory");		\
+   ({unsigned int __ret = __builtin_tend (R);	\
      __ret;					\
    })
 # endif /* __TM_FENCE__  */

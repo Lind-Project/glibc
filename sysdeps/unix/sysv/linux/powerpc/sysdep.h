@@ -40,26 +40,15 @@
 
 #define INTERNAL_VSYSCALL_CALL_TYPE(funcptr, type, nr, args...)         \
   ({									\
-    register void *r0  __asm__ ("r0");					\
-    register long int r3  __asm__ ("r3");				\
-    register long int r4  __asm__ ("r4");				\
-    register long int r5  __asm__ ("r5");				\
-    register long int r6  __asm__ ("r6");				\
-    register long int r7  __asm__ ("r7");				\
-    register long int r8  __asm__ ("r8");				\
-    register type rval  __asm__ ("r3");				        \
+    register void *r0  ;					\
+    register long int r3  ;				\
+    register long int r4  ;				\
+    register long int r5  ;				\
+    register long int r6  ;				\
+    register long int r7 ;				\
+    register long int r8  ;				\
+    register type rval  ;				        \
     LOADARGS_##nr (funcptr, args);					\
-    __asm__ __volatile__						\
-      ("mtctr %0\n\t"							\
-       "bctrl\n\t"							\
-       "mfcr  %0\n\t"							\
-       "0:"								\
-       : "+r" (r0), "+r" (r3), "+r" (r4), "+r" (r5),  "+r" (r6),        \
-         "+r" (r7), "+r" (r8)						\
-       : : "r9", "r10", "r11", "r12",					\
-           "cr0", "cr1", "cr5", "cr6", "cr7",				\
-           "xer", "lr", "ctr", "memory");				\
-    __asm__ __volatile__ ("" : "=r" (rval) : "r" (r3));		        \
     (long int) r0 & (1 << 28) ? -rval : rval;				\
   })
 
@@ -67,44 +56,21 @@
   INTERNAL_VSYSCALL_CALL_TYPE(funcptr, long int, nr, args)
 
 #define DECLARE_REGS				\
-  register long int r0  __asm__ ("r0");		\
-  register long int r3  __asm__ ("r3");		\
-  register long int r4  __asm__ ("r4");		\
-  register long int r5  __asm__ ("r5");		\
-  register long int r6  __asm__ ("r6");		\
-  register long int r7  __asm__ ("r7");		\
-  register long int r8  __asm__ ("r8");
+  register long int r0  ;		\
+  register long int r3 ;		\
+  register long int r4  ;		\
+  register long int r5  ;		\
+  register long int r6  ;		\
+  register long int r7  ;		\
+  register long int r8 ;
 
 #define SYSCALL_SCV(nr)				\
   ({						\
-    __asm__ __volatile__			\
-      (".machine \"push\"\n\t"			\
-       ".machine \"power9\"\n\t"		\
-       "scv 0\n\t"				\
-       ".machine \"pop\"\n\t"			\
-       "0:"					\
-       : "=&r" (r0),				\
-	 "=&r" (r3), "=&r" (r4), "=&r" (r5),	\
-	 "=&r" (r6), "=&r" (r7), "=&r" (r8)	\
-       : ASM_INPUT_##nr			\
-       : "r9", "r10", "r11", "r12",		\
-	 "cr0", "cr1", "cr5", "cr6", "cr7",	\
-	 "xer", "lr", "ctr", "memory"); 	\
     r3;					\
   })
 
 #define SYSCALL_SC(nr)				\
   ({						\
-    __asm__ __volatile__			\
-      ("sc\n\t"				\
-       "mfcr %0\n\t"				\
-       "0:"					\
-       : "=&r" (r0),				\
-	 "=&r" (r3), "=&r" (r4), "=&r" (r5),	\
-	 "=&r" (r6), "=&r" (r7), "=&r" (r8)	\
-       : ASM_INPUT_##nr			\
-       : "r9", "r10", "r11", "r12",		\
-	 "xer", "cr0", "ctr", "memory");	\
     r0 & (1 << 28) ? -r3 : r3;			\
   })
 

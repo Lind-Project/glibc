@@ -189,13 +189,8 @@ __LABEL(name)						\
 
 #define internal_syscall0(name, args...)			\
 ({								\
-	register long int _sc_19 __asm__("$19");		\
+	register long int _sc_19;		\
 	register long int _sc_0 = name;				\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2"				\
-	   : "+v"(_sc_0), "=r"(_sc_19)				\
-	   : : internal_syscall_clobbers,			\
-	     "$16", "$17", "$18", "$20", "$21");		\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 
@@ -203,13 +198,8 @@ __LABEL(name)						\
 ({								\
 	register long int _tmp_16 = syscall_promote (arg1);	\
 	register long int _sc_0 = name;				\
-	register long int _sc_16 __asm__("$16") = _tmp_16;	\
-	register long int _sc_19 __asm__("$19");		\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2 %3"				\
-	   : "+v"(_sc_0), "=r"(_sc_19), "+r"(_sc_16)		\
-	   : : internal_syscall_clobbers,			\
-	     "$17", "$18", "$20", "$21");			\
+	register long int _sc_16 = _tmp_16;	\
+	register long int _sc_19;		\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 
@@ -218,15 +208,9 @@ __LABEL(name)						\
 	register long int _tmp_16 = syscall_promote (arg1);	\
 	register long int _tmp_17 = syscall_promote (arg2);	\
 	register long int _sc_0 = name;				\
-	register long int _sc_16 __asm__("$16") = _tmp_16;	\
-	register long int _sc_17 __asm__("$17") = _tmp_17;	\
-	register long int _sc_19 __asm__("$19");		\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2 %3 %4"			\
-	   : "+v"(_sc_0), "=r"(_sc_19),				\
-	     "+r"(_sc_16), "+r"(_sc_17)				\
-	   : : internal_syscall_clobbers,			\
-	     "$18", "$20", "$21");				\
+	register long int _sc_16  = _tmp_16;	\
+	register long int _sc_17  = _tmp_17;	\
+	register long int _sc_19;		\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 
@@ -236,15 +220,10 @@ __LABEL(name)						\
 	register long int _tmp_17 = syscall_promote (arg2);	\
 	register long int _tmp_18 = syscall_promote (arg3);	\
 	register long int _sc_0 = name;				\
-	register long int _sc_16 __asm__("$16") = _tmp_16;	\
-	register long int _sc_17 __asm__("$17") = _tmp_17;	\
-	register long int _sc_18 __asm__("$18") = _tmp_18;	\
-	register long int _sc_19 __asm__("$19");		\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2 %3 %4 %5"			\
-	   : "+v"(_sc_0), "=r"(_sc_19), "+r"(_sc_16),		\
-	     "+r"(_sc_17), "+r"(_sc_18)				\
-	   : : internal_syscall_clobbers, "$20", "$21");	\
+	register long int _sc_16  = _tmp_16;	\
+	register long int _sc_17  = _tmp_17;	\
+	register long int _sc_18  = _tmp_18;	\
+	register long int _sc_19 ;		\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 
@@ -255,15 +234,10 @@ __LABEL(name)						\
 	register long int _tmp_18 = syscall_promote (arg3);	\
 	register long int _tmp_19 = syscall_promote (arg4);	\
 	register long int _sc_0 = name;				\
-	register long int _sc_16 __asm__("$16") = _tmp_16;	\
-	register long int _sc_17 __asm__("$17") = _tmp_17;	\
-	register long int _sc_18 __asm__("$18") = _tmp_18;	\
-	register long int _sc_19 __asm__("$19") = _tmp_19;	\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2 %3 %4 %5 %6"			\
-	   : "+v"(_sc_0), "+r"(_sc_19), "+r"(_sc_16),		\
-	     "+r"(_sc_17), "+r"(_sc_18)				\
-	   : : internal_syscall_clobbers, "$20", "$21");	\
+	register long int _sc_16  = _tmp_16;	\
+	register long int _sc_17 = _tmp_17;	\
+	register long int _sc_18  = _tmp_18;	\
+	register long int _sc_19  = _tmp_19;	\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 
@@ -275,16 +249,11 @@ __LABEL(name)						\
 	register long int _tmp_19 = syscall_promote (arg4);	\
 	register long int _tmp_20 = syscall_promote (arg5);	\
 	register long int _sc_0 = name;				\
-	register long int _sc_16 __asm__("$16") = _tmp_16;	\
-	register long int _sc_17 __asm__("$17") = _tmp_17;	\
-	register long int _sc_18 __asm__("$18") = _tmp_18;	\
-	register long int _sc_19 __asm__("$19") = _tmp_19;	\
-	register long int _sc_20 __asm__("$20") = _tmp_20;	\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2 %3 %4 %5 %6 %7"		\
-	   : "+v"(_sc_0), "+r"(_sc_19), "+r"(_sc_16),		\
-	     "+r"(_sc_17), "+r"(_sc_18), "+r"(_sc_20)		\
-	   : : internal_syscall_clobbers, "$21");		\
+	register long int _sc_16  = _tmp_16;	\
+	register long int _sc_17  = _tmp_17;	\
+	register long int _sc_18  = _tmp_18;	\
+	register long int _sc_19  = _tmp_19;	\
+	register long int _sc_20  = _tmp_20;	\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 
@@ -297,18 +266,12 @@ __LABEL(name)						\
 	register long int _tmp_20 = syscall_promote (arg5);	\
 	register long int _tmp_21 = syscall_promote (arg6);	\
 	register long int _sc_0 = name;				\
-	register long int _sc_16 __asm__("$16") = _tmp_16;	\
-	register long int _sc_17 __asm__("$17") = _tmp_17;	\
-	register long int _sc_18 __asm__("$18") = _tmp_18;	\
-	register long int _sc_19 __asm__("$19") = _tmp_19;	\
-	register long int _sc_20 __asm__("$20") = _tmp_20;	\
-	register long int _sc_21 __asm__("$21") = _tmp_21;	\
-	__asm__ __volatile__					\
-	  ("callsys # %0 %1 <= %2 %3 %4 %5 %6 %7 %8"		\
-	   : "+v"(_sc_0), "+r"(_sc_19), "+r"(_sc_16),		\
-	     "+r"(_sc_17), "+r"(_sc_18), "+r"(_sc_20),		\
-	     "+r"(_sc_21)					\
-	   : : internal_syscall_clobbers);			\
+	register long int _sc_16  = _tmp_16;	\
+	register long int _sc_17 = _tmp_17;	\
+	register long int _sc_18  = _tmp_18;	\
+	register long int _sc_19  = _tmp_19;	\
+	register long int _sc_20 = _tmp_20;	\
+	register long int _sc_21 = _tmp_21;	\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
 #endif /* ASSEMBLER */

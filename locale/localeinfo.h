@@ -288,14 +288,20 @@ extern __thread struct __locale_data *const *_nl_current_##category \
    can only handle even addresses.  */
 #define _NL_CURRENT_DEFINE(category) \
   __thread struct __locale_data *const *_nl_current_##category \
-    attribute_hidden = &_nl_global_locale.__locales[category]; \
-  asm (".globl " __SYMBOL_PREFIX "_nl_current_" #category "_used\n" \
-       _NL_CURRENT_DEFINE_ABS (_nl_current_##category##_used, 2));
+    __attribute__ ((visibility ("hidden"))) = &_nl_global_locale.__locales[category];
+// Use plain C for absolute symbol definition - replace assembly directive.
 #ifdef HAVE_ASM_SET_DIRECTIVE
-# define _NL_CURRENT_DEFINE_ABS(sym, val) ".set " #sym ", " #val
+# define _NL_CURRENT_DEFINE_ABS(sym, val) \
+    int sym = val;
 #else
-# define _NL_CURRENT_DEFINE_ABS(sym, val) #sym " = " #val
+# define _NL_CURRENT_DEFINE_ABS(sym, val) \
+    int sym = val;
 #endif
+// #ifdef HAVE_ASM_SET_DIRECTIVE
+// # define _NL_CURRENT_DEFINE_ABS(sym, val) ".set " #sym ", " #val
+// #else
+// # define _NL_CURRENT_DEFINE_ABS(sym, val) #sym " = " #val
+// #endif
 
 #else
 

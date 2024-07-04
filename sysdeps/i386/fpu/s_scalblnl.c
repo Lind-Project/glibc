@@ -1,2 +1,7 @@
-/* Nothing to do.  This function is the same as scalbnl.  So we define an
-   alias.  */
+//#include <math.h>
+
+// Make sure no previous conflicting definition is causing issues
+long double __scalblnl(long double x, int n) {
+    return 0;
+}
+

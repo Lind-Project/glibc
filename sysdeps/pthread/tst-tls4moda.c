@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 static __thread unsigned char foo [32]
-  __attribute__ ((tls_model ("initial-exec"), aligned (sizeof (void *))));
+  __attribute__ ((tls_model ("local-exec"), aligned (sizeof (void *))));
 
 void
 test1 (void)

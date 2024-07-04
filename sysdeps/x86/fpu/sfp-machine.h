@@ -1,6 +1,7 @@
 /* Configure soft-fp for building sqrtf128.  Based on sfp-machine.h in
    libgcc, with soft-float and other irrelevant parts removed.  */
-
+#include <stdint.h>
+#include <fenv.h>
 #if defined __x86_64__ && defined __ILP32__
 typedef long long int __gcc_CMPtype;
 #else
@@ -56,7 +57,7 @@ typedef unsigned int UTItype __attribute__ ((mode (TI)));
 
 # define FP_INIT_ROUNDMODE					\
   do {								\
-    __asm__ __volatile__ (AVX_INSN_PREFIX "stmxcsr\t%0" : "=m" (_fcw)); \
+    
   } while (0)
 #else
 # define _FP_W_TYPE_SIZE	32
@@ -72,76 +73,61 @@ typedef unsigned int UTItype __attribute__ ((mode (TI)));
 #  define __asm_output_check_type(__type, __arg) ((__type)(__arg))
 # endif
 
-# define __FP_FRAC_ADD_4(r3,r2,r1,r0,x3,x2,x1,x0,y3,y2,y1,y0)	\
-  __asm__ ("add{l} {%11,%3|%3,%11}\n\t"				\
-	   "adc{l} {%9,%2|%2,%9}\n\t"				\
-	   "adc{l} {%7,%1|%1,%7}\n\t"				\
-	   "adc{l} {%5,%0|%0,%5}"				\
-	   : "=r" __asm_output_check_type (USItype, r3),	\
-	     "=&r" __asm_output_check_type (USItype, r2),	\
-	     "=&r" __asm_output_check_type (USItype, r1),	\
-	     "=&r" __asm_output_check_type (USItype, r0)	\
-	   : "%0" ((USItype) (x3)),				\
-	     "g" ((USItype) (y3)),				\
-	     "%1" ((USItype) (x2)),				\
-	     "g" ((USItype) (y2)),				\
-	     "%2" ((USItype) (x1)),				\
-	     "g" ((USItype) (y1)),				\
-	     "%3" ((USItype) (x0)),				\
-	     "g" ((USItype) (y0)))
-# define __FP_FRAC_ADD_3(r2,r1,r0,x2,x1,x0,y2,y1,y0)		\
-  __asm__ ("add{l} {%8,%2|%2,%8}\n\t"				\
-	   "adc{l} {%6,%1|%1,%6}\n\t"				\
-	   "adc{l} {%4,%0|%0,%4}"				\
-	   : "=r" __asm_output_check_type (USItype, r2),	\
-	     "=&r" __asm_output_check_type (USItype, r1),	\
-	     "=&r" __asm_output_check_type (USItype, r0)	\
-	   : "%0" ((USItype) (x2)),				\
-	     "g" ((USItype) (y2)),				\
-	     "%1" ((USItype) (x1)),				\
-	     "g" ((USItype) (y1)),				\
-	     "%2" ((USItype) (x0)),				\
-	     "g" ((USItype) (y0)))
-# define __FP_FRAC_SUB_4(r3,r2,r1,r0,x3,x2,x1,x0,y3,y2,y1,y0)	\
-  __asm__ ("sub{l} {%11,%3|%3,%11}\n\t"				\
-	   "sbb{l} {%9,%2|%2,%9}\n\t"				\
-	   "sbb{l} {%7,%1|%1,%7}\n\t"				\
-	   "sbb{l} {%5,%0|%0,%5}"				\
-	   : "=r" __asm_output_check_type (USItype, r3),	\
-	     "=&r" __asm_output_check_type (USItype, r2),	\
-	     "=&r" __asm_output_check_type (USItype, r1),	\
-	     "=&r" __asm_output_check_type (USItype, r0)	\
-	   : "0" ((USItype) (x3)),				\
-	     "g" ((USItype) (y3)),				\
-	     "1" ((USItype) (x2)),				\
-	     "g" ((USItype) (y2)),				\
-	     "2" ((USItype) (x1)),				\
-	     "g" ((USItype) (y1)),				\
-	     "3" ((USItype) (x0)),				\
-	     "g" ((USItype) (y0)))
-# define __FP_FRAC_SUB_3(r2,r1,r0,x2,x1,x0,y2,y1,y0)		\
-  __asm__ ("sub{l} {%8,%2|%2,%8}\n\t"				\
-	   "sbb{l} {%6,%1|%1,%6}\n\t"				\
-	   "sbb{l} {%4,%0|%0,%4}"				\
-	   : "=r" __asm_output_check_type (USItype, r2),	\
-	     "=&r" __asm_output_check_type (USItype, r1),	\
-	     "=&r" __asm_output_check_type (USItype, r0)	\
-	   : "0" ((USItype) (x2)),				\
-	     "g" ((USItype) (y2)),				\
-	     "1" ((USItype) (x1)),				\
-	     "g" ((USItype) (y1)),				\
-	     "2" ((USItype) (x0)),				\
-	     "g" ((USItype) (y0)))
-# define __FP_FRAC_ADDI_4(x3,x2,x1,x0,i)			\
-  __asm__ ("add{l} {%4,%3|%3,%4}\n\t"				\
-	   "adc{l} {$0,%2|%2,0}\n\t"				\
-	   "adc{l} {$0,%1|%1,0}\n\t"				\
-	   "adc{l} {$0,%0|%0,0}"				\
-	   : "+r" __asm_output_check_type (USItype, x3),	\
-	     "+&r" __asm_output_check_type (USItype, x2),	\
-	     "+&r" __asm_output_check_type (USItype, x1),	\
-	     "+&r" __asm_output_check_type (USItype, x0)	\
-	   : "g" ((USItype) (i)))
+#define __FP_FRAC_ADD_4(r3, r2, r1, r0, x3, x2, x1, x0, y3, y2, y1, y0) \
+    do {                                                                \
+        uint32_t carry = 0;                                             \
+        (r0) = (x0) + (y0);                                             \
+        carry = (r0) < (x0);                                            \
+        (r1) = (x1) + (y1) + carry;                                     \
+        carry = (r1) < (x1) || (carry && (r1) == (x1));                 \
+        (r2) = (x2) + (y2) + carry;                                     \
+        carry = (r2) < (x2) || (carry && (r2) == (x2));                 \
+        (r3) = (x3) + (y3) + carry;                                     \
+    } while (0)
+
+#define __FP_FRAC_ADD_3(r2, r1, r0, x2, x1, x0, y2, y1, y0) \
+    do {                                                    \
+        uint32_t carry;                                     \
+        (r0) = (x0) + (y0);                                 \
+        carry = (r0) < (x0);                                \
+        (r1) = (x1) + (y1) + carry;                         \
+        carry = (r1) < (x1) || (carry && (r1) == (x1));     \
+        (r2) = (x2) + (y2) + carry;                         \
+    } while (0)
+
+#define __FP_FRAC_SUB_4(r3, r2, r1, r0, x3, x2, x1, x0, y3, y2, y1, y0) \
+    do {                                                                \
+        uint32_t borrow = 0;                                            \
+        (r0) = (x0) - (y0);                                             \
+        borrow = (r0) > (x0);                                           \
+        (r1) = (x1) - (y1) - borrow;                                    \
+        borrow = (r1) > (x1) || (borrow && (r1) == (x1));               \
+        (r2) = (x2) - (y2) - borrow;                                    \
+        borrow = (r2) > (x2) || (borrow && (r2) == (x2));               \
+        (r3) = (x3) - (y3) - borrow;                                    \
+    } while (0)
+
+#define __FP_FRAC_SUB_3(r2, r1, r0, x2, x1, x0, y2, y1, y0) \
+    do {                                                    \
+        uint32_t borrow;                                    \
+        (r0) = (x0) - (y0);                                 \
+        borrow = (r0) > (x0);                               \
+        (r1) = (x1) - (y1) - borrow;                        \
+        borrow = (r1) > (x1) || (borrow && (r1) == (x1));   \
+        (r2) = (x2) - (y2) - borrow;                        \
+    } while (0)
+
+#define __FP_FRAC_ADDI_4(x3, x2, x1, x0, i)                             \
+    do {                                                                \
+        uint32_t carry = 0;                                             \
+        (x0) += (i);                                                    \
+        carry = (x0) < (i);                                             \
+        (x1) += carry;                                                  \
+        carry = !(x1);                                                  \
+        (x2) += carry;                                                  \
+        carry = !(x2);                                                  \
+        (x3) += carry;                                                  \
+    } while (0)
 
 
 # define _FP_MUL_MEAT_S(R,X,Y)				\
@@ -174,10 +160,10 @@ typedef unsigned int UTItype __attribute__ ((mode (TI)));
 
 # define FP_RND_MASK		0xc00
 
-# define FP_INIT_ROUNDMODE				\
-  do {							\
-    __asm__ __volatile__ ("fnstcw\t%0" : "=m" (_fcw));	\
-  } while (0)
+#define FP_INIT_ROUNDMODE do {            \
+    fenv_t _fcw;                          \
+    fegetenv(&_fcw);                      \
+} while (0)
 #endif
 
 #define _FP_KEEPNANFRACP	1

@@ -39,7 +39,7 @@
   ({								\
     __typeof (x) math_narrow_eval_tmp = (x);			\
     if (excess_precision (__typeof (math_narrow_eval_tmp)))	\
-      __asm__ ("" : "+m" (math_narrow_eval_tmp));		\
+      __typeof (x) tmp = math_narrow_eval_tmp;	\
     math_narrow_eval_tmp;					\
    })
 #endif

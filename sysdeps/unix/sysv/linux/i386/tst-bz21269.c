@@ -196,7 +196,6 @@ do_test (void)
 
   thread = xpthread_create (0, threadproc, 0);
 
-  asm volatile ("mov %%ss, %0" : "=rm" (orig_ss));
 
   for (int i = 0; i < 5; i++)
     {
@@ -240,7 +239,6 @@ do_test (void)
 	 longjump back to the top of the loop.  The intention is to
 	 have this happen when the thread clears the LDT, but it could
 	 happen elsewhen.  */
-      asm volatile ("mov %0, %%ss" : : "r" (0x7));
 
       /* Fire up thread modify_ldt call.  */
       atomic_store (&ftx, 2);

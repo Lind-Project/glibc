@@ -19,12 +19,16 @@
 #include <unistd.h>
 #include <sysdep-cancel.h>
 #include <not-cancel.h>
+#include <syscall-template.h>
 
 /* Close the file descriptor FD.  */
+
+// Edit: Dennis
 int
 __close (int fd)
 {
-  return SYSCALL_CANCEL (close, fd);
+  return MAKE_SYSCALL(11, "syscall|close", (uint64_t) fd, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+  // return SYSCALL_CANCEL (close, fd);
 }
 libc_hidden_def (__close)
 strong_alias (__close, __libc_close)

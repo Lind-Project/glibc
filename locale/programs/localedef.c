@@ -90,10 +90,10 @@ bool hard_links = true;
 /* Maximum number of retries when opening the locale archive.  */
 int max_locarchive_open_retry = 10;
 
-
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// Commented out to avoid symbol duplication in WASM sysroot
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 #define OPT_POSIX 301
 #define OPT_QUIET 302
@@ -183,135 +183,135 @@ static char *construct_output_path (char *path);
 static char *normalize_codeset (const char *codeset, size_t name_len);
 
 
-int
-main (int argc, char *argv[])
-{
-  char *output_path;
-  int cannot_write_why;
-  struct charmap_t *charmap;
-  struct localedef_t global;
-  int remaining;
+// int
+// main (int argc, char *argv[])
+// {
+//   char *output_path;
+//   int cannot_write_why;
+//   struct charmap_t *charmap;
+//   struct localedef_t global;
+//   int remaining;
 
-  /* Set initial values for global variables.  */
-  copy_list = NULL;
-  posix_conformance = getenv ("POSIXLY_CORRECT") != NULL;
-  error_print_progname = error_print;
+//   /* Set initial values for global variables.  */
+//   copy_list = NULL;
+//   posix_conformance = getenv ("POSIXLY_CORRECT") != NULL;
+//   error_print_progname = error_print;
 
-  /* Set locale.  Do not set LC_ALL because the other categories must
-     not be affected (according to POSIX.2).  */
-  setlocale (LC_MESSAGES, "");
-  setlocale (LC_CTYPE, "");
+//   /* Set locale.  Do not set LC_ALL because the other categories must
+//      not be affected (according to POSIX.2).  */
+//   setlocale (LC_MESSAGES, "");
+//   setlocale (LC_CTYPE, "");
 
-  /* Initialize the message catalog.  */
-  textdomain (_libc_intl_domainname);
+//   /* Initialize the message catalog.  */
+//   textdomain (_libc_intl_domainname);
 
-  /* Parse and process arguments.  */
-  argp_err_exit_status = 4;
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   argp_err_exit_status = 4;
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  /* Handle a few special cases.  */
-  if (list_archive)
-    show_archive_content (remaining > 1 ? argv[remaining] : NULL, verbose);
-  if (add_to_archive)
-    return add_locales_to_archive (argc - remaining, &argv[remaining],
-				   replace_archive);
-  if (delete_from_archive)
-    return delete_locales_from_archive (argc - remaining, &argv[remaining]);
+//   /* Handle a few special cases.  */
+//   if (list_archive)
+//     show_archive_content (remaining > 1 ? argv[remaining] : NULL, verbose);
+//   if (add_to_archive)
+//     return add_locales_to_archive (argc - remaining, &argv[remaining],
+// 				   replace_archive);
+//   if (delete_from_archive)
+//     return delete_locales_from_archive (argc - remaining, &argv[remaining]);
 
-  /* POSIX.2 requires to be verbose about missing characters in the
-     character map.  */
-  verbose |= posix_conformance;
+//   /* POSIX.2 requires to be verbose about missing characters in the
+//      character map.  */
+//   verbose |= posix_conformance;
 
-  if (argc - remaining != 1)
-    {
-      /* We need exactly one non-option parameter.  */
-      argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
-		 program_invocation_short_name);
-      exit (4);
-    }
+//   if (argc - remaining != 1)
+//     {
+//       /* We need exactly one non-option parameter.  */
+//       argp_help (&argp, stdout, ARGP_HELP_SEE | ARGP_HELP_EXIT_ERR,
+// 		 program_invocation_short_name);
+//       exit (4);
+//     }
 
-  /* The parameter describes the output path of the constructed files.
-     If the described files cannot be written return a NULL pointer.
-     We don't free output_path because we will exit.  */
-  output_path  = construct_output_path (argv[remaining]);
-  if (output_path == NULL && ! no_archive)
-    error (4, errno, _("cannot create directory for output files"));
-  cannot_write_why = errno;
+//   /* The parameter describes the output path of the constructed files.
+//      If the described files cannot be written return a NULL pointer.
+//      We don't free output_path because we will exit.  */
+//   output_path  = construct_output_path (argv[remaining]);
+//   if (output_path == NULL && ! no_archive)
+//     error (4, errno, _("cannot create directory for output files"));
+//   cannot_write_why = errno;
 
-  /* Now that the parameters are processed we have to reset the local
-     ctype locale.  (P1003.2 4.35.5.2)  */
-  setlocale (LC_CTYPE, "POSIX");
+//   /* Now that the parameters are processed we have to reset the local
+//      ctype locale.  (P1003.2 4.35.5.2)  */
+//   setlocale (LC_CTYPE, "POSIX");
 
-  /* Look whether the system really allows locale definitions.  POSIX
-     defines error code 3 for this situation so I think it must be
-     a fatal error (see P1003.2 4.35.8).  */
-  if (sysconf (_SC_2_LOCALEDEF) < 0)
-    record_error (3, 0, _("\
-FATAL: system does not define `_POSIX2_LOCALEDEF'"));
+//   /* Look whether the system really allows locale definitions.  POSIX
+//      defines error code 3 for this situation so I think it must be
+//      a fatal error (see P1003.2 4.35.8).  */
+//   if (sysconf (_SC_2_LOCALEDEF) < 0)
+//     record_error (3, 0, _("\
+// FATAL: system does not define `_POSIX2_LOCALEDEF'"));
 
-  /* Process charmap file.  */
-  charmap = charmap_read (charmap_file, verbose, 1, be_quiet, 1);
+//   /* Process charmap file.  */
+//   charmap = charmap_read (charmap_file, verbose, 1, be_quiet, 1);
 
-  /* Add the first entry in the locale list.  */
-  memset (&global, '\0', sizeof (struct localedef_t));
-  global.name = input_file ?: "/dev/stdin";
-  global.needed = ALL_LOCALES;
-  locales = &global;
+//   /* Add the first entry in the locale list.  */
+//   memset (&global, '\0', sizeof (struct localedef_t));
+//   global.name = input_file ?: "/dev/stdin";
+//   global.needed = ALL_LOCALES;
+//   locales = &global;
 
-  /* Now read the locale file.  */
-  if (locfile_read (&global, charmap) != 0)
-    record_error (4, errno, _("\
-cannot open locale definition file `%s'"), input_file);
+//   /* Now read the locale file.  */
+//   if (locfile_read (&global, charmap) != 0)
+//     record_error (4, errno, _("\
+// cannot open locale definition file `%s'"), input_file);
 
-  /* Perhaps we saw some `copy' instructions.  */
-  while (1)
-    {
-      struct localedef_t *runp = locales;
+//   /* Perhaps we saw some `copy' instructions.  */
+//   while (1)
+//     {
+//       struct localedef_t *runp = locales;
 
-      while (runp != NULL && (runp->needed & runp->avail) == runp->needed)
-	runp = runp->next;
+//       while (runp != NULL && (runp->needed & runp->avail) == runp->needed)
+// 	runp = runp->next;
 
-      if (runp == NULL)
-	/* Everything read.  */
-	break;
+//       if (runp == NULL)
+// 	/* Everything read.  */
+// 	break;
 
-      if (locfile_read (runp, charmap) != 0)
-	record_error (4, errno, _("\
-cannot open locale definition file `%s'"), runp->name);
-    }
+//       if (locfile_read (runp, charmap) != 0)
+// 	record_error (4, errno, _("\
+// cannot open locale definition file `%s'"), runp->name);
+//     }
 
-  /* Check the categories we processed in source form.  */
-  check_all_categories (locales, charmap);
+//   /* Check the categories we processed in source form.  */
+//   check_all_categories (locales, charmap);
 
-  /* What we do next depends on the number of errors and warnings we
-     have generated in processing the input files.
+//   /* What we do next depends on the number of errors and warnings we
+//      have generated in processing the input files.
 
-     * No errors: Write the output file.
+//      * No errors: Write the output file.
 
-     * Some warnings: Write the output file and exit with status 1 to
-     indicate there may be problems using the output file e.g. missing
-     data that makes it difficult to use
+//      * Some warnings: Write the output file and exit with status 1 to
+//      indicate there may be problems using the output file e.g. missing
+//      data that makes it difficult to use
 
-     * Errors: We don't write the output file and we exit with status 4
-     to indicate no output files were written.
+//      * Errors: We don't write the output file and we exit with status 4
+//      to indicate no output files were written.
 
-     The use of -c|--force writes the output file even if errors were
-     seen.  */
-  if (recorded_error_count == 0 || force_output != 0)
-    {
-      if (cannot_write_why != 0)
-	record_error (4, cannot_write_why, _("\
-cannot write output files to `%s'"), output_path ? : argv[remaining]);
-      else
-	write_all_categories (locales, charmap, argv[remaining], output_path);
-    }
-  else
-    record_error (4, 0, _("\
-no output file produced because errors were issued"));
+//      The use of -c|--force writes the output file even if errors were
+//      seen.  */
+//   if (recorded_error_count == 0 || force_output != 0)
+//     {
+//       if (cannot_write_why != 0)
+// 	record_error (4, cannot_write_why, _("\
+// cannot write output files to `%s'"), output_path ? : argv[remaining]);
+//       else
+// 	write_all_categories (locales, charmap, argv[remaining], output_path);
+//     }
+//   else
+//     record_error (4, 0, _("\
+// no output file produced because errors were issued"));
 
-  /* This exit status is prescribed by POSIX.2 4.35.7.  */
-  exit (recorded_warning_count != 0);
-}
+//   /* This exit status is prescribed by POSIX.2 4.35.7.  */
+//   exit (recorded_warning_count != 0);
+// }
 
 /* Search warnings for matching warnings and if found enable those
    warnings if ENABLED is true, otherwise disable the warnings.  */

@@ -1,2 +1,6 @@
-/* Nothing to do.  This function is the same as scalbn.  So we define an
-   alias.  */
+//#include <math.h>  // Include the math library for scalbn()
+
+double __scalbln(double x, int n) {
+    return 0;  // Use the standard library function to scale by powers of 2
+}
+

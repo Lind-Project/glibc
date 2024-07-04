@@ -263,21 +263,27 @@ while read file srcfile caller syscall args strong weak; do
 	(echo '/* Dummy module requested by syscalls.list */'; \\"
   ;;
   x*)
+  # echo "\
+	# \$(make-target-directory)
+	# (echo '#define SYSCALL_NAME $syscall'; \\
+	#  echo '#define SYSCALL_NARGS $nargs'; \\
+	#  echo '#define SYSCALL_ULONG_ARG_1 $ulong_arg_1'; \\
+	#  echo '#define SYSCALL_ULONG_ARG_2 $ulong_arg_2'; \\
+	#  echo '#define SYSCALL_SYMBOL $strong'; \\
+	#  echo '#define SYSCALL_NOERRNO $noerrno'; \\
+	#  echo '#define SYSCALL_ERRVAL $errval'; \\
+	#  echo '#include <syscall-template.c>'; \\"
+  # ;;
+  # esac
+
   echo "\
 	\$(make-target-directory)
-	(echo '#define SYSCALL_NAME $syscall'; \\
-	 echo '#define SYSCALL_NARGS $nargs'; \\
-	 echo '#define SYSCALL_ULONG_ARG_1 $ulong_arg_1'; \\
-	 echo '#define SYSCALL_ULONG_ARG_2 $ulong_arg_2'; \\
-	 echo '#define SYSCALL_SYMBOL $strong'; \\
-	 echo '#define SYSCALL_NOERRNO $noerrno'; \\
-	 echo '#define SYSCALL_ERRVAL $errval'; \\
-	 echo '#include <syscall-template.S>'; \\"
+	(echo '#include <syscall-template.h>'; \\"
   ;;
   esac
 
   # Append any weak aliases or versions defined for this syscall function.
-  emit_weak_aliases
+  # emit_weak_aliases
 
   # And finally, pipe this all into the compiler.
   echo '	) | $(compile-syscall) '"\

@@ -27,7 +27,7 @@ __profil_counter (int signo, siginfo_t *_si, void *scp)
   /* This is a hack to prevent the compiler from implementing the
      above function call as a sibcall.  The sibcall would overwrite
      the signal context.  */
-  asm volatile ("");
+
 }
 #ifndef __profil_counter
 # include <shlib-compat.h>

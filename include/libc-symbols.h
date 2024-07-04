@@ -71,9 +71,9 @@
 #define _LIBC	1
 
 /* Some files must be compiled with optimization on.  */
-#if !defined __ASSEMBLER__ && !defined __OPTIMIZE__
-# error "glibc cannot be compiled without optimization"
-#endif
+// #if !defined __ASSEMBLER__ && !defined __OPTIMIZE__
+// # error "glibc cannot be compiled without optimization"
+// #endif
 
 /* -ffast-math cannot be applied to the C library, as it alters the ABI.
    Some test components that use -ffast-math are currently not part of
@@ -207,8 +207,7 @@
 /* When a reference to SYMBOL is encountered, the linker will emit a
    warning message MSG.  */
 /* We want the .gnu.warning.SYMBOL section to be unallocated.  */
-#define __make_section_unallocated(section_string)	\
-  asm (".section " section_string "\n\t.previous");
+#define __make_section_unallocated(section_string)
 
 /* Tacking on "\n\t#" to the section name makes gcc put it's bogus
    section attributes on what looks like a comment to the assembler.  */
@@ -254,17 +253,9 @@ for linking")
    .size C_SYMBOL_NAME (symbol), s_size ASM_LINE_SEP
 #else /* Not __ASSEMBLER__.  */
 # ifdef HAVE_ASM_SET_DIRECTIVE
-#  define declare_object_symbol_alias_1(symbol, original, size) \
-     asm (".global " __SYMBOL_PREFIX # symbol "\n" \
-	  ".type " __SYMBOL_PREFIX # symbol ", %object\n" \
-	  ".set " __SYMBOL_PREFIX #symbol ", " __SYMBOL_PREFIX original "\n" \
-	  ".size " __SYMBOL_PREFIX #symbol ", " #size "\n");
+#  define declare_object_symbol_alias_1(symbol, original, size) 
 # else
-#  define declare_object_symbol_alias_1(symbol, original, size) \
-     asm (".global " __SYMBOL_PREFIX # symbol "\n" \
-	  ".type " __SYMBOL_PREFIX # symbol ", %object\n" \
-	  __SYMBOL_PREFIX #symbol " = " __SYMBOL_PREFIX original "\n" \
-	  ".size " __SYMBOL_PREFIX #symbol ", " #size "\n");
+#  define declare_object_symbol_alias_1(symbol, original, size) 
 # endif /* HAVE_ASM_SET_DIRECTIVE */
 #endif /* __ASSEMBLER__ */
 
@@ -359,7 +350,7 @@ for linking")
 # define attribute_hidden
 #endif
 
-#define attribute_tls_model_ie __attribute__ ((tls_model ("initial-exec")))
+#define attribute_tls_model_ie __attribute__ ((tls_model ("local-exec")))
 
 #define attribute_relro __attribute__ ((section (".data.rel.ro")))
 
@@ -448,9 +439,9 @@ for linking")
   __hidden_proto_alias (name, , alias, ##attrs)
 #  define hidden_tls_proto(name, attrs...) \
   __hidden_proto (name, __thread, __GI_##name, ##attrs)
-#  define __hidden_proto(name, thread, internal, attrs...)	     \
-  extern thread __typeof (name) name __asm__ (__hidden_asmname (#internal)) \
-  __hidden_proto_hiddenattr (attrs);
+// #  define __hidden_proto(name, thread, internal, attrs...)	     \
+//   extern thread __typeof (name) name __asm__ (__hidden_asmname (#internal)) \
+//   __hidden_proto_hiddenattr (attrs);
 #  define __hidden_proto_alias(name, thread, internal, attrs...)	     \
   extern thread __typeof (name) internal __hidden_proto_hiddenattr (attrs);
 #  define __hidden_asmname(name) \
@@ -459,12 +450,12 @@ for linking")
 #  define __hidden_asmname2(prefix, name) #prefix name
 #  define __hidden_ver1(local, internal, name) \
   __hidden_ver2 (, local, internal, name)
-#  define __hidden_ver2(thread, local, internal, name)			\
-  extern thread __typeof (name) __EI_##name \
-    __asm__(__hidden_asmname (#internal));  \
-  extern thread __typeof (name) __EI_##name \
-    __attribute__((alias (__hidden_asmname (#local))))	\
-    __attribute_copy__ (name)
+// #  define __hidden_ver2(thread, local, internal, name)			\
+//   extern thread __typeof (name) __EI_##name \
+//     __asm__(__hidden_asmname (#internal));  \
+//   extern thread __typeof (name) __EI_##name \
+//     __attribute__((alias (__hidden_asmname (#local))))	\
+//     __attribute_copy__ (name)
 #  define hidden_ver(local, name)	__hidden_ver1(local, __GI_##name, name);
 #  define hidden_def(name)		__hidden_ver1(__GI_##name, name, name);
 #  define hidden_def_alias(name, internal) \
@@ -484,8 +475,7 @@ for linking")
   extern __typeof (name) internal __attribute__ ((alias (#local)))	\
     __attribute_copy__ (name);						\
   __hidden_nolink3 (local, internal, #name "@" #version)
-#  define __hidden_nolink3(local, internal, vername) \
-  __asm__ (".symver " #internal ", " vername);
+#  define __hidden_nolink3(local, internal, vername)
 # else
 /* For assembly, we need to do the opposite of what we do in C:
    in assembly gcc __REDIRECT stuff is not in place, so functions
@@ -692,9 +682,8 @@ for linking")
 
 # define __ifunc_args(type_name, name, expr, init, ...)			\
   extern __typeof (type_name) name;					\
-  __typeof (type_name) *name##_ifunc (__VA_ARGS__) __asm__ (#name);	\
-  __ifunc_resolver (type_name, name, expr, init, , __VA_ARGS__)		\
- __asm__ (".type " #name ", %gnu_indirect_function");
+  __typeof (type_name) *name##_ifunc (__VA_ARGS__);	\
+  __ifunc_resolver (type_name, name, expr, init, , __VA_ARGS__)	
 
 # define __ifunc_args_hidden(type_name, name, expr, init, ...)		\
   extern __typeof (type_name) __libc_##name;				\

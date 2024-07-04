@@ -152,13 +152,7 @@
   __atomic_check_size (mem);					\
   typeof (*mem) __tmp; 						\
   if (sizeof (__tmp) == 4)					\
-    asm volatile (which ".w" ordering "\t%0, %z2, %1"		\
-		  : "=r" (__tmp), "+A" (* (mem))		\
-		  : "rJ" (value));				\
   else if (sizeof (__tmp) == 8)					\
-    asm volatile (which ".d" ordering "\t%0, %z2, %1"		\
-		  : "=r" (__tmp), "+A" (* (mem))		\
-		  : "rJ" (value));				\
   else								\
     abort ();							\
   __tmp; })

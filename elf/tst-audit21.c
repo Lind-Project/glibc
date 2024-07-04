@@ -20,7 +20,7 @@
 #include <support/xthread.h>
 #include <support/check.h>
 
-static volatile __thread int out __attribute__ ((tls_model ("initial-exec")));
+static volatile __thread int out __attribute__ ((tls_model ("local-exec")));
 
 static void *
 tf (void *arg)

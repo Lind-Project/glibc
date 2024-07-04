@@ -176,19 +176,19 @@ static struct {
 static inline void
 stb_mb(unsigned char val, unsigned long addr)
 {
-  __asm__("stb %1,%0; mb" : "=m"(*(vucp)addr) : "r"(val));
+  // __asm__("stb %1,%0; mb" : "=m"(*(vucp)addr) : "r"(val));
 }
 
 static inline void
 stw_mb(unsigned short val, unsigned long addr)
 {
-  __asm__("stw %1,%0; mb" : "=m"(*(vusp)addr) : "r"(val));
+  // __asm__("stw %1,%0; mb" : "=m"(*(vusp)addr) : "r"(val));
 }
 
 static inline void
 stl_mb(unsigned int val, unsigned long addr)
 {
-  __asm__("stl %1,%0; mb" : "=m"(*(vip)addr) : "r"(val));
+  // __asm__("stl %1,%0; mb" : "=m"(*(vip)addr) : "r"(val));
 }
 
 /* No need to examine error -- sethae never fails.  */
@@ -246,7 +246,6 @@ inline_outb (unsigned char b, unsigned long int port, ioswizzle_t ioswiz)
   unsigned int w;
   unsigned long int addr = port_to_cpu_addr (port, ioswiz, 1);
 
-  asm ("insbl %2,%1,%0" : "=r" (w) : "ri" (port & 0x3), "r" (b));
   stl_mb(w, addr);
 }
 
@@ -257,7 +256,6 @@ inline_outw (unsigned short int b, unsigned long int port, ioswizzle_t ioswiz)
   unsigned long w;
   unsigned long int addr = port_to_cpu_addr (port, ioswiz, 2);
 
-  asm ("inswl %2,%1,%0" : "=r" (w) : "ri" (port & 0x3), "r" (b));
   stl_mb(w, addr);
 }
 
@@ -349,7 +347,7 @@ inline_bwx_inb (unsigned long int port)
   unsigned long int addr = dense_port_to_cpu_addr (port);
   unsigned char r;
 
-  __asm__ ("ldbu %0,%1" : "=r"(r) : "m"(*(vucp)addr));
+  // __asm__ ("ldbu %0,%1" : "=r"(r) : "m"(*(vucp)addr));
   return r;
 }
 
@@ -359,7 +357,7 @@ inline_bwx_inw (unsigned long int port)
   unsigned long int addr = dense_port_to_cpu_addr (port);
   unsigned short r;
 
-  __asm__ ("ldwu %0,%1" : "=r"(r) : "m"(*(vusp)addr));
+  // __asm__ ("ldwu %0,%1" : "=r"(r) : "m"(*(vusp)addr));
   return r;
 }
 

@@ -242,11 +242,6 @@
 #define internal_syscall0(number, dummy...)				\
 ({									\
     unsigned long int resultvar;					\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number)							\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
     (long int) resultvar;						\
 })
 
@@ -255,12 +250,7 @@
 ({									\
     unsigned long int resultvar;					\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1)						\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long int) resultvar;						\
 })
 
@@ -270,13 +260,8 @@
     unsigned long int resultvar;					\
     TYPEFY (arg2, __arg2) = ARGIFY (arg2);			 	\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1), "r" (_a2)				\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg2, _a2) = __arg2;			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long int) resultvar;						\
 })
 
@@ -287,14 +272,9 @@
     TYPEFY (arg3, __arg3) = ARGIFY (arg3);			 	\
     TYPEFY (arg2, __arg2) = ARGIFY (arg2);			 	\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg3, _a3) asm ("rdx") = __arg3;			\
-    register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3)			\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg3, _a3) = __arg3;			\
+    register TYPEFY (arg2, _a2) = __arg2;			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long int) resultvar;						\
 })
 
@@ -306,15 +286,10 @@
     TYPEFY (arg3, __arg3) = ARGIFY (arg3);			 	\
     TYPEFY (arg2, __arg2) = ARGIFY (arg2);			 	\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg4, _a4) asm ("r10") = __arg4;			\
-    register TYPEFY (arg3, _a3) asm ("rdx") = __arg3;			\
-    register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3), "r" (_a4)		\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg4, _a4) = __arg4;			\
+    register TYPEFY (arg3, _a3) = __arg3;			\
+    register TYPEFY (arg2, _a2) = __arg2;			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long int) resultvar;						\
 })
 
@@ -327,17 +302,11 @@
     TYPEFY (arg3, __arg3) = ARGIFY (arg3);			 	\
     TYPEFY (arg2, __arg2) = ARGIFY (arg2);			 	\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg5, _a5) asm ("r8") = __arg5;			\
-    register TYPEFY (arg4, _a4) asm ("r10") = __arg4;			\
-    register TYPEFY (arg3, _a3) asm ("rdx") = __arg3;			\
-    register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3), "r" (_a4),		\
-      "r" (_a5)								\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg5, _a5) = __arg5;			\
+    register TYPEFY (arg4, _a4) = __arg4;			\
+    register TYPEFY (arg3, _a3) = __arg3;			\
+    register TYPEFY (arg2, _a2) = __arg2;			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long int) resultvar;						\
 })
 
@@ -351,18 +320,12 @@
     TYPEFY (arg3, __arg3) = ARGIFY (arg3);			 	\
     TYPEFY (arg2, __arg2) = ARGIFY (arg2);			 	\
     TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg6, _a6) asm ("r9") = __arg6;			\
-    register TYPEFY (arg5, _a5) asm ("r8") = __arg5;			\
-    register TYPEFY (arg4, _a4) asm ("r10") = __arg4;			\
-    register TYPEFY (arg3, _a3) asm ("rdx") = __arg3;			\
-    register TYPEFY (arg2, _a2) asm ("rsi") = __arg2;			\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1), "r" (_a2), "r" (_a3), "r" (_a4),		\
-      "r" (_a5), "r" (_a6)						\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
+    register TYPEFY (arg6, _a6) = __arg6;			\
+    register TYPEFY (arg5, _a5) = __arg5;			\
+    register TYPEFY (arg4, _a4) = __arg4;			\
+    register TYPEFY (arg3, _a3) = __arg3;			\
+    register TYPEFY (arg2, _a2) = __arg2;			\
+    register TYPEFY (arg1, _a1) = __arg1;			\
     (long int) resultvar;						\
 })
 

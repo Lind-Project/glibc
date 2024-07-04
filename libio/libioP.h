@@ -175,6 +175,7 @@ typedef int (*_IO_pbackfail_t) (FILE *, int);
 typedef size_t (*_IO_xsputn_t) (FILE *FP, const void *DATA,
 				    size_t N);
 #define _IO_XSPUTN(FP, DATA, N) JUMP2 (__xsputn, FP, DATA, N)
+// #define _IO_XSPUTN(FP, DATA, N) _IO_file_xsputn(FP, DATA, N)
 #define _IO_WXSPUTN(FP, DATA, N) WJUMP2 (__xsputn, FP, DATA, N)
 
 /* The 'xsgetn' hook reads upto N characters into buffer DATA.
@@ -528,7 +529,9 @@ extern const struct _IO_jump_t __io_vtables[] attribute_hidden;
 #ifdef SHARED
 # define libio_static_fn_required(name)
 #else
-# define libio_static_fn_required(name) __asm (".globl " #name);
+// the asm doesn't make sense for WASM compiler, and not needed
+# define libio_static_fn_required(name)
+// # define libio_static_fn_required(name) __asm (".globl " #name);
 #endif
 
 extern int _IO_do_write (FILE *, const char *, size_t);

@@ -46,9 +46,9 @@
 
 #define PACKAGE _libc_intl_domainname
 
-/* Name and version of program.  */
-static void print_version (FILE *stream, struct argp_state *state);
-void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
+// /* Name and version of program.  */
+// static void print_version (FILE *stream, struct argp_state *state);
+// void (*argp_program_version_hook) (FILE *, struct argp_state *) = print_version;
 
 /* Short description of parameters.  */
 static const char args_doc[] = N_("database [key ...]");
@@ -975,34 +975,34 @@ For bug reporting instructions, please see:\n\
 
 
 /* the main function */
-int
-main (int argc, char *argv[])
-{
-  /* Debugging support.  */
-  mtrace ();
+// int
+// main (int argc, char *argv[])
+// {
+//   /* Debugging support.  */
+//   mtrace ();
 
-  /* Set locale via LC_ALL.  */
-  setlocale (LC_ALL, "");
-  /* Set the text message domain.  */
-  textdomain (PACKAGE);
+//   /* Set locale via LC_ALL.  */
+//   setlocale (LC_ALL, "");
+//   /* Set the text message domain.  */
+//   textdomain (PACKAGE);
 
-  /* Parse and process arguments.  */
-  int remaining;
-  argp_parse (&argp, argc, argv, 0, &remaining, NULL);
+//   /* Parse and process arguments.  */
+//   int remaining;
+//   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
-  if ((argc - remaining) < 1)
-    {
-      error (0, 0, gettext ("wrong number of arguments"));
-      argp_help (&argp, stdout, ARGP_HELP_SEE, program_invocation_short_name);
-      return 1;
-    }
+//   if ((argc - remaining) < 1)
+//     {
+//       error (0, 0, gettext ("wrong number of arguments"));
+//       argp_help (&argp, stdout, ARGP_HELP_SEE, program_invocation_short_name);
+//       return 1;
+//     }
 
-  for (int i = 0; databases[i].name; ++i)
-    if (argv[remaining][0] == databases[i].name[0]
-	&& !strcmp (argv[remaining], databases[i].name))
-      return databases[i].func (argc - remaining - 1, &argv[remaining + 1]);
+//   for (int i = 0; databases[i].name; ++i)
+//     if (argv[remaining][0] == databases[i].name[0]
+// 	&& !strcmp (argv[remaining], databases[i].name))
+//       return databases[i].func (argc - remaining - 1, &argv[remaining + 1]);
 
-  fprintf (stderr, _("Unknown database: %s\n"), argv[remaining]);
-  argp_help (&argp, stdout, ARGP_HELP_SEE, program_invocation_short_name);
-  return 1;
-}
+//   fprintf (stderr, _("Unknown database: %s\n"), argv[remaining]);
+//   argp_help (&argp, stdout, ARGP_HELP_SEE, program_invocation_short_name);
+//   return 1;
+// }

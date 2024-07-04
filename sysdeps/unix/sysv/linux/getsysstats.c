@@ -245,24 +245,26 @@ weak_alias (__get_nprocs_conf, get_nprocs_conf)
    PAGE_SIZE in mm/page_alloc.c:si_meminfo(), and then in
    kernel.sys.c:do_sysinfo() it is set to 1 if unsigned long can
    represent all the sizes measured in bytes].  */
-static long int
-sysinfo_mempages (unsigned long int num, unsigned int mem_unit)
-{
-  unsigned long int ps = __getpagesize ();
 
-  while (mem_unit > 1 && ps > 1)
-    {
-      mem_unit >>= 1;
-      ps >>= 1;
-    }
-  num *= mem_unit;
-  while (ps > 1)
-    {
-      ps >>= 1;
-      num >>= 1;
-    }
-  return num;
-}
+// Dennis Edit
+// static long int
+// sysinfo_mempages (unsigned long int num, unsigned int mem_unit)
+// {
+//   unsigned long int ps = __getpagesize ();
+
+//   while (mem_unit > 1 && ps > 1)
+//     {
+//       mem_unit >>= 1;
+//       ps >>= 1;
+//     }
+//   num *= mem_unit;
+//   while (ps > 1)
+//     {
+//       ps >>= 1;
+//       num >>= 1;
+//     }
+//   return num;
+// }
 
 /* Return the number of pages of total/available physical memory in
    the system.  This used to be done by parsing /proc/meminfo, but
@@ -272,10 +274,13 @@ sysinfo_mempages (unsigned long int num, unsigned int mem_unit)
 long int
 __get_phys_pages (void)
 {
-  struct sysinfo info;
+  // Dennis Edit
+  return 0;
 
-  __sysinfo (&info);
-  return sysinfo_mempages (info.totalram, info.mem_unit);
+  // struct sysinfo info;
+
+  // __sysinfo (&info);
+  // return sysinfo_mempages (info.totalram, info.mem_unit);
 }
 libc_hidden_def (__get_phys_pages)
 weak_alias (__get_phys_pages, get_phys_pages)
@@ -283,10 +288,13 @@ weak_alias (__get_phys_pages, get_phys_pages)
 long int
 __get_avphys_pages (void)
 {
-  struct sysinfo info;
+  // Dennis Edit
+  return 0;
 
-  __sysinfo (&info);
-  return sysinfo_mempages (info.freeram, info.mem_unit);
+  // struct sysinfo info;
+
+  // __sysinfo (&info);
+  // return sysinfo_mempages (info.freeram, info.mem_unit);
 }
 libc_hidden_def (__get_avphys_pages)
 weak_alias (__get_avphys_pages, get_avphys_pages)

@@ -23,6 +23,8 @@
 #include <kernel-features.h>
 
 #ifndef __ASSUME_TIME64_SYSCALLS
+
+// Dennis Edit: disable syscal cancel
 static int
 __futex_abstimed_wait_common32 (unsigned int* futex_word,
                                 unsigned int expected, int op,
@@ -36,28 +38,29 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
       pts32 = &ts32;
     }
 
-  if (cancel)
-    return INTERNAL_SYSCALL_CANCEL (futex, futex_word, op, expected,
-                                    pts32, NULL /* Unused.  */,
-                                    FUTEX_BITSET_MATCH_ANY);
-  else
+  // if (cancel)
+  //   return INTERNAL_SYSCALL_CANCEL (futex, futex_word, op, expected,
+  //                                   pts32, NULL /* Unused.  */,
+  //                                   FUTEX_BITSET_MATCH_ANY);
+  // else
     return INTERNAL_SYSCALL_CALL (futex, futex_word, op, expected,
                                   pts32, NULL /* Unused.  */,
                                   FUTEX_BITSET_MATCH_ANY);
 }
 #endif /* ! __ASSUME_TIME64_SYSCALLS */
 
+// Dennis Edit: disable syscal cancel
 static int
 __futex_abstimed_wait_common64 (unsigned int* futex_word,
                                 unsigned int expected, int op,
                                 const struct __timespec64* abstime,
                                 int private, bool cancel)
 {
-  if (cancel)
-    return INTERNAL_SYSCALL_CANCEL (futex_time64, futex_word, op, expected,
-				    abstime, NULL /* Unused.  */,
-				    FUTEX_BITSET_MATCH_ANY);
-  else
+  // if (cancel)
+  //   return INTERNAL_SYSCALL_CANCEL (futex_time64, futex_word, op, expected,
+	// 			    abstime, NULL /* Unused.  */,
+	// 			    FUTEX_BITSET_MATCH_ANY);
+  // else
     return INTERNAL_SYSCALL_CALL (futex_time64, futex_word, op, expected,
 				  abstime, NULL /* Unused.  */,
 				  FUTEX_BITSET_MATCH_ANY);

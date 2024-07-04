@@ -33,7 +33,7 @@ struct test_s
 #define INIT_A 1
 #define INIT_B 42
 /* Deliberately not static.  */
-__thread struct test_s s __attribute__ ((tls_model ("initial-exec"))) =
+__thread struct test_s s __attribute__ ((tls_model ("local-exec"))) =
 {
   .a = INIT_A,
   .b = INIT_B

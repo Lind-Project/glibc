@@ -18,12 +18,17 @@
 
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 /* Read NBYTES into BUF from FD.  Return the number read or -1.  */
+
+// Edit: Dennis
 ssize_t
 __libc_read (int fd, void *buf, size_t nbytes)
 {
-  return SYSCALL_CANCEL (read, fd, buf, nbytes);
+  return MAKE_SYSCALL(12, "syscall|read", (uint64_t) fd, (uint64_t)(uintptr_t) buf, (uint64_t) nbytes, NOTUSED, NOTUSED, NOTUSED);
+
+  //return SYSCALL_CANCEL (read, fd, buf, nbytes);
 }
 libc_hidden_def (__libc_read)
 

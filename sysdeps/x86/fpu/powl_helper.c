@@ -183,10 +183,6 @@ __powl_helper (long double x, long double y)
 
   /* Correct for the masking off of W_LO.  */
   long double log2_1p_w_lo;
-  asm ("fyl2xp1"
-       : "=t" (log2_1p_w_lo)
-       : "0" (w_lo / (1.0L + w_hi)), "u" (1.0L)
-       : "st(1)");
   acc_split (&log2_x_frac_hi, &log2_x_frac_lo, log2_x_frac_hi, log2_x_frac_lo,
 	     log2_1p_w_lo);
 
@@ -225,11 +221,9 @@ __powl_helper (long double x, long double y)
 
   /* Compute the final result.  */
   long double res;
-  asm ("f2xm1" : "=t" (res) : "0" (log2_res_frac));
   res += 1.0L;
   if (negate)
     res = -res;
-  asm ("fscale" : "=t" (res) : "0" (res), "u" (log2_res_int));
   math_check_force_underflow (res);
   return res;
 }

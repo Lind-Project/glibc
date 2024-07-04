@@ -46,8 +46,7 @@ read_gnu_property (unsigned int *isal_level, uint32_t type,
 			  "DL_CACHE_HWCAP_ISA_LEVEL_COUNT is too small");
 	  if (isa_1_needed != 0)
 	    {
-	      unsigned int level;
-	      asm ("bsr %1, %0" : "=r" (level) : "g" (isa_1_needed));
+	      unsigned int level = 0;
 	      *isal_level = level;
 	    }
 	}

@@ -33,8 +33,6 @@ do_test (void)
 #else
 # define SEG_REG "gs"
 #endif
-  asm ("movl %%" SEG_REG ":%P1, %0"
-       : "=r" (feature_1) : "i" (FEATURE_1_OFFSET));
   if ((feature_1 & GNU_PROPERTY_X86_FEATURE_1_IBT) != 0)
     printf ("IBT\n");
 

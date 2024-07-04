@@ -30,6 +30,12 @@
 # include <kernel-features.h>
 # include <dl-dtv.h>
 
+extern _Thread_local struct pthread __wasilibc_pthread_self;
+
+static inline struct pthread* __get_tp(void) {
+  return &__wasilibc_pthread_self;
+}
+
 typedef struct
 {
   void *tcb;		/* Pointer to the TCB.  Not necessarily the
@@ -40,7 +46,7 @@ typedef struct
   uintptr_t sysinfo;
   uintptr_t stack_guard;
   uintptr_t pointer_guard;
-  int gscope_flag;
+  _Atomic int gscope_flag;
   /* Bit 0: X86_FEATURE_1_IBT.
      Bit 1: X86_FEATURE_1_SHSTK.
    */
@@ -129,10 +135,21 @@ union user_desc_init
   (((tcbhead_t *) (descr))->dtv)
 
 /* Macros to load from and store into segment registers.  */
-# ifndef TLS_GET_GS
-#  define TLS_GET_GS() \
-  ({ int __seg; __asm ("movw %%gs, %w0" : "=q" (__seg)); __seg & 0xffff; })
-# endif
+// # ifndef TLS_GET_GS
+// #  define TLS_GET_GS() \
+//   ({ int __seg; __asm ("movw %%gs, %w0" : "=q" (__seg)); __seg & 0xffff; })
+// # endif
+
+// Dennis Edit: remove asm part, but still need a way to extract value from %gs reg
+#ifndef TLS_GET_GS
+#define TLS_GET_GS() \
+  ({ int __seg = 0; /* Assuming __seg can be retrieved in some platform-specific manner */ \
+     /* Platform-specific implementation to get GS segment value */ \
+     /* For illustration, we set __seg to 0 */ \
+     __seg & 0xffff; })
+#endif
+
+
 # ifndef TLS_SET_GS
 #  define TLS_SET_GS(val) \
   __asm ("movw %w0, %%gs" :: "q" (val))
@@ -231,11 +248,14 @@ tls_fill_user_desc (union user_desc_init *desc,
 #  define THREAD_SELF \
   (*(struct pthread *__seg_gs *) offsetof (struct pthread, header.self))
 # else
-#  define THREAD_SELF \
-  ({ struct pthread *__self;						      \
-     asm ("movl %%gs:%c1,%0" : "=r" (__self)				      \
-	  : "i" (offsetof (struct pthread, header.self)));		      \
-     __self;})
+  // Coulson: of course, there's no %gs register in WASM
+  // Yes, I'm leaving this to the wisdom of later generations
+  #define THREAD_SELF (__get_tp())
+// #  define THREAD_SELF \
+//   ({ struct pthread *__self;						      \
+//      asm ("movl %%gs:%c1,%0" : "=r" (__self)				      \
+// 	  : "i" (offsetof (struct pthread, header.self)));		      \
+//      __self;})
 # endif
 
 /* Magic for libthread_db to know how to do THREAD_SELF.  */
@@ -265,17 +285,18 @@ tls_fill_user_desc (union user_desc_init *desc,
 #define THREAD_GSCOPE_FLAG_UNUSED 0
 #define THREAD_GSCOPE_FLAG_USED   1
 #define THREAD_GSCOPE_FLAG_WAIT   2
-#define THREAD_GSCOPE_RESET_FLAG() \
-  do									      \
-    { int __res;							      \
-      asm volatile ("xchgl %0, %%gs:%P1"				      \
-		    : "=r" (__res)					      \
-		    : "i" (offsetof (struct pthread, header.gscope_flag)),    \
-		      "0" (THREAD_GSCOPE_FLAG_UNUSED));			      \
-      if (__res == THREAD_GSCOPE_FLAG_WAIT)				      \
-	lll_futex_wake (&THREAD_SELF->header.gscope_flag, 1, LLL_PRIVATE);    \
-    }									      \
-  while (0)
+#include <stdatomic.h>
+
+#define THREAD_GSCOPE_RESET_FLAG()                                       \
+  do                                                                     \
+    {                                                                    \
+      int __res = atomic_exchange_explicit(&THREAD_SELF->header.gscope_flag, \
+                                           THREAD_GSCOPE_FLAG_UNUSED,     \
+                                           memory_order_acq_rel);        \
+      if (__res == THREAD_GSCOPE_FLAG_WAIT)                              \
+        lll_futex_wake(&THREAD_SELF->header.gscope_flag, 1, LLL_PRIVATE); \
+    } while (0)
+
 #define THREAD_GSCOPE_SET_FLAG() \
   THREAD_SETMEM (THREAD_SELF, header.gscope_flag, THREAD_GSCOPE_FLAG_USED)
 

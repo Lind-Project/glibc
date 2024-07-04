@@ -21,6 +21,7 @@
 #include <sys/mman.h>
 #include <sysdep.h>
 #include <stdint.h>
+#include <syscall-template.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 # include <mmap_internal.h>
@@ -30,21 +31,28 @@
 #  define MMAP_ADJUST_OFFSET(offset) offset
 # endif
 
+// void *
+// __mmap (void *addr, size_t len, int prot, int flags, int fd, off_t offset)
+// {
+//   MMAP_CHECK_PAGE_UNIT ();
+
+//   if (offset & MMAP_OFF_LOW_MASK)
+//     return (void *) INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+
+// #ifdef __NR_mmap2
+//   return (void *) MMAP_CALL (mmap2, addr, len, prot, flags, fd,
+// 			     offset / (uint32_t) MMAP2_PAGE_UNIT);
+// #else
+//   return (void *) MMAP_CALL (mmap, addr, len, prot, flags, fd,
+// 			     MMAP_ADJUST_OFFSET (offset));
+// #endif
+// }
+
+// Edit: Dennis
 void *
 __mmap (void *addr, size_t len, int prot, int flags, int fd, off_t offset)
 {
-  MMAP_CHECK_PAGE_UNIT ();
-
-  if (offset & MMAP_OFF_LOW_MASK)
-    return (void *) INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
-
-#ifdef __NR_mmap2
-  return (void *) MMAP_CALL (mmap2, addr, len, prot, flags, fd,
-			     offset / (uint32_t) MMAP2_PAGE_UNIT);
-#else
-  return (void *) MMAP_CALL (mmap, addr, len, prot, flags, fd,
-			     MMAP_ADJUST_OFFSET (offset));
-#endif
+  return MAKE_SYSCALL(21, "syscall|mmap", (uint64_t)(uintptr_t) addr, (uint64_t) len, (uint64_t) prot, (uint64_t) flags, (uint64_t) fd, (uint64_t) offset);
 }
 weak_alias (__mmap, mmap)
 libc_hidden_def (__mmap)

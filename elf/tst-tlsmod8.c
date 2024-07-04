@@ -2,10 +2,10 @@
 
 __thread long long dummy __attribute__((visibility ("hidden"))) = 12;
 __thread struct A a2 = { 22, 23, 24 };
-__thread struct A a4 __attribute__((tls_model("initial-exec")))
+__thread struct A a4 __attribute__((tls_model("local-exec")))
   = { 25, 26, 27 };
 static __thread struct A local1 = { 28, 29, 30 };
-static __thread struct A local2 __attribute__((tls_model("initial-exec")))
+static __thread struct A local2 __attribute__((tls_model("local-exec")))
   = { 31, 32, 33 };
 
 void

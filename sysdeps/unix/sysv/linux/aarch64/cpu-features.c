@@ -120,7 +120,7 @@ init_cpu_features (struct cpu_features *cpu_features)
   if (midr == UINT64_MAX)
     {
       if (GLRO (dl_hwcap) & HWCAP_CPUID)
-	asm volatile ("mrs %0, midr_el1" : "=r"(midr));
+
       else
 	midr = 0;
     }
@@ -129,7 +129,6 @@ init_cpu_features (struct cpu_features *cpu_features)
 
   /* Check if ZVA is enabled.  */
   uint64_t dczid;
-  asm volatile ("mrs %0, dczid_el0" : "=r"(dczid));
 
   if ((dczid & DCZID_DZP_MASK) == 0)
     cpu_features->zva_size = 4 << (dczid & DCZID_BS_MASK);

@@ -4,9 +4,9 @@
 src_dir="./build"
 
 # Define paths for copying additional resources
-include_source_dir="/sysroot-coulson/include"
-crt1_source_path="/lind-glibc/replace-sysroot/replace/sysroot/lib/wasm32-wasi/crt1.o"
-lind_syscall_path="/glibc/lind_syscall/lind_syscall.o" # Path to the lind_syscall.o file
+include_source_dir="/home/dennis/Documents/lind-wasm/glibc/target/include"
+crt1_source_path="/home/dennis/Documents/Just-One-Turtle/lind-glibc/replace-sysroot/replace/sysroot/lib/wasm32-wasi/crt1.o"
+lind_syscall_path="/home/dennis/Documents/lind-wasm/glibc/lind_syscall/lind_syscall.o" # Path to the lind_syscall.o file
 
 # Define the output archive and sysroot directory
 output_archive="sysroot/lib/wasm32-wasi/libc.a"
@@ -31,7 +31,7 @@ fi
 mkdir -p "$sysroot_dir/include/wasm32-wasi" "$sysroot_dir/lib/wasm32-wasi"
 
 # Pack all found .o files into a single .a archive
-/wasi-sdk/build/wasi-sdk-22.0/bin/llvm-ar rcs "$output_archive" $object_files
+/home/dennis/Documents/Just-One-Turtle/clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04/bin/llvm-ar rcs "$output_archive" $object_files
 
 # Check if llvm-ar succeeded
 if [ $? -eq 0 ]; then

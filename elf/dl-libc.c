@@ -153,7 +153,9 @@ __libc_dlopen_mode (const char *name, int mode)
   struct do_dlopen_args args;
   args.name = name;
   args.mode = mode;
-  args.caller_dlopen = RETURN_ADDRESS (0);
+  // args.caller_dlopen = RETURN_ADDRESS (0);
+  // Dennis Edit
+  args.caller_dlopen = NULL;
 
 #ifdef SHARED
   if (GLRO (dl_dlfcn_hook) != NULL)

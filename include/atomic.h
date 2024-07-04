@@ -518,9 +518,8 @@
 # define atomic_write_barrier() atomic_full_barrier ()
 #endif
 
-
 #ifndef atomic_forced_read
-# define atomic_forced_read(x) 
+# define atomic_forced_read(x) (x)
 #endif
 
 /* This is equal to 1 iff the architecture supports 64b atomic operations.  */

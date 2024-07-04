@@ -201,8 +201,11 @@
 #endif /* __ASSEMBLER__ */
 
 /* Determine the return address.  */
-#define RETURN_ADDRESS(nr) \
-  __builtin_extract_return_addr (__builtin_return_address (nr))
+// #define RETURN_ADDRESS(nr) \
+//   __builtin_extract_return_addr (__builtin_return_address (nr))
+
+// Edit by Dennis
+#define RETURN_ADDRESS(nr) (NULL)
 
 /* When a reference to SYMBOL is encountered, the linker will emit a
    warning message MSG.  */

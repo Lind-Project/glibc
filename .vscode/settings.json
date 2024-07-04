@@ -34,7 +34,17 @@
         "stdint.h": "c",
         "chrono": "c",
         "algorithm": "c",
-        "not-cancel.h": "c"
+        "not-cancel.h": "c",
+        "malloc.h": "c",
+        "atomic": "c",
+        "array": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "htm.h": "c",
+        "x86intrin.h": "c",
+        "__stddef_max_align_t.h": "c",
+        "streambuf": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

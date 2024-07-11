@@ -206,6 +206,8 @@ advise_stack_range (void *mem, size_t size, uintptr_t pd, size_t guardsize)
 #endif
 }
 
+#include <stdio.h>
+
 /* Returns a usable stack for a new thread either by allocating a
    new stack or reusing a cached stack of sufficient size.
    ATTR must be non-NULL and point to a valid pthread_attr.
@@ -214,14 +216,22 @@ static int
 allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 		void **stack, size_t *stacksize)
 {
+  printf("stacksize 219: %zu\n", stacksize);
   struct pthread *pd;
   size_t size;
+  printf("stacksize 222: %zu\n", stacksize);
   size_t pagesize_m1 = __getpagesize () - 1;
+  printf("stacksize 224: %zu\n", pagesize_m1);
   size_t tls_static_size_for_stack = __nptl_tls_static_size_for_stack ();
+  printf("stacksize 226: %zu\n", stacksize);
   size_t tls_static_align_m1 = GLRO (dl_tls_static_align) - 1;
+
+  printf("stacksize 229: %zu\n", stacksize);
 
   assert (powerof2 (pagesize_m1 + 1));
   assert (TCB_ALIGNMENT >= STACK_ALIGN);
+
+  printf("stacksize 234: %zu\n", stacksize);
 
   /* Get the stack size from the attribute if it is set.  Otherwise we
      use the default we determined at start time.  */
@@ -229,16 +239,18 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
     size = attr->stacksize;
   else
     {
-      lll_lock (__default_pthread_attr_lock, LLL_PRIVATE);
+      // lll_lock (__default_pthread_attr_lock, LLL_PRIVATE);
       size = __default_pthread_attr.internal.stacksize;
-      lll_unlock (__default_pthread_attr_lock, LLL_PRIVATE);
+      // lll_unlock (__default_pthread_attr_lock, LLL_PRIVATE);
     }
-
+  printf("stacksize 246: %zu\n", stacksize);
   /* Get memory for the stack.  */
   if (__glibc_unlikely (attr->flags & ATTR_FLAG_STACKADDR))
     {
+      printf("stacksize 250: %zu\n", stacksize);
       uintptr_t adj;
       char *stackaddr = (char *) attr->stackaddr;
+      printf("stacksize 253: %zu\n", stacksize);
 
       /* Assume the same layout as the _STACK_GROWS_DOWN case, with struct
 	 pthread at the top of the stack block.  Later we adjust the guard
@@ -257,7 +269,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 #if TLS_TCB_AT_TP
       adj = ((uintptr_t) stackaddr - TLS_TCB_SIZE)
 	    & tls_static_align_m1;
-      assert (size > adj + TLS_TCB_SIZE);
+      // assert (size > adj + TLS_TCB_SIZE);
 #elif TLS_DTV_AT_TP
       adj = ((uintptr_t) stackaddr - tls_static_size_for_stack)
 	    & tls_static_align_m1;
@@ -276,9 +288,11 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 				- tls_static_size_for_stack - adj)
 			       - TLS_PRE_TCB_SIZE);
 #endif
-
+      printf("stacksize 289: %zu\n", stacksize);
       /* The user provided stack memory needs to be cleared.  */
       memset (pd, '\0', sizeof (struct pthread));
+
+      printf("stacksize 293: %zu\n", stacksize);
 
       /* The first TSD block is included in the TCB.  */
       pd->specific[0] = pd->specific_1stblock;
@@ -302,13 +316,15 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
       pd->setxid_futex = -1;
 
       /* Allocate the DTV for this thread.  */
+      printf("stacksize 317: %zu\n", stacksize);
       if (_dl_allocate_tls (TLS_TPADJ (pd)) == NULL)
 	{
 	  /* Something went wrong.  */
+    printf("stacksize 321: %zu\n", stacksize);
 	  assert (errno == ENOMEM);
 	  return errno;
 	}
-
+      printf("stacksize 325: %zu\n", stacksize);
 
       /* Prepare to modify global data.  */
       lll_lock (GL (dl_stack_cache_lock), LLL_PRIVATE);
@@ -321,6 +337,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
   else
     {
       /* Allocate some anonymous memory.  If possible use the cache.  */
+      printf("stacksize 334: %zu\n", stacksize);
       size_t guardsize;
       size_t reported_guardsize;
       size_t reqsize;
@@ -358,6 +375,8 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
       /* Try to get a stack from the cache.  */
       reqsize = size;
       pd = get_cached_stack (&size, &mem);
+
+      printf("stacksize 373: %zu\n", stacksize);
       if (pd == NULL)
 	{
 	  /* If a guard page is required, avoid committing memory by first
@@ -365,6 +384,8 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	     excluding the guard page.  */
 	  mem = __mmap (NULL, size, (guardsize == 0) ? prot : PROT_NONE,
 			MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
+
+      printf("stacksize 382: %zu\n", stacksize);
 
 	  if (__glibc_unlikely (mem == MAP_FAILED))
 	    return errno;
@@ -374,10 +395,12 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  if (__glibc_unlikely (__nptl_stack_hugetlb == 0)
 	      && __madvise (mem, size, MADV_NOHUGEPAGE) != 0)
 	    return errno;
-
+    printf("stacksize 392: %zu\n", stacksize);
 	  /* SIZE is guaranteed to be greater than zero.
 	     So we can never get a null pointer back from mmap.  */
 	  assert (mem != NULL);
+
+    printf("stacksize 397: %zu\n", stacksize);
 
 	  /* Place the thread descriptor at the end of the stack.  */
 #if TLS_TCB_AT_TP
@@ -394,10 +417,12 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  /* Now mprotect the required region excluding the guard area.  */
 	  if (__glibc_likely (guardsize > 0))
 	    {
+        printf("stacksize 414: %zu\n", stacksize);
 	      char *guard = guard_position (mem, size, guardsize, pd,
 					    pagesize_m1);
 	      if (setup_stack_prot (mem, size, guard, guardsize, prot) != 0)
 		{
+      printf("stacksize 419: %zu\n", stacksize);
 		  __munmap (mem, size);
 		  return errno;
 		}

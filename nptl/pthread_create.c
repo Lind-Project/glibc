@@ -619,6 +619,7 @@ report_thread_creation (struct pthread *pd)
   return false;
 }
 
+#include <stdio.h>
 
 int
 __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
@@ -626,6 +627,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 {
   void *stackaddr = NULL;
   size_t stacksize = 0;
+
+  printf("stacksize632: %zu\n", stacksize);
 
   /* Avoid a data race in the multi-threaded case, and call the
      deferred initialization only once.  */
@@ -637,6 +640,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 	 it requires to update the external copy.  */
       // __libc_single_threaded = 0;
     }
+  printf("stackaddr644: %p\n", stackaddr);
 
   const struct pthread_attr *iattr = (struct pthread_attr *) attr;
   union pthread_attr_transparent default_attr;
@@ -651,9 +655,16 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
       iattr = &default_attr.internal;
     }
 
+  printf("stackaddr659: %p\n", stackaddr);
+
   struct pthread *pd = NULL;
+
+  printf("stackaddr663: %p\n", stackaddr);
+
   int err = allocate_stack (iattr, &pd, &stackaddr, &stacksize);
   int retval = 0;
+
+  printf("stackaddr665: %p\n", stackaddr);
 
   if (__glibc_unlikely (err != 0))
     /* Something went wrong.  Maybe a parameter of the attributes is
@@ -684,6 +695,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   pd->arg = arg;
   pd->c11 = c11;
 
+printf("stackaddr696: %p\n", stackaddr);
+
   /* Copy the thread attribute flags.  */
   struct pthread *self = THREAD_SELF;
   pd->flags = ((iattr->flags & ~(ATTR_FLAG_SCHED_SET | ATTR_FLAG_POLICY_SET))
@@ -693,6 +706,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
      registration will either always fail or always succeed.  */
   if ((int) THREAD_GETMEM_VOLATILE (self, rseq_area.cpu_id) >= 0)
     pd->flags |= ATTR_FLAG_DO_RSEQ;
+
+  printf("stackaddr708: %p\n", stackaddr);
 
   /* Initialize the field for the ID of the thread which is waiting
      for us.  This is a self-reference in case the thread is created
@@ -708,6 +723,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   pd->schedpolicy = self->schedpolicy;
   pd->schedparam = self->schedparam;
 
+printf("stackaddr724: %p\n", stackaddr);
+
   /* Copy the stack guard canary.  */
 #ifdef THREAD_COPY_STACK_GUARD
   THREAD_COPY_STACK_GUARD (pd);
@@ -718,6 +735,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   THREAD_COPY_POINTER_GUARD (pd);
 #endif
 
+printf("stackaddr736: %p\n", stackaddr);
+return 0;
   /* Setup tcbhead.  */
   tls_setup_tcbhead (pd);
 
@@ -753,6 +772,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 
   /* Pass the descriptor to the caller.  */
   *newthread = (pthread_t) pd;
+
+  printf("I can reach here!766\n");
 
   LIBC_PROBE (pthread_create, 4, newthread, attr, start_routine, arg);
 
@@ -836,6 +857,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
     retval = create_thread (pd, iattr, &stopped_start, stackaddr,
 			    stacksize, &thread_ran);
 
+  printf("I can reach here!850\n");
   /* Return to the previous signal mask, after creating the new
      thread.  */
   internal_signal_restore_set (&original_sigmask);

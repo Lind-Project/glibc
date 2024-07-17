@@ -157,8 +157,8 @@ extern void (*__init_array_start []) (int, char **, char **)
   attribute_hidden;
 extern void (*__init_array_end []) (int, char **, char **)
   attribute_hidden;
-extern void (*__fini_array_start []) (void) 0;
-extern void (*__fini_array_end []) (void) 0;
+extern void (*__fini_array_start []) (void);
+extern void (*__fini_array_end []) (void);
 
 // hidden void (*const __init_array_start)(void)=0, (*const __fini_array_start)(void)=0;
 

@@ -773,8 +773,6 @@ return 0;
   /* Pass the descriptor to the caller.  */
   *newthread = (pthread_t) pd;
 
-  printf("I can reach here!766\n");
-
   LIBC_PROBE (pthread_create, 4, newthread, attr, start_routine, arg);
 
   /* One more thread.  We cannot have the thread do this itself, since it
@@ -857,7 +855,6 @@ return 0;
     retval = create_thread (pd, iattr, &stopped_start, stackaddr,
 			    stacksize, &thread_ran);
 
-  printf("I can reach here!850\n");
   /* Return to the previous signal mask, after creating the new
      thread.  */
   internal_signal_restore_set (&original_sigmask);

@@ -43,6 +43,14 @@
 
 #include <stap-probe.h>
 
+int32_t __imported_wasi_thread_spawn(int32_t arg0) __attribute__((
+    __import_module__("wasi"),
+    __import_name__("thread-spawn")
+));
+
+int32_t __wasi_thread_spawn(void* start_arg) {
+    return __imported_wasi_thread_spawn((int32_t) start_arg);
+}
 
 /* Globally enabled events.  */
 extern td_thr_events_t __nptl_threads_events;
@@ -228,6 +236,22 @@ late_init (void)
    be set to true iff the thread actually started up but before calling
    the user code (*PD->start_routine).  */
 
+void wasi_thread_start(int tid, void *p);
+void *__dummy_reference = wasi_thread_start;
+
+void __wasi_thread_start_C(int tid, void *p)
+{
+	// struct start_args *args = p;
+	// pthread_t self = __pthread_self();
+	// Set the thread ID (TID) on the pthread structure. The TID is stored
+	// atomically since it is also stored by the parent thread; this way,
+	// whichever thread (parent or child) reaches this point first can proceed
+	// without waiting.
+	// atomic_store((atomic_int *) &(self->tid), tid);
+	// Execute the user's start function.
+	// __pthread_exit(args->start_func(args->start_arg));
+}
+
 static int _Noreturn start_thread (void *arg);
 
 static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
@@ -284,17 +308,42 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   TLS_DEFINE_INIT_TP (tp, pd);
 
-  struct clone_args args =
-    {
-      .flags = clone_flags,
-      .pidfd = (uintptr_t) &pd->tid,
-      .parent_tid = (uintptr_t) &pd->tid,
-      .child_tid = (uintptr_t) &pd->tid,
-      .stack = (uintptr_t) stackaddr,
-      .stack_size = stacksize,
-      .tls = (uintptr_t) tp,
-    };
-  int ret = __clone_internal (&args, &start_thread, pd);
+  unsigned char *stack = 0;
+
+  struct start_args {
+    /*
+    * Note: the offset of the "stack" and "tls_base" members
+    * in this structure is hardcoded in wasi_thread_start.
+    */
+    void *stack;
+    void *tls_base;
+    void *(*start_func)(void *);
+    void *start_arg;
+  };
+
+	/* Align the stack to struct start_args */
+	// stack -= sizeof(struct start_args);
+	// stack -= (uintptr_t)stack % alignof(struct start_args);
+	struct start_args *args = (void *)stack;
+
+	args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
+	args->start_func = &pd->start_routine;
+	args->start_arg = &pd->arg;
+	args->tls_base = (uintptr_t) tp;
+
+
+  // struct clone_args args =
+  //   {
+  //     .flags = clone_flags,
+  //     .pidfd = (uintptr_t) &pd->tid,
+  //     .parent_tid = (uintptr_t) &pd->tid,
+  //     .child_tid = (uintptr_t) &pd->tid,
+  //     .stack = (uintptr_t) stackaddr,
+  //     .stack_size = stacksize,
+  //     .tls = (uintptr_t) tp,
+  //   };
+  int ret = __wasi_thread_spawn((void *) args);
+  // int ret = __clone_internal (&args, &start_thread, pd);
   if (__glibc_unlikely (ret == -1))
     return errno;
 
@@ -628,8 +677,6 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   void *stackaddr = NULL;
   size_t stacksize = 0;
 
-  printf("stacksize632: %zu\n", stacksize);
-
   /* Avoid a data race in the multi-threaded case, and call the
      deferred initialization only once.  */
   if (__libc_single_threaded)
@@ -640,7 +687,6 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 	 it requires to update the external copy.  */
       // __libc_single_threaded = 0;
     }
-  printf("stackaddr644: %p\n", stackaddr);
 
   const struct pthread_attr *iattr = (struct pthread_attr *) attr;
   union pthread_attr_transparent default_attr;
@@ -655,16 +701,10 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
       iattr = &default_attr.internal;
     }
 
-  printf("stackaddr659: %p\n", stackaddr);
-
   struct pthread *pd = NULL;
-
-  printf("stackaddr663: %p\n", stackaddr);
 
   int err = allocate_stack (iattr, &pd, &stackaddr, &stacksize);
   int retval = 0;
-
-  printf("stackaddr665: %p\n", stackaddr);
 
   if (__glibc_unlikely (err != 0))
     /* Something went wrong.  Maybe a parameter of the attributes is
@@ -695,8 +735,6 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   pd->arg = arg;
   pd->c11 = c11;
 
-printf("stackaddr696: %p\n", stackaddr);
-
   /* Copy the thread attribute flags.  */
   struct pthread *self = THREAD_SELF;
   pd->flags = ((iattr->flags & ~(ATTR_FLAG_SCHED_SET | ATTR_FLAG_POLICY_SET))
@@ -706,8 +744,6 @@ printf("stackaddr696: %p\n", stackaddr);
      registration will either always fail or always succeed.  */
   if ((int) THREAD_GETMEM_VOLATILE (self, rseq_area.cpu_id) >= 0)
     pd->flags |= ATTR_FLAG_DO_RSEQ;
-
-  printf("stackaddr708: %p\n", stackaddr);
 
   /* Initialize the field for the ID of the thread which is waiting
      for us.  This is a self-reference in case the thread is created
@@ -723,8 +759,6 @@ printf("stackaddr696: %p\n", stackaddr);
   pd->schedpolicy = self->schedpolicy;
   pd->schedparam = self->schedparam;
 
-printf("stackaddr724: %p\n", stackaddr);
-
   /* Copy the stack guard canary.  */
 #ifdef THREAD_COPY_STACK_GUARD
   THREAD_COPY_STACK_GUARD (pd);
@@ -735,8 +769,6 @@ printf("stackaddr724: %p\n", stackaddr);
   THREAD_COPY_POINTER_GUARD (pd);
 #endif
 
-printf("stackaddr736: %p\n", stackaddr);
-return 0;
   /* Setup tcbhead.  */
   tls_setup_tcbhead (pd);
 
@@ -795,7 +827,6 @@ return 0;
      startup.  */
   internal_sigset_t original_sigmask;
   internal_signal_block_all (&original_sigmask);
-
   if (iattr->extension != NULL && iattr->extension->sigmask_set)
     /* Use the signal mask in the attribute.  The internal signals
        have already been filtered by the public
@@ -911,7 +942,6 @@ return 0;
 	 again if this is what we use.  */
       THREAD_SETMEM (THREAD_SELF, header.multiple_threads, 1);
     }
-
  out:
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
@@ -921,7 +951,7 @@ return 0;
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);
 libc_hidden_ver (__pthread_create_2_1, __pthread_create)
 #ifndef SHARED
-strong_alias (__pthread_create_2_1, __pthread_create)
+// strong_alias (__pthread_create_2_1, __pthread_create)
 #endif
 
 #if OTHER_SHLIB_COMPAT (libpthread, GLIBC_2_1, GLIBC_2_34)

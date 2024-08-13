@@ -252,22 +252,7 @@ static void __pthread_exit_2(void *result)
 void wasi_thread_start(int tid, void *p);
 void *__dummy_reference = wasi_thread_start;
 
-void __wasi_thread_start_C(int tid, void *p)
-{
-  	printf("test in __wasi_thread_start_C, p=%p\n", p);
-
-    uint8_t* ptr = (uint8_t*) p; // Cast the address to a byte pointer
-    size_t i;
-    // Print the memory content byte by byte
-    for (i = 0; i < 128; i++) {
-        if (i % 16 == 0) {
-            printf("\n%p: ", ptr + i); // Print the address at the start of each line
-        }
-        printf("%02x ", ptr[i]); // Print each byte in hexadecimal format
-    }
-    printf("\n");
-
-  struct start_args {
+struct start_args {
     /*
     * Note: the offset of the "stack" and "tls_base" members
     * in this structure is hardcoded in wasi_thread_start.
@@ -276,28 +261,17 @@ void __wasi_thread_start_C(int tid, void *p)
     void *tls_base;
     void *(*start_func)(void *);
     void *start_arg;
-  };
-  	printf("test in __wasi_thread_start_C 2\n");
+};
 
-	struct start_args *args = p;
-  	printf("args: %p\n", args);
-  	printf("args->start_arg: %p\n", args->start_arg);
-  	printf("args->start_func: %p\n", args->start_func);
-	// struct pthread self = (struct pthread) __pthread_self();
-  struct pthread *self = THREAD_SELF;
-	// Set the thread ID (TID) on the pthread structure. The TID is stored
-	// atomically since it is also stored by the parent thread; this way,
-	// whichever thread (parent or child) reaches this point first can proceed
-	// without waiting.
-  	printf("test in __wasi_thread_start_C 3\n");
-	atomic_store((atomic_int *) &(self->tid), tid);
-	// Execute the user's start function.
-  	printf("test in __wasi_thread_start_C 4\n");
-  	printf("start_func: %p, start_arg: %p, p: %d, tid: %d\n", (void*)args->start_func, (void*)args->start_arg, (int)p, tid);
-  	printf("test in __wasi_thread_start_C 5\n");
-	__pthread_exit_2((args->start_func)(args->start_arg));
-  // args->start_func(args->start_arg);
-  	printf("test in __wasi_thread_start_C 6\n");
+void __wasi_thread_start_C(int tid, void *p)
+{
+    struct start_args *args = p;
+
+    struct pthread *self = THREAD_SELF;
+
+    atomic_store((atomic_int *) &(self->tid), tid);
+
+    __pthread_exit_2((args->start_func)(args->start_arg));
 }
 
 static int _Noreturn start_thread (void *arg);
@@ -306,8 +280,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 			  bool *stopped_start, void *stackaddr,
 			  size_t stacksize, bool *thread_ran)
 {
-
-  	printf("test\n");
   /* Determine whether the newly created threads has to be started
      stopped since we have to set the scheduling parameters or set the
      affinity.  */
@@ -388,23 +360,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	args->start_arg = pd->arg;
 	// args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
 	args->tls_base = pd;
-
-  	printf("args: %p\n", (void *)args);
-  	printf("args->stack: %p\n", (void *)args->stack);
-  	printf("args->start_func: %p\n", (void *)args->start_func);
-	printf("args->start_arg: %p\n", (void *)args->start_arg);
-	printf("args->tls_base: %p\n", (void *)args->tls_base);
-
-    uint8_t* ptr = (uint8_t*) args; // Cast the address to a byte pointer
-    size_t i;
-    // Print the memory content byte by byte
-    for (i = 0; i < 128; i++) {
-        if (i % 16 == 0) {
-            printf("\n%p: ", ptr + i); // Print the address at the start of each line
-        }
-        printf("%02x ", ptr[i]); // Print each byte in hexadecimal format
-    }
-    printf("\n");
 
   	// args->stack = (void *)0x216a0;
   	// args->start_func = (void *)0x1;
@@ -1025,7 +980,6 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
 
-  printf("pthread_create ready to return");
   return retval;
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);

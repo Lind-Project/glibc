@@ -49,6 +49,7 @@ int32_t __imported_wasi_thread_spawn(int32_t arg0) __attribute__((
 ));
 
 int32_t __wasi_thread_spawn(void* start_arg) {
+    printf("__wasi_thread_spawn: start_arg: %p\n", start_arg);
     return __imported_wasi_thread_spawn((int32_t) start_arg);
 }
 
@@ -236,20 +237,67 @@ late_init (void)
    be set to true iff the thread actually started up but before calling
    the user code (*PD->start_routine).  */
 
+
+static void __pthread_exit_2(void *result)
+{
+	struct pthread *self = THREAD_SELF;
+
+	self->result = result;
+
+	self->tid = 0;
+
+  free(self->stackblock);
+}
+
 void wasi_thread_start(int tid, void *p);
 void *__dummy_reference = wasi_thread_start;
 
 void __wasi_thread_start_C(int tid, void *p)
 {
-	// struct start_args *args = p;
-	// pthread_t self = __pthread_self();
+  	printf("test in __wasi_thread_start_C, p=%p\n", p);
+
+    uint8_t* ptr = (uint8_t*) p; // Cast the address to a byte pointer
+    size_t i;
+    // Print the memory content byte by byte
+    for (i = 0; i < 128; i++) {
+        if (i % 16 == 0) {
+            printf("\n%p: ", ptr + i); // Print the address at the start of each line
+        }
+        printf("%02x ", ptr[i]); // Print each byte in hexadecimal format
+    }
+    printf("\n");
+
+  struct start_args {
+    /*
+    * Note: the offset of the "stack" and "tls_base" members
+    * in this structure is hardcoded in wasi_thread_start.
+    */
+    char *stack;
+    void *tls_base;
+    void *(*start_func)(void *);
+    void *start_arg;
+  };
+  	printf("test in __wasi_thread_start_C 2\n");
+
+	struct start_args *args = p;
+  	printf("args: %p\n", args);
+  	printf("args->start_arg: %p\n", args->start_arg);
+  	printf("args->start_func: %p\n", args->start_func);
+	// struct pthread self = (struct pthread) __pthread_self();
+  struct pthread *self = THREAD_SELF;
 	// Set the thread ID (TID) on the pthread structure. The TID is stored
 	// atomically since it is also stored by the parent thread; this way,
 	// whichever thread (parent or child) reaches this point first can proceed
 	// without waiting.
-	// atomic_store((atomic_int *) &(self->tid), tid);
+  	printf("test in __wasi_thread_start_C 3\n");
+	atomic_store((atomic_int *) &(self->tid), tid);
 	// Execute the user's start function.
-	// __pthread_exit(args->start_func(args->start_arg));
+  	printf("test in __wasi_thread_start_C 4\n");
+  	printf("start_func: %p, start_arg: %p, p: %d, tid: %d\n", (void*)args->start_func, (void*)args->start_arg, (int)p, tid);
+  	printf("test in __wasi_thread_start_C 5\n");
+	__pthread_exit_2((args->start_func)(args->start_arg));
+  // args->start_func(args->start_arg);
+  	printf("test in __wasi_thread_start_C 6\n");
 }
 
 static int _Noreturn start_thread (void *arg);
@@ -258,6 +306,8 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 			  bool *stopped_start, void *stackaddr,
 			  size_t stacksize, bool *thread_ran)
 {
+
+  	printf("test\n");
   /* Determine whether the newly created threads has to be started
      stopped since we have to set the scheduling parameters or set the
      affinity.  */
@@ -315,7 +365,7 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
     * Note: the offset of the "stack" and "tls_base" members
     * in this structure is hardcoded in wasi_thread_start.
     */
-    void *stack;
+    char *stack;
     void *tls_base;
     void *(*start_func)(void *);
     void *start_arg;
@@ -324,14 +374,42 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	/* Align the stack to struct start_args */
 	// stack -= sizeof(struct start_args);
 	// stack -= (uintptr_t)stack % alignof(struct start_args);
-	struct start_args *args = (void *)stack;
+	struct start_args *args = (void *)pd->stackblock;
+	// struct start_args args;
+	// args -= sizeof(struct start_args);
+
+  // unsigned char * tsd = stackaddr + 65664 - sizeof(void *) * 128;
+	// size_t tls_size = __builtin_wasm_tls_size();
+	// size_t tls_size = 0;
 
 	args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
-	args->start_func = &pd->start_routine;
-	args->start_arg = &pd->arg;
-	args->tls_base = (uintptr_t) tp;
+	// args.stack = malloc(128);
+	args->start_func = pd->start_routine;
+	args->start_arg = pd->arg;
+	// args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
+	args->tls_base = pd;
 
+  	printf("args: %p\n", (void *)args);
+  	printf("args->stack: %p\n", (void *)args->stack);
+  	printf("args->start_func: %p\n", (void *)args->start_func);
+	printf("args->start_arg: %p\n", (void *)args->start_arg);
+	printf("args->tls_base: %p\n", (void *)args->tls_base);
 
+    uint8_t* ptr = (uint8_t*) args; // Cast the address to a byte pointer
+    size_t i;
+    // Print the memory content byte by byte
+    for (i = 0; i < 128; i++) {
+        if (i % 16 == 0) {
+            printf("\n%p: ", ptr + i); // Print the address at the start of each line
+        }
+        printf("%02x ", ptr[i]); // Print each byte in hexadecimal format
+    }
+    printf("\n");
+
+  	// args->stack = (void *)0x216a0;
+  	// args->start_func = (void *)0x1;
+  	// args->start_arg = (void *)0;
+  	// args->tls_base = (void *)0x216c0;
   // struct clone_args args =
   //   {
   //     .flags = clone_flags,
@@ -674,6 +752,7 @@ int
 __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 		      void *(*start_routine) (void *), void *arg)
 {
+  printf("pthread_create\n");
   void *stackaddr = NULL;
   size_t stacksize = 0;
 
@@ -946,6 +1025,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
 
+  printf("pthread_create ready to return");
   return retval;
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);

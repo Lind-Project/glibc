@@ -21,6 +21,8 @@
 #include <stap-probe.h>
 #include <time.h>
 #include <futex-internal.h>
+#include "libioP.h"
+#include <syscall-template.h>
 
 static void
 cleanup (void *arg)
@@ -37,6 +39,7 @@ __pthread_clockjoin_ex (pthread_t threadid, void **thread_return,
                         clockid_t clockid,
                         const struct __timespec64 *abstime, bool block)
 {
+  printf(" __pthread_clockjoin_ex ");
   struct pthread *pd = (struct pthread *) threadid;
 
   /* Make sure the descriptor is valid.  */
@@ -91,22 +94,37 @@ __pthread_clockjoin_ex (pthread_t threadid, void **thread_return,
       /* We need acquire MO here so that we synchronize with the
          kernel's store to 0 when the clone terminates. (see above)  */
       pid_t tid;
+      // const char* message = " before loop tid=%d, pd=%p\n";
+      char message[] = "This is a local stack string\n";
+      
+      printf("message: %p, *message: %d\n", message, *message);
+      printf(message, pd->tid, pd);
+
+      // char buf[] = "makesyscall\n";
+      // printf("buf: %d, *buf: %c\n", buf, *buf);
+      // MAKE_SYSCALL(13, "syscall|write", (uint64_t) 1, (uint64_t)(uintptr_t) buf, (uint64_t) 12, NOTUSED, NOTUSED, NOTUSED);
+
       while ((tid = atomic_load_acquire (&pd->tid)) != 0)
         {
+          // printf("tid=%d\n", tid);
          /* The kernel notifies a process which uses CLONE_CHILD_CLEARTID via
 	    futex wake-up when the clone terminates.  The memory location
 	    contains the thread ID while the clone is running and is reset to
 	    zero by the kernel afterwards.  The kernel up to version 3.16.3
 	    does not use the private futex operations for futex wake-up when
 	    the clone terminates.  */
+  // printf(" before __futex_abstimed_wait_cancelable64 ");
+  // int test = 1;
 	  int ret = __futex_abstimed_wait_cancelable64 (
 	    (unsigned int *) &pd->tid, tid, clockid, abstime, LLL_SHARED);
+    printf("--------futex awake\n");
 	  if (ret == ETIMEDOUT || ret == EOVERFLOW)
 	    {
 	      result = ret;
 	      break;
 	    }
 	}
+  printf("after loop\n");
 
       pthread_cleanup_pop (0);
     }

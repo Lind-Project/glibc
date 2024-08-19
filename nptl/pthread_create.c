@@ -38,6 +38,7 @@
 #include <version.h>
 #include <clone_internal.h>
 #include <futex-internal.h>
+#include <syscall-template.h>
 
 #include <shlib-compat.h>
 
@@ -238,15 +239,18 @@ late_init (void)
    the user code (*PD->start_routine).  */
 
 
-static void __pthread_exit_2(void *result)
+static void __pthread_exit_2(void *result, struct pthread *self)
 {
-	struct pthread *self = THREAD_SELF;
+	// struct pthread *self = THREAD_SELF;
 
 	self->result = result;
 
-	self->tid = 0;
+  printf("set tid to 0: self: %p\n", self);
 
-  free(self->stackblock);
+  MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
+
+	self->tid = 0;
+  // free(self->stackblock);
 }
 
 void wasi_thread_start(int tid, void *p);
@@ -261,17 +265,24 @@ struct start_args {
     void *tls_base;
     void *(*start_func)(void *);
     void *start_arg;
+    pthread_t *thread;
 };
 
 void __wasi_thread_start_C(int tid, void *p)
 {
     struct start_args *args = p;
 
-    struct pthread *self = THREAD_SELF;
+    struct pthread *self = (struct pthread*) args->thread;
+    __wasilibc_pthread_self = *self;
 
     atomic_store((atomic_int *) &(self->tid), tid);
+    printf("self: %p, __wasilibc_pthread_self: %p\n", self, __wasilibc_pthread_self);
+    printf("self->start_routing: %p, args->start_func: %p\n", self->start_routine, args->start_func);
+    printf("***pthread tid=%d\n", self->tid);
 
-    __pthread_exit_2((args->start_func)(args->start_arg));
+    MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
+
+    __pthread_exit_2((args->start_func)(args->start_arg), self);
 }
 
 static int _Noreturn start_thread (void *arg);
@@ -332,17 +343,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-  struct start_args {
-    /*
-    * Note: the offset of the "stack" and "tls_base" members
-    * in this structure is hardcoded in wasi_thread_start.
-    */
-    char *stack;
-    void *tls_base;
-    void *(*start_func)(void *);
-    void *start_arg;
-  };
-
 	/* Align the stack to struct start_args */
 	// stack -= sizeof(struct start_args);
 	// stack -= (uintptr_t)stack % alignof(struct start_args);
@@ -360,6 +360,7 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	args->start_arg = pd->arg;
 	// args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
 	args->tls_base = pd;
+  args->thread = (pthread_t*) pd;
 
   	// args->stack = (void *)0x216a0;
   	// args->start_func = (void *)0x1;
@@ -979,6 +980,8 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
  out:
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
+
+  MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAIT, (uint64_t) 0, (uint64_t)0, 0, (uint64_t)0);
 
   return retval;
 }

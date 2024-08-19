@@ -21,6 +21,8 @@
 #include <time.h>
 #include <futex-internal.h>
 #include <kernel-features.h>
+#include "libioP.h"
+#include <syscall-template.h>
 
 #ifndef __ASSUME_TIME64_SYSCALLS
 
@@ -31,6 +33,7 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
                                 const struct __timespec64* abstime,
                                 int private, bool cancel)
 {
+  printf("__futex_abstimed_wait_common32\n");
   struct timespec ts32, *pts32 = NULL;
   if (abstime != NULL)
     {
@@ -43,9 +46,16 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
   //                                   pts32, NULL /* Unused.  */,
   //                                   FUTEX_BITSET_MATCH_ANY);
   // else
-    return INTERNAL_SYSCALL_CALL (futex, futex_word, op, expected,
-                                  pts32, NULL /* Unused.  */,
-                                  FUTEX_BITSET_MATCH_ANY);
+    printf("make futex syscall: %p, %d, %d, %p, 0, %d\n", futex_word, op, expected, pts32, FUTEX_BITSET_MATCH_ANY);
+    printf("*futex_word=%d\n", *futex_word);
+      return MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op, (uint64_t) expected, (uint64_t)pts32, 0, (uint64_t)0);
+    // return INTERNAL_SYSCALL_CALL (futex, futex_word, op, expected,
+    //                               pts32, NULL /* Unused.  */,
+    //                               FUTEX_BITSET_MATCH_ANY);
+
+    // return INTERNAL_SYSCALL_CALL (futex, &pd->tid, WAIT, tid,
+    //                               NULL, NULL /* Unused.  */,
+    //                               FUTEX_BITSET_MATCH_ANY);
 }
 #endif /* ! __ASSUME_TIME64_SYSCALLS */
 
@@ -56,6 +66,7 @@ __futex_abstimed_wait_common64 (unsigned int* futex_word,
                                 const struct __timespec64* abstime,
                                 int private, bool cancel)
 {
+  printf("__futex_abstimed_wait_common64\n");
   // if (cancel)
   //   return INTERNAL_SYSCALL_CANCEL (futex_time64, futex_word, op, expected,
 	// 			    abstime, NULL /* Unused.  */,
@@ -99,9 +110,10 @@ __futex_abstimed_wait_common (unsigned int* futex_word,
 	err = -EOVERFLOW;
     }
   else
-    err = __futex_abstimed_wait_common32 (futex_word, expected, op, abstime,
+    err = __futex_abstimed_wait_common32 (futex_word, expected, FUTEX_WAIT, abstime,
                                           private, cancel);
 #endif
+  printf("futex err: %d\n", err);
 
   switch (err)
     {
@@ -139,8 +151,12 @@ __futex_abstimed_wait_cancelable64 (unsigned int* futex_word,
                                     const struct __timespec64* abstime,
                                     int private)
 {
+  // printf("__futex_abstimed_wait_cancelable64");
   return __futex_abstimed_wait_common (futex_word, expected, clockid,
                                        abstime, private, true);
+
+  // return __futex_abstimed_wait_common (pd->tid, tid, 0,
+  //                                      NULL, LLL_SHARED, true);
 }
 libc_hidden_def (__futex_abstimed_wait_cancelable64)
 

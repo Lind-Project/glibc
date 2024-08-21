@@ -206,6 +206,8 @@ advise_stack_range (void *mem, size_t size, uintptr_t pd, size_t guardsize)
 #endif
 }
 
+#include <stdio.h>
+
 /* Returns a usable stack for a new thread either by allocating a
    new stack or reusing a cached stack of sufficient size.
    ATTR must be non-NULL and point to a valid pthread_attr.
@@ -229,11 +231,10 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
     size = attr->stacksize;
   else
     {
-      lll_lock (__default_pthread_attr_lock, LLL_PRIVATE);
+      // lll_lock (__default_pthread_attr_lock, LLL_PRIVATE);
       size = __default_pthread_attr.internal.stacksize;
-      lll_unlock (__default_pthread_attr_lock, LLL_PRIVATE);
+      // lll_unlock (__default_pthread_attr_lock, LLL_PRIVATE);
     }
-
   /* Get memory for the stack.  */
   if (__glibc_unlikely (attr->flags & ATTR_FLAG_STACKADDR))
     {
@@ -257,7 +258,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 #if TLS_TCB_AT_TP
       adj = ((uintptr_t) stackaddr - TLS_TCB_SIZE)
 	    & tls_static_align_m1;
-      assert (size > adj + TLS_TCB_SIZE);
+      // assert (size > adj + TLS_TCB_SIZE);
 #elif TLS_DTV_AT_TP
       adj = ((uintptr_t) stackaddr - tls_static_size_for_stack)
 	    & tls_static_align_m1;
@@ -276,7 +277,6 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 				- tls_static_size_for_stack - adj)
 			       - TLS_PRE_TCB_SIZE);
 #endif
-
       /* The user provided stack memory needs to be cleared.  */
       memset (pd, '\0', sizeof (struct pthread));
 
@@ -308,7 +308,6 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  assert (errno == ENOMEM);
 	  return errno;
 	}
-
 
       /* Prepare to modify global data.  */
       lll_lock (GL (dl_stack_cache_lock), LLL_PRIVATE);
@@ -358,13 +357,24 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
       /* Try to get a stack from the cache.  */
       reqsize = size;
       pd = get_cached_stack (&size, &mem);
+
       if (pd == NULL)
 	{
 	  /* If a guard page is required, avoid committing memory by first
 	     allocate with PROT_NONE and then reserve with required permission
 	     excluding the guard page.  */
-	  mem = __mmap (NULL, size, (guardsize == 0) ? prot : PROT_NONE,
-			MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
+	  // mem = __mmap (NULL, size, (guardsize == 0) ? prot : PROT_NONE,
+		// 	MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
+
+    // Dennis Edit: Replacement mmap with malloc
+    size = 65664;
+    void* mem = malloc(size);
+
+    if (mem == NULL) {
+        // Handle memory allocation failure
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
 
 	  if (__glibc_unlikely (mem == MAP_FAILED))
 	    return errno;
@@ -374,7 +384,6 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  if (__glibc_unlikely (__nptl_stack_hugetlb == 0)
 	      && __madvise (mem, size, MADV_NOHUGEPAGE) != 0)
 	    return errno;
-
 	  /* SIZE is guaranteed to be greater than zero.
 	     So we can never get a null pointer back from mmap.  */
 	  assert (mem != NULL);

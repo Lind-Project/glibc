@@ -35,6 +35,8 @@ routines = \
   libc-tls \
   sysdep \
   version \
+  __init_tls \
+  /wasm32/wasi_thread_start.s \
   # routines
 aux	 = errno
 elide-routines.os = libc-tls

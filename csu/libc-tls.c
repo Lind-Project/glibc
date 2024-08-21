@@ -25,6 +25,7 @@
 #include <sys/param.h>
 #include <array_length.h>
 #include <pthreadP.h>
+// #include <wasi-pthread.h>
 // #include <dl-call_tls_init_tp.h>
 
 #ifdef SHARED
@@ -86,6 +87,8 @@ init_slotinfo (void)
   GL(dl_tls_dtv_slotinfo_list) = &static_slotinfo;
 }
 
+#include <stdio.h>
+
 static void
 init_static_tls (size_t memsz, size_t align)
 {
@@ -112,25 +115,25 @@ __libc_setup_tls (void)
   size_t align = 0;
   size_t max_align = TCB_ALIGNMENT;
   size_t tcb_offset;
-  const ElfW(Phdr) *phdr;
+  // const ElfW(Phdr) *phdr;
 
   struct link_map *main_map = GL(dl_ns)[LM_ID_BASE]._ns_loaded;
 
   __tls_pre_init_tp ();
 
-  /* Look through the TLS segment if there is any.  */
-  for (phdr = _dl_phdr; phdr < &_dl_phdr[_dl_phnum]; ++phdr)
-    if (phdr->p_type == PT_TLS)
-      {
-	/* Remember the values we need.  */
-	memsz = phdr->p_memsz;
-	filesz = phdr->p_filesz;
-	initimage = (void *) phdr->p_vaddr + main_map->l_addr;
-	align = phdr->p_align;
-	if (phdr->p_align > max_align)
-	  max_align = phdr->p_align;
-	break;
-      }
+  // /* Look through the TLS segment if there is any.  */
+  // for (phdr = _dl_phdr; phdr < &_dl_phdr[_dl_phnum]; ++phdr)
+  //   if (phdr->p_type == PT_TLS)
+  //     {
+	// /* Remember the values we need.  */
+	// memsz = phdr->p_memsz;
+	// filesz = phdr->p_filesz;
+	// initimage = (void *) phdr->p_vaddr + main_map->l_addr;
+	// align = phdr->p_align;
+	// if (phdr->p_align > max_align)
+	//   max_align = phdr->p_align;
+	// break;
+  //     }
 
   /* Calculate the size of the static TLS surplus, with 0 auditors.  */
   _dl_tls_static_surplus_init (0);
@@ -216,4 +219,6 @@ __libc_setup_tls (void)
 #endif
 
   init_static_tls (memsz, MAX (TCB_ALIGNMENT, max_align));
+  __default_pthread_attr.internal.stacksize = 131072;
+  __default_pthread_attr.internal.guardsize = 0;
 }

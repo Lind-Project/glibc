@@ -21,6 +21,8 @@
 #include <time.h>
 #include <futex-internal.h>
 #include <kernel-features.h>
+#include "libioP.h"
+#include <syscall-template.h>
 
 #ifndef __ASSUME_TIME64_SYSCALLS
 
@@ -31,8 +33,8 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
                                 const struct __timespec64* abstime,
                                 int private, bool cancel)
 {
-  struct timespec ts32, *pts32 = NULL;
-  if (abstime != NULL)
+    struct timespec ts32, *pts32 = NULL;
+    if (abstime != NULL)
     {
       ts32 = valid_timespec64_to_timespec (*abstime);
       pts32 = &ts32;
@@ -43,9 +45,10 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
   //                                   pts32, NULL /* Unused.  */,
   //                                   FUTEX_BITSET_MATCH_ANY);
   // else
-    return INTERNAL_SYSCALL_CALL (futex, futex_word, op, expected,
-                                  pts32, NULL /* Unused.  */,
-                                  FUTEX_BITSET_MATCH_ANY);
+    return MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op, (uint64_t) expected, (uint64_t)pts32, 0, (uint64_t)0);
+    // return INTERNAL_SYSCALL_CALL (futex, futex_word, op, expected,
+    //                               pts32, NULL /* Unused.  */,
+    //                               FUTEX_BITSET_MATCH_ANY);
 }
 #endif /* ! __ASSUME_TIME64_SYSCALLS */
 
@@ -99,7 +102,7 @@ __futex_abstimed_wait_common (unsigned int* futex_word,
 	err = -EOVERFLOW;
     }
   else
-    err = __futex_abstimed_wait_common32 (futex_word, expected, op, abstime,
+    err = __futex_abstimed_wait_common32 (futex_word, expected, FUTEX_WAIT, abstime,
                                           private, cancel);
 #endif
 

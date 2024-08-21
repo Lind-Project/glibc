@@ -21,6 +21,8 @@
 #include <stap-probe.h>
 #include <time.h>
 #include <futex-internal.h>
+#include "libioP.h"
+#include <syscall-template.h>
 
 static void
 cleanup (void *arg)

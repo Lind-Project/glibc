@@ -38,11 +38,20 @@
 #include <version.h>
 #include <clone_internal.h>
 #include <futex-internal.h>
+#include <syscall-template.h>
 
 #include <shlib-compat.h>
 
 #include <stap-probe.h>
 
+int32_t __imported_wasi_thread_spawn(int32_t arg0) __attribute__((
+    __import_module__("wasi"),
+    __import_name__("thread-spawn")
+));
+
+int32_t __wasi_thread_spawn(void* start_arg) {
+    return __imported_wasi_thread_spawn((int32_t) start_arg);
+}
 
 /* Globally enabled events.  */
 extern td_thr_events_t __nptl_threads_events;
@@ -228,6 +237,49 @@ late_init (void)
    be set to true iff the thread actually started up but before calling
    the user code (*PD->start_routine).  */
 
+
+static void __pthread_exit_2(void *result, struct pthread *self)
+{
+	// struct pthread *self = THREAD_SELF;
+	self->result = result;
+
+  MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
+
+	self->tid = 0;
+
+  // TODO: need to free this somewhere
+  // free(self->stackblock);
+}
+
+void wasi_thread_start(int tid, void *p);
+void *__dummy_reference = wasi_thread_start;
+
+struct start_args {
+    /*
+    * Note: the offset of the "stack" and "tls_base" members
+    * in this structure is hardcoded in wasi_thread_start.
+    */
+    char *stack;
+    void *tls_base;
+    void *(*start_func)(void *);
+    void *start_arg;
+    pthread_t *thread;
+};
+
+void __wasi_thread_start_C(int tid, void *p)
+{
+    struct start_args *args = p;
+
+    struct pthread *self = (struct pthread*) args->thread;
+    __wasilibc_pthread_self = *self;
+
+    atomic_store((atomic_int *) &(self->tid), tid);
+
+    MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, 1, 0, 0, 0);
+
+    __pthread_exit_2((args->start_func)(args->start_arg), self);
+}
+
 static int _Noreturn start_thread (void *arg);
 
 static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
@@ -284,17 +336,25 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   TLS_DEFINE_INIT_TP (tp, pd);
 
-  struct clone_args args =
-    {
-      .flags = clone_flags,
-      .pidfd = (uintptr_t) &pd->tid,
-      .parent_tid = (uintptr_t) &pd->tid,
-      .child_tid = (uintptr_t) &pd->tid,
-      .stack = (uintptr_t) stackaddr,
-      .stack_size = stacksize,
-      .tls = (uintptr_t) tp,
-    };
-  int ret = __clone_internal (&args, &start_thread, pd);
+  unsigned char *stack = 0;
+
+	struct start_args *args = (void *)pd->stackblock;
+	// struct start_args args;
+	// args -= sizeof(struct start_args);
+
+  // unsigned char * tsd = stackaddr + 65664 - sizeof(void *) * 128;
+	// size_t tls_size = __builtin_wasm_tls_size();
+	// size_t tls_size = 0;
+
+	args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
+	args->start_func = pd->start_routine;
+	args->start_arg = pd->arg;
+	// args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
+	args->tls_base = pd;
+  args->thread = (pthread_t*) pd;
+
+  int ret = __wasi_thread_spawn((void *) args);
+  // int ret = __clone_internal (&args, &start_thread, pd);
   if (__glibc_unlikely (ret == -1))
     return errno;
 
@@ -619,7 +679,6 @@ report_thread_creation (struct pthread *pd)
   return false;
 }
 
-
 int
 __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 		      void *(*start_routine) (void *), void *arg)
@@ -652,6 +711,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
     }
 
   struct pthread *pd = NULL;
+
   int err = allocate_stack (iattr, &pd, &stackaddr, &stacksize);
   int retval = 0;
 
@@ -776,7 +836,6 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
      startup.  */
   internal_sigset_t original_sigmask;
   internal_signal_block_all (&original_sigmask);
-
   if (iattr->extension != NULL && iattr->extension->sigmask_set)
     /* Use the signal mask in the attribute.  The internal signals
        have already been filtered by the public
@@ -892,17 +951,18 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 	 again if this is what we use.  */
       THREAD_SETMEM (THREAD_SELF, header.multiple_threads, 1);
     }
-
  out:
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
+
+  MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAIT, (uint64_t) 0, (uint64_t)0, 0, (uint64_t)0);
 
   return retval;
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);
 libc_hidden_ver (__pthread_create_2_1, __pthread_create)
 #ifndef SHARED
-strong_alias (__pthread_create_2_1, __pthread_create)
+// strong_alias (__pthread_create_2_1, __pthread_create)
 #endif
 
 #if OTHER_SHLIB_COMPAT (libpthread, GLIBC_2_1, GLIBC_2_34)

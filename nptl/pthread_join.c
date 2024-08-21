@@ -17,6 +17,7 @@
 
 #include "pthreadP.h"
 #include <shlib-compat.h>
+#include "libioP.h"
 
 int
 ___pthread_join (pthread_t threadid, void **thread_return)

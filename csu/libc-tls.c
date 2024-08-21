@@ -92,8 +92,6 @@ init_slotinfo (void)
 static void
 init_static_tls (size_t memsz, size_t align)
 {
-  printf("memsz: %zu, align: %zu\n", memsz, align);
-
   /* That is the size of the TLS memory for this object.  */
   GL(dl_tls_static_size) = roundup (memsz + GLRO(dl_tls_static_surplus),
 				    TCB_ALIGNMENT);

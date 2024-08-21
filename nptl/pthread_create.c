@@ -50,7 +50,6 @@ int32_t __imported_wasi_thread_spawn(int32_t arg0) __attribute__((
 ));
 
 int32_t __wasi_thread_spawn(void* start_arg) {
-    printf("__wasi_thread_spawn: start_arg: %p\n", start_arg);
     return __imported_wasi_thread_spawn((int32_t) start_arg);
 }
 
@@ -242,14 +241,13 @@ late_init (void)
 static void __pthread_exit_2(void *result, struct pthread *self)
 {
 	// struct pthread *self = THREAD_SELF;
-
 	self->result = result;
-
-  printf("set tid to 0: self: %p\n", self);
 
   MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
 
 	self->tid = 0;
+
+  // TODO: need to free this somewhere
   // free(self->stackblock);
 }
 
@@ -276,11 +274,8 @@ void __wasi_thread_start_C(int tid, void *p)
     __wasilibc_pthread_self = *self;
 
     atomic_store((atomic_int *) &(self->tid), tid);
-    printf("self: %p, __wasilibc_pthread_self: %p\n", self, __wasilibc_pthread_self);
-    printf("self->start_routing: %p, args->start_func: %p\n", self->start_routine, args->start_func);
-    printf("***pthread tid=%d\n", self->tid);
 
-    MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
+    MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &self->tid, (uint64_t) FUTEX_WAKE, 1, 0, 0, 0);
 
     __pthread_exit_2((args->start_func)(args->start_arg), self);
 }
@@ -343,9 +338,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-	/* Align the stack to struct start_args */
-	// stack -= sizeof(struct start_args);
-	// stack -= (uintptr_t)stack % alignof(struct start_args);
 	struct start_args *args = (void *)pd->stackblock;
 	// struct start_args args;
 	// args -= sizeof(struct start_args);
@@ -355,27 +347,12 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	// size_t tls_size = 0;
 
 	args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
-	// args.stack = malloc(128);
 	args->start_func = pd->start_routine;
 	args->start_arg = pd->arg;
 	// args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
 	args->tls_base = pd;
   args->thread = (pthread_t*) pd;
 
-  	// args->stack = (void *)0x216a0;
-  	// args->start_func = (void *)0x1;
-  	// args->start_arg = (void *)0;
-  	// args->tls_base = (void *)0x216c0;
-  // struct clone_args args =
-  //   {
-  //     .flags = clone_flags,
-  //     .pidfd = (uintptr_t) &pd->tid,
-  //     .parent_tid = (uintptr_t) &pd->tid,
-  //     .child_tid = (uintptr_t) &pd->tid,
-  //     .stack = (uintptr_t) stackaddr,
-  //     .stack_size = stacksize,
-  //     .tls = (uintptr_t) tp,
-  //   };
   int ret = __wasi_thread_spawn((void *) args);
   // int ret = __clone_internal (&args, &start_thread, pd);
   if (__glibc_unlikely (ret == -1))
@@ -702,13 +679,10 @@ report_thread_creation (struct pthread *pd)
   return false;
 }
 
-#include <stdio.h>
-
 int
 __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 		      void *(*start_routine) (void *), void *arg)
 {
-  printf("pthread_create\n");
   void *stackaddr = NULL;
   size_t stacksize = 0;
 

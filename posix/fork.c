@@ -25,6 +25,16 @@
 #include <stdio-lock.h>
 #include <sys/single_threaded.h>
 #include <unwind-link.h>
+#include "libioP.h"
+
+int32_t __imported_wasi_fork(int32_t arg0) __attribute__((
+    __import_module__("wasi"),
+    __import_name__("wasi-fork")
+));
+
+int32_t __wasi_fork(void* start_arg) {
+    return __imported_wasi_fork((int32_t) start_arg);
+}
 
 static void
 fresetlockfiles (void)
@@ -39,6 +49,9 @@ fresetlockfiles (void)
 pid_t
 __libc_fork (void)
 {
+  printf("calling fork in glibc\n");
+  int ret = __wasi_fork(0);
+  return ret;
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in
      signal handlers.  Although POSIX has dropped async-signal-safe

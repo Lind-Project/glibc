@@ -26,9 +26,10 @@
 int
 epoll_wait (int epfd, struct epoll_event *events, int maxevents, int timeout)
 {
-#ifdef __NR_epoll_wait
-  return SYSCALL_CANCEL (epoll_wait, epfd, events, maxevents, timeout);
-#else
-  return epoll_pwait (epfd, events, maxevents, timeout, NULL);
-#endif
+// #ifdef __NR_epoll_wait
+//   return SYSCALL_CANCEL (epoll_wait, epfd, events, maxevents, timeout);
+// #else
+//   return epoll_pwait (epfd, events, maxevents, timeout, NULL);
+// #endif
+   return MAKE_SYSCALL(58, "syscall|epoll_wait", (uint64_t) epfd, (uint64_t) events, (uint64_t) maxevents, (uint64_t) timeout, NOTUSED, NOTUSED);
 }

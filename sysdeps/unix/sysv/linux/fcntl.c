@@ -102,16 +102,17 @@ libc_hidden_weak (__fcntl)
 int
 __old_libc_fcntl64 (int fd, int cmd, ...)
 {
-  va_list ap;
-  void *arg;
+  // va_list ap;
+  // void *arg;
 
-  va_start (ap, cmd);
-  arg = va_arg (ap, void *);
-  va_end (ap);
+  // va_start (ap, cmd);
+  // arg = va_arg (ap, void *);
+  // va_end (ap);
 
-  /* Previous versions called __NR_fcntl64 for fcntl (which did not handle
-     OFD locks in LFS mode).  */
-  return __libc_fcntl64 (fd, cmd, arg);
+  // /* Previous versions called __NR_fcntl64 for fcntl (which did not handle
+  //    OFD locks in LFS mode).  */
+  // return __libc_fcntl64 (fd, cmd, arg);
+	return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 compat_symbol (libc, __old_libc_fcntl64, fcntl, GLIBC_2_0);
 versioned_symbol (libc, __libc_fcntl, fcntl, GLIBC_2_28);

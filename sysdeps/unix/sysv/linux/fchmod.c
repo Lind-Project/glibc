@@ -6,6 +6,7 @@
 int
 fchmod (int fd, mode_t mode)
 {
-  return 0;
+  // return 0;
+  return MAKE_SYSCALL(134, "syscall|fchmod", (uint64_t) fd, (uint64_t) mode, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 

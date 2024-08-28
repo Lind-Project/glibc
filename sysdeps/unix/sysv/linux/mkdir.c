@@ -24,11 +24,12 @@
 int
 __mkdir (const char *path, mode_t mode)
 {
-#ifdef __NR_mkdir
-  return INLINE_SYSCALL_CALL (mkdir,  path, mode);
-#else
-  return INLINE_SYSCALL_CALL (mkdirat, AT_FDCWD, path, mode);
-#endif
+// #ifdef __NR_mkdir
+//   return INLINE_SYSCALL_CALL (mkdir,  path, mode);
+// #else
+//   return INLINE_SYSCALL_CALL (mkdirat, AT_FDCWD, path, mode);
+// #endif
+   return MAKE_SYSCALL(131, "syscall|mkdir", (uint64_t) path, (uint64_t) mode, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 
 libc_hidden_def (__mkdir)

@@ -26,6 +26,6 @@ __shutdown (int fd, int how)
 // #else
 //   return SOCKETCALL (shutdown, fd, how);
 // #endif
-   return MAKE_SYSCALL(44, "syscall|shutdown", (uint64_t) fd, (uint64_t) how, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+   return MAKE_SYSCALL(45, "syscall|shutdown", (uint64_t) fd, (uint64_t) how, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__shutdown, shutdown)

@@ -25,9 +25,10 @@
 int
 shmdt (const void *shmaddr)
 {
-#ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return INLINE_SYSCALL_CALL (shmdt, shmaddr);
-#else
-  return INLINE_SYSCALL_CALL (ipc, IPCOP_shmdt, 0, 0, 0, shmaddr);
-#endif
+// #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
+//   return INLINE_SYSCALL_CALL (shmdt, shmaddr);
+// #else
+//   return INLINE_SYSCALL_CALL (ipc, IPCOP_shmdt, 0, 0, 0, shmaddr);
+// #endif
+   return MAKE_SYSCALL(64, "syscall|shmdt", (uint64_t) shmaddr, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }

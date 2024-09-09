@@ -17,10 +17,19 @@
 
 #include <unistd.h>
 
+__int32_t __imported_wasi_execv() __attribute__((
+    __import_module__("wasix"),
+    __import_name__("lind-execv")
+));
+
+__int32_t __wasi_execv(const char *path, char *const argv[]) {
+    return __imported_wasi_execv((__uint64_t) path, (__uint64_t) argv);
+}
 
 /* Execute PATH with arguments ARGV and environment from `environ'.  */
 int
 execv (const char *path, char *const argv[])
 {
-  return __execve (path, argv, __environ);
+  return __wasi_execv(path, argv);
+  // return __execve (path, argv, __environ);
 }

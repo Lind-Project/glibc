@@ -21,7 +21,7 @@
 #include <syscall-template.h>
 
 int
-__libc_accept (int fd, __SOCKADDR_ARG addr, socklen_t *len)
+__libc_accept (int fd, struct sockaddr * addr, socklen_t *len)
 {
 // #ifdef __ASSUME_ACCEPT_SYSCALL
 //   return SYSCALL_CANCEL (accept, fd, addr.__sockaddr__, len);

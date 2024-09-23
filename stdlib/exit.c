@@ -23,6 +23,15 @@
 #include <set-freeres.h>
 #include "exit.h"
 
+void __imported_wasi_exit() __attribute__((
+    __import_module__("wasix"),
+    __import_name__("lind-exit")
+));
+
+void __wasi_exit(int status) {
+    return __imported_wasi_exit(status);
+}
+
 /* Initialize the flag that indicates exit function processing
    is complete. See concurrency notes in stdlib/exit.h where
    __exit_funcs_lock is declared.  */
@@ -128,7 +137,8 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
   if (run_list_atexit)
     call_function_static_weak (_IO_cleanup);
 
-  _exit (status);
+//   _exit (status);
+	__wasi_exit(status);
 }
 
 

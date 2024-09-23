@@ -25,7 +25,10 @@
 #include <stdio-lock.h>
 #include <sys/single_threaded.h>
 #include <unwind-link.h>
+#include <clone3.h>
+#include <clone_internal.h>
 #include "libioP.h"
+#include <syscall-template.h>
 
 int32_t __imported_wasi_fork() __attribute__((
     __import_module__("wasix"),
@@ -50,7 +53,13 @@ pid_t
 __libc_fork (void)
 {
   // printf("calling fork in glibc\n");
-  int pid = __wasi_fork();
+  // int pid = __wasi_fork();
+  struct clone_args args;
+  memset(&args, 0, sizeof(args));
+  args.flags = 0;
+
+  int pid = __clone_internal(&args, NULL, NULL);
+  // int pid = MAKE_SYSCALL(171, "syscall|clone3", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
   return pid;
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in

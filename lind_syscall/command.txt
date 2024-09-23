@@ -1,4 +1,4 @@
-/home/dennis/Documents/Just-One-Turtle/clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04/bin/clang-16 \
+/home/clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04/bin/clang-16 \
 --target=wasm32-unknown-wasi \
 -c \
 -g \

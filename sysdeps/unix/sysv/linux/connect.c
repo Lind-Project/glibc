@@ -21,7 +21,7 @@
 #include <syscall-template.h>
 
 int
-__libc_connect (int fd, __CONST_SOCKADDR_ARG addr, socklen_t len)
+__libc_connect (int fd, const struct sockaddr * addr, socklen_t len)
 {
 // #ifdef __ASSUME_CONNECT_SYSCALL
 //   return SYSCALL_CANCEL (connect, fd, addr.__sockaddr__, len);

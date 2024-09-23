@@ -37,6 +37,7 @@
 #include <sys/single_threaded.h>
 #include <version.h>
 #include <clone_internal.h>
+#include <clone3.h>
 #include <futex-internal.h>
 #include <syscall-template.h>
 
@@ -254,6 +255,9 @@ static void __pthread_exit_2(void *result, struct pthread *self)
 void wasi_thread_start(int tid, void *p);
 void *__dummy_reference = wasi_thread_start;
 
+void set_stack_pointer(int stack_addr);
+void *__dummy_reference3 = set_stack_pointer;
+
 struct start_args {
     /*
     * Note: the offset of the "stack" and "tls_base" members
@@ -338,7 +342,7 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-	struct start_args *args = (void *)pd->stackblock;
+	// struct start_args *args = (void *)pd->stackblock;
 	// struct start_args args;
 	// args -= sizeof(struct start_args);
 
@@ -346,15 +350,23 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	// size_t tls_size = __builtin_wasm_tls_size();
 	// size_t tls_size = 0;
 
-	args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
-	args->start_func = pd->start_routine;
-	args->start_arg = pd->arg;
-	// args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
-	args->tls_base = pd;
-  args->thread = (pthread_t*) pd;
+	// args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
+	// args->start_func = pd->start_routine;
+	// args->start_arg = pd->arg;
+	// // args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
+	// args->tls_base = pd;
+  // args->thread = (pthread_t*) pd;
 
-  int ret = __wasi_thread_spawn((void *) args);
-  // int ret = __clone_internal (&args, &start_thread, pd);
+  struct clone_args *args = (void *)pd->stackblock;
+  memset(args, 0, sizeof(struct clone_args));
+  args->flags = clone_flags;
+  args->stack = stackaddr;
+  args->stack_size = 65664;
+  args->child_tid = &pd->tid;
+
+  // int ret = __wasi_thread_spawn((void *) args);
+  // int ret = __clone_internal (args, pd->start_routine, pd->arg);
+  int ret = __clone_internal(args, &start_thread, pd);
   if (__glibc_unlikely (ret == -1))
     return errno;
 
@@ -388,7 +400,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	    return INTERNAL_SYSCALL_ERRNO (res);
 	}
     }
-
   return 0;
 }
 
@@ -495,27 +506,27 @@ start_thread (void *arg)
       /* Run the code the user provided.  */
       void *ret;
       if (pd->c11)
-	{
-	  /* The function pointer of the c11 thread start is cast to an incorrect
-	     type on __pthread_create_2_1 call, however it is casted back to correct
-	     one so the call behavior is well-defined (it is assumed that pointers
-	     to void are able to represent all values of int.  */
-	  int (*start)(void*) = (int (*) (void*)) pd->start_routine;
-	  ret = (void*) (uintptr_t) start (pd->arg);
-	}
+      {
+        /* The function pointer of the c11 thread start is cast to an incorrect
+          type on __pthread_create_2_1 call, however it is casted back to correct
+          one so the call behavior is well-defined (it is assumed that pointers
+          to void are able to represent all values of int.  */
+        int (*start)(void*) = (int (*) (void*)) pd->start_routine;
+        ret = (void*) (uintptr_t) start (pd->arg);
+      }
       else
-	ret = pd->start_routine (pd->arg);
+        ret = pd->start_routine (pd->arg);
       THREAD_SETMEM (pd, result, ret);
     }
 
   /* Call destructors for the thread_local TLS variables.  */
-  call_function_static_weak (__call_tls_dtors);
+  // call_function_static_weak (__call_tls_dtors);
 
   /* Run the destructor for the thread-local data.  */
-  __nptl_deallocate_tsd ();
+  // __nptl_deallocate_tsd ();
 
   /* Clean up any state libc stored in thread-local variables.  */
-  __libc_thread_freeres ();
+  // __libc_thread_freeres ();
 
   /* Report the death of the thread if this is wanted.  */
   if (__glibc_unlikely (pd->report_events))
@@ -609,9 +620,9 @@ start_thread (void *arg)
     }
 #endif
 
-  if (!pd->user_stack)
-    advise_stack_range (pd->stackblock, pd->stackblock_size, (uintptr_t) pd,
-			pd->guardsize);
+  // if (!pd->user_stack)
+  //   advise_stack_range (pd->stackblock, pd->stackblock_size, (uintptr_t) pd,
+	// 		pd->guardsize);
 
   if (__glibc_unlikely (pd->cancelhandling & SETXID_BITMASK))
     {
@@ -655,12 +666,15 @@ out:
 
      The exit code is zero since in case all threads exit by calling
      'pthread_exit' the exit status must be 0 (zero).  */
+
+  MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
+	pd->tid = 0;
   while (1)
-    INTERNAL_SYSCALL_CALL (exit, 0);
+    // INTERNAL_SYSCALL_CALL (exit, 0);
+    exit(0);
 
   /* NOTREACHED */
 }
-
 
 /* Return true iff obliged to report TD_CREATE events.  */
 static bool
@@ -955,7 +969,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
 
-  MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAIT, (uint64_t) 0, (uint64_t)0, 0, (uint64_t)0);
+  // MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAIT, (uint64_t) 0, (uint64_t)0, 0, (uint64_t)0);
 
   return retval;
 }

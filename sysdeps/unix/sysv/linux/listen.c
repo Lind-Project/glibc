@@ -21,10 +21,11 @@
 int
 listen (int fd, int backlog)
 {
-#ifdef __ASSUME_LISTEN_SYSCALL
-  return INLINE_SYSCALL_CALL (listen, fd, backlog);
-#else
-  return SOCKETCALL (listen, fd, backlog);
-#endif
+// #ifdef __ASSUME_LISTEN_SYSCALL
+//   return INLINE_SYSCALL_CALL (listen, fd, backlog);
+// #else
+//   return SOCKETCALL (listen, fd, backlog);
+// #endif
+   return MAKE_SYSCALL(39, "syscall|listen", (uint64_t) fd, (uint64_t) backlog, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (listen, __listen);

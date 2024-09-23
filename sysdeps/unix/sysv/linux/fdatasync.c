@@ -19,12 +19,14 @@
 
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 /* Synchronize at least the data part of a file with the underlying
    media.  */
 int
 fdatasync (int fd)
 {
-  return SYSCALL_CANCEL (fdatasync, fd);
+  // return SYSCALL_CANCEL (fdatasync, fd);
+   return MAKE_SYSCALL(163, "syscall|fdatasync", (uint64_t) fd, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (fdatasync)

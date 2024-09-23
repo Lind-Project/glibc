@@ -21,10 +21,11 @@
 int
 __shutdown (int fd, int how)
 {
-#ifdef __ASSUME_SHUTDOWN_SYSCALL
-  return INLINE_SYSCALL_CALL (shutdown, fd, how);
-#else
-  return SOCKETCALL (shutdown, fd, how);
-#endif
+// #ifdef __ASSUME_SHUTDOWN_SYSCALL
+//   return INLINE_SYSCALL_CALL (shutdown, fd, how);
+// #else
+//   return SOCKETCALL (shutdown, fd, how);
+// #endif
+   return MAKE_SYSCALL(45, "syscall|shutdown", (uint64_t) fd, (uint64_t) how, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__shutdown, shutdown)

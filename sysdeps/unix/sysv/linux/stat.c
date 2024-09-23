@@ -19,12 +19,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <kernel_stat.h>
+#include <syscall-template.h>
 
 #if !XSTAT_IS_XSTAT64
 int
-__stat (const char *file, struct stat *buf)
+__stat (const char *fd, struct stat *buf)
 {
-  return __fstatat (AT_FDCWD, file, buf, 0);
+ // return __fstatat (AT_FDCWD, file, buf, 0);
+ return MAKE_SYSCALL(9, "syscall|xstat", (uint64_t) fd, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED); 
 }
 
 weak_alias (__stat, stat)

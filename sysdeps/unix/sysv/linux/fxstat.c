@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <kernel_stat.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 #if !XSTAT_IS_XSTAT64
 # include <xstatconv.h>
@@ -32,33 +33,34 @@
 int
 __fxstat (int vers, int fd, struct stat *buf)
 {
-  switch (vers)
-    {
-    case _STAT_VER_KERNEL:
-      {
-# if STAT_IS_KERNEL_STAT
-	/* New kABIs which uses generic pre 64-bit time Linux ABI,
-	   e.g. csky, nios2  */
-	int r = INLINE_SYSCALL_CALL (fstat64, fd, buf);
-	return r ?: stat_overflow (buf);
-# else
-	/* Old kABIs with old non-LFS support, e.g. arm, i386, hppa, m68k,
-	   microblaze, s390, sh, powerpc, and sparc.  */
-	return INLINE_SYSCALL_CALL (fstat, fd, buf);
-# endif
-      }
+//   switch (vers)
+//     {
+//     case _STAT_VER_KERNEL:
+//       {
+// # if STAT_IS_KERNEL_STAT
+// 	/* New kABIs which uses generic pre 64-bit time Linux ABI,
+// 	   e.g. csky, nios2  */
+// 	int r = INLINE_SYSCALL_CALL (fstat64, fd, buf);
+// 	return r ?: stat_overflow (buf);
+// # else
+// 	/* Old kABIs with old non-LFS support, e.g. arm, i386, hppa, m68k,
+// 	   microblaze, s390, sh, powerpc, and sparc.  */
+// 	return INLINE_SYSCALL_CALL (fstat, fd, buf);
+// # endif
+//       }
 
-    default:
-      {
-# if STAT_IS_KERNEL_STAT
-	return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
-# else
-	struct stat64 buf64;
-	int r = INLINE_SYSCALL_CALL (fstat64, fd, &buf64);
-	return r ?: __xstat32_conv (vers, &buf64, buf);
-#endif
-      }
-    }
+//     default:
+//       {
+// # if STAT_IS_KERNEL_STAT
+// 	return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+// # else
+// 	struct stat64 buf64;
+// 	int r = INLINE_SYSCALL_CALL (fstat64, fd, &buf64);
+// 	return r ?: __xstat32_conv (vers, &buf64, buf);
+// #endif
+//       }
+//     }
+	return MAKE_SYSCALL(17, "syscall|fxstat", (uint64_t) vers, (uint64_t) fd, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED);
 }
 
 # endif /* LIB_COMPAT  */

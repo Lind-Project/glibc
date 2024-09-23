@@ -24,12 +24,13 @@
 int
 __truncate (const char *path, off_t length)
 {
-# ifndef __NR_truncate
-  return INLINE_SYSCALL_CALL (truncate64, path,
-			      __ALIGNMENT_ARG SYSCALL_LL (length));
-# else
-  return INLINE_SYSCALL_CALL (truncate, path, length);
-# endif
+// # ifndef __NR_truncate
+//   return INLINE_SYSCALL_CALL (truncate64, path,
+// 			      __ALIGNMENT_ARG SYSCALL_LL (length));
+// # else
+//   return INLINE_SYSCALL_CALL (truncate, path, length);
+// # endif
+	return MAKE_SYSCALL(16, "syscall|truncate", (uint64_t) path, (uint64_t) length, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__truncate, truncate)
 #endif

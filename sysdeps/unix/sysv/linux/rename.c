@@ -20,16 +20,18 @@
 #include <fcntl.h>
 #include <sysdep.h>
 #include <errno.h>
+#include <syscall-template.h>
 
 /* Rename the file OLD to NEW.  */
 int
 rename (const char *old, const char *new)
 {
-#if defined (__NR_rename)
-  return INLINE_SYSCALL_CALL (rename, old, new);
-#elif defined (__NR_renameat)
-  return INLINE_SYSCALL_CALL (renameat, AT_FDCWD, old, AT_FDCWD, new);
-#else
-  return INLINE_SYSCALL_CALL (renameat2, AT_FDCWD, old, AT_FDCWD, new, 0);
-#endif
+// #if defined (__NR_rename)
+//   return INLINE_SYSCALL_CALL (rename, old, new);
+// #elif defined (__NR_renameat)
+//   return INLINE_SYSCALL_CALL (renameat, AT_FDCWD, old, AT_FDCWD, new);
+// #else
+//   return INLINE_SYSCALL_CALL (renameat2, AT_FDCWD, old, AT_FDCWD, new, 0);
+// #endif
+   return MAKE_SYSCALL(6, "syscall|rename", (uint64_t) old, (uint64_t) new, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }

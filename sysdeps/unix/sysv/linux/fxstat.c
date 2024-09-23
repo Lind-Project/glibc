@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <kernel_stat.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 #if !XSTAT_IS_XSTAT64
 # include <xstatconv.h>

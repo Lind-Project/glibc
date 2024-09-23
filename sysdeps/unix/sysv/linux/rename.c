@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <sysdep.h>
 #include <errno.h>
+#include <syscall-template.h>
 
 /* Rename the file OLD to NEW.  */
 int

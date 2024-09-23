@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 /* Duplicate FD to FD2, closing the old FD2 and making FD2 be
    open the same file as FD is.  Return FD2 or -1.  */

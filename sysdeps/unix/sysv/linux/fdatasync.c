@@ -19,6 +19,7 @@
 
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 /* Synchronize at least the data part of a file with the underlying
    media.  */

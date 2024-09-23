@@ -17,12 +17,14 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <dirent.h>
+#include <syscall-template.h>
 
 #if !_DIRENT_MATCHES_DIRENT64
 
 # include <unistd.h>
 # include <string.h>
 # include <errno.h>
+
 
 # ifndef DIRENT_SET_DP_INO
 #  define DIRENT_SET_DP_INO(dp, value) (dp)->d_ino = (value)

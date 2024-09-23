@@ -25,7 +25,7 @@
 
 #include <sysdep.h>
 #include <sys/syscall.h>
-
+#include <syscall-template.h>
 
 /* If we compile the file for use in ld.so we don't need the feature
    that getcwd() allocates the buffers itself.  */
@@ -43,6 +43,7 @@
 /* Get the code for the generic version.  */
 #define GETCWD_RETURN_TYPE	static char *
 #include <sysdeps/posix/getcwd.c>
+
 
 char *
 __getcwd (char *buf, size_t size)

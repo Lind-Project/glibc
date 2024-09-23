@@ -18,6 +18,7 @@
 
 #include <unistd.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 /* Create a one-way communication channel (__pipe).
    If successful, two file descriptors are stored in PIPEDES;

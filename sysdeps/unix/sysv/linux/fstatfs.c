@@ -20,6 +20,7 @@
 #include <time.h>
 #include <sysdep.h>
 #include <kernel_stat.h>
+#include <syscall-template.h>
 
 #if !STATFS_IS_STATFS64
 

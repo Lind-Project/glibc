@@ -18,6 +18,9 @@
 
 #include <fcntl.h>
 #include <sysdep.h>
+#include <unistd.h>
+#include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 /* Change the protections of FILE to MODE.  */
 int

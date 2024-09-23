@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <syscall-template.h>
 
 int
 __chdir (const char *__path)

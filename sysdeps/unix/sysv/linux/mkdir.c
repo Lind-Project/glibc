@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 /* Create a directory named PATH with protections MODE.  */
 int

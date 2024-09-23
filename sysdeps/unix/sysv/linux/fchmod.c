@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <sys/stat.h>
+#include <syscall-template.h>
 
 int
 fchmod (int fd, mode_t mode)

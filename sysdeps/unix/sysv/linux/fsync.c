@@ -19,6 +19,7 @@
 
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 /* Make all changes done to FD actually appear on disk.  */
 int

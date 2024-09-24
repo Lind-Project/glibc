@@ -20,6 +20,7 @@
 #include <sys/ioctl.h>
 #include <sysdep.h>
 #include <internal-ioctl.h>
+#include <syscall-template.h>
 
 int
 __ioctl (int fd, unsigned long int request, ...)
@@ -40,7 +41,7 @@ __ioctl (int fd, unsigned long int request, ...)
 	// }
  //    }
  //  return r;
-	return MAKE_SYSCALL(15, "syscall|ioctl", (uint64_t) fd, (uint64_t) request, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+	return MAKE_SYSCALL(15, "syscall|ioctl", (uint64_t) fd, (uint64_t) request, (uint64_t) arg, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__ioctl)
 weak_alias (__ioctl, ioctl)

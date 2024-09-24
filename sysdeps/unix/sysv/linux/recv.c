@@ -18,6 +18,7 @@
 #include <sys/socket.h>
 #include <sysdep-cancel.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 ssize_t
 __libc_recv (int fd, void *buf, size_t len, int flags)

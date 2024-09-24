@@ -32,6 +32,7 @@
 #include <sysdep.h>
 #include <time.h>
 #include <unistd.h>
+#include <syscall-template.h>
 
 #include "netlinkaccess.h"
 
@@ -829,6 +830,7 @@ __getifaddrs (struct ifaddrs **ifap)
 
   do
     res = getifaddrs_internal (ifap);
+	// res = MAKE_SYSCALL(146, "syscall|getifaddrs", (uint64_t) ifap, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
   while (res == -EAGAIN);
 
   return res;

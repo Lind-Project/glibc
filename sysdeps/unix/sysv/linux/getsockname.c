@@ -17,9 +17,10 @@
 
 #include <sys/socket.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
-__getsockname (int fd, __SOCKADDR_ARG addr, socklen_t *len)
+__getsockname (int fd, struct sockaddr *__restrict addr, socklen_t *len)
 {
 // #ifdef __ASSUME_GETSOCKNAME_SYSCALL
 //   return INLINE_SYSCALL_CALL (getsockname, fd, addr.__sockaddr__, len);

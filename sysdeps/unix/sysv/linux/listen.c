@@ -17,6 +17,7 @@
 
 #include <sys/socket.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
 listen (int fd, int backlog)

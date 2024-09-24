@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <sysdep-cancel.h>
 #include <not-cancel.h>
+#include <syscall-template.h>
 
 #ifndef __NR_fcntl64
 # define __NR_fcntl64 __NR_fcntl
@@ -52,7 +53,8 @@ __fcntl64_nocancel_adjusted (int fd, int cmd, void *arg)
   if (cmd == F_GETOWN)
     {
       struct f_owner_ex fex;
-      int res = INTERNAL_SYSCALL_CALL (fcntl64, fd, F_GETOWN_EX, &fex);
+      int res = MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) F_GETOWN_EX, (uint64_t) &fex, NOTUSED, NOTUSED, NOTUSED);
+      // int res = INTERNAL_SYSCALL_CALL (fcntl64, fd, F_GETOWN_EX, &fex);
       if (!INTERNAL_SYSCALL_ERROR_P (res))
 	return fex.type == F_OWNER_GID ? -fex.pid : fex.pid;
 
@@ -60,5 +62,6 @@ __fcntl64_nocancel_adjusted (int fd, int cmd, void *arg)
         (INTERNAL_SYSCALL_ERRNO (res));
     }
 
-  return INLINE_SYSCALL_CALL (fcntl64, fd, cmd, (void *) arg);
+  return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) (void *) arg, NOTUSED, NOTUSED, NOTUSED);
+  // return INLINE_SYSCALL_CALL (fcntl64, fd, cmd, (void *) arg);
 }

@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <kernel_stat.h>
 #include <sysdep.h>
+#include <stdio.h>
 
 #if !XSTAT_IS_XSTAT64
 int

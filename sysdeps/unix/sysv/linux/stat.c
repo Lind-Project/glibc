@@ -25,6 +25,7 @@
 int
 __stat (const char *fd, struct stat *buf)
 {
+   printf("stat\n");
  // return __fstatat (AT_FDCWD, file, buf, 0);
  return MAKE_SYSCALL(9, "syscall|xstat", (uint64_t) fd, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED); 
 }

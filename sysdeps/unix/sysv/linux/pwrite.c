@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sysdep-cancel.h>
 #include <shlib-compat.h>
+#include <syscall-template.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 

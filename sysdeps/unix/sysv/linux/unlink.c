@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 /* Remove the link named NAME.  */
 int

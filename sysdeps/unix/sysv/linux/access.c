@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 int
 __access (const char *file, int type)

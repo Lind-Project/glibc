@@ -13,7 +13,7 @@ struct timespec
 #ifdef __USE_TIME_BITS64
   __time64_t tv_sec;		/* Seconds.  */
 #else
-  __time_t tv_sec;		/* Seconds.  */
+  __time64_t tv_sec;		/* Seconds.  */
 #endif
 #if __WORDSIZE == 64 \
   || (defined __SYSCALL_WORDSIZE && __SYSCALL_WORDSIZE == 64) \

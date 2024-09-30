@@ -91,7 +91,7 @@ __clock_nanosleep_time64 (clockid_t clock_id, int flags,
 //     *rem = valid_timespec64_to_timespec (trem64);
 
 //   return r;
-  return MAKE_SYSCALL(172, "syscall|nanosleep", (uint64_t) clock_id, (uint64_t) flags, (uint64_t)req, (uint64_t)rem, NOTUSED, NOTUSED);
+  return MAKE_SYSCALL(181, "syscall|nanosleep", (uint64_t) clock_id, (uint64_t) flags, (uint64_t)req, (uint64_t)rem, NOTUSED, NOTUSED);
 }
 // #endif
 // libc_hidden_def (__clock_nanosleep)

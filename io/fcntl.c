@@ -28,13 +28,12 @@ __fcntl (int fd, int cmd, ...)
       return -1;
     }
   
-  // va_list args;
-  // va_start(args, cmd);
-  // int arg = va_arg(args, int);
+  va_list args;
+  va_start(args, cmd);
+  int arg = va_arg(args, int);
 
   __set_errno (ENOSYS);
   return -1;
-	// return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) arg, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__fcntl)
 stub_warning (fcntl)

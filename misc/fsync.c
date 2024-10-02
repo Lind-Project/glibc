@@ -24,8 +24,6 @@ int
 fsync (int fd)
 {
 	return MAKE_SYSCALL(162, "syscall|fsync", (uint64_t) fd, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
-  // __set_errno (ENOSYS);
-  // return -1;
 }
 libc_hidden_def (fsync)
 

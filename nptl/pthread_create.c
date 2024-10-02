@@ -342,21 +342,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-	// struct start_args *args = (void *)pd->stackblock;
-	// struct start_args args;
-	// args -= sizeof(struct start_args);
-
-  // unsigned char * tsd = stackaddr + 65664 - sizeof(void *) * 128;
-	// size_t tls_size = __builtin_wasm_tls_size();
-	// size_t tls_size = 0;
-
-	// args->stack = (uintptr_t) stackaddr; /* just for convenience of asm trampoline */
-	// args->start_func = pd->start_routine;
-	// args->start_arg = pd->arg;
-	// // args->tls_base = (uintptr_t) __copy_tls(tsd - tls_size);
-	// args->tls_base = pd;
-  // args->thread = (pthread_t*) pd;
-
   struct clone_args *args = (void *)pd->stackblock;
   memset(args, 0, sizeof(struct clone_args));
   args->flags = clone_flags;
@@ -364,8 +349,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
   args->stack_size = 65664;
   args->child_tid = &pd->tid;
 
-  // int ret = __wasi_thread_spawn((void *) args);
-  // int ret = __clone_internal (args, pd->start_routine, pd->arg);
   int ret = __clone_internal(args, &start_thread, pd);
   if (__glibc_unlikely (ret == -1))
     return errno;
@@ -619,10 +602,6 @@ start_thread (void *arg)
       while (robust != (void *) &pd->robust_head);
     }
 #endif
-
-  // if (!pd->user_stack)
-  //   advise_stack_range (pd->stackblock, pd->stackblock_size, (uintptr_t) pd,
-	// 		pd->guardsize);
 
   if (__glibc_unlikely (pd->cancelhandling & SETXID_BITMASK))
     {
@@ -969,14 +948,11 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
 
-  // MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAIT, (uint64_t) 0, (uint64_t)0, 0, (uint64_t)0);
-
   return retval;
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);
 libc_hidden_ver (__pthread_create_2_1, __pthread_create)
 #ifndef SHARED
-// strong_alias (__pthread_create_2_1, __pthread_create)
 #endif
 
 #if OTHER_SHLIB_COMPAT (libpthread, GLIBC_2_1, GLIBC_2_34)

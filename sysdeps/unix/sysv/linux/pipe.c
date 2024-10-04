@@ -27,7 +27,6 @@
 int
 __pipe (int __pipedes[2])
 {
-  // return INLINE_SYSCALL_CALL (pipe2, (int *) __pipedes, 0);
    return MAKE_SYSCALL(66, "syscall|pipe", (uint64_t) __pipedes, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__pipe)

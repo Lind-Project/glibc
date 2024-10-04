@@ -26,7 +26,6 @@ __writev (int fd, const struct iovec *iov, int iovcnt)
 {
   // Dennis Edit
   return MAKE_SYSCALL(170, "syscall|writev", (uint64_t) fd, (uint64_t)(uintptr_t) iov, (uint64_t) iovcnt, NOTUSED, NOTUSED, NOTUSED);
-  // return SYSCALL_CANCEL (writev, fd, iov, iovcnt);
 }
 libc_hidden_def (__writev)
 weak_alias (__writev, writev)

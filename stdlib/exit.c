@@ -137,7 +137,6 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
   if (run_list_atexit)
     call_function_static_weak (_IO_cleanup);
 
-//   _exit (status);
 	__wasi_exit(status);
 }
 

@@ -42,19 +42,6 @@ static inline off_t lseek_overflow (loff_t res)
 off_t
 __lseek (int fd, off_t offset, int whence)
 {
-// #ifdef __NR_llseek
-// # define __NR__llseek __NR_llseek
-// #endif
-
-// # ifdef __NR__llseek
-//   loff_t res;
-//   int rc = INLINE_SYSCALL_CALL (_llseek, fd,
-// 				(long) (((uint64_t) (offset)) >> 32),
-// 				(long) offset, &res, whence);
-//   return rc ?: lseek_overflow (res);
-// # else
-//   return INLINE_SYSCALL_CALL (lseek, fd, offset, whence);
-// # endif
 	return MAKE_SYSCALL(14, "syscall|lseek", (uint64_t) fd, (uint64_t) offset, (uint64_t) whence, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__lseek)

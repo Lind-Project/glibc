@@ -23,13 +23,6 @@
 ssize_t
 __libc_recv (int fd, void *buf, size_t len, int flags)
 {
-// #ifdef __ASSUME_RECV_SYSCALL
-//   return SYSCALL_CANCEL (recv, fd, buf, len, flags);
-// #elif defined __ASSUME_RECVFROM_SYSCALL
-//   return SYSCALL_CANCEL (recvfrom, fd, buf, len, flags, NULL, NULL);
-// #else
-//   return SOCKETCALL_CANCEL (recv, fd, buf, len, flags);
-// #endif
    return MAKE_SYSCALL(36, "syscall|recv", (uint64_t) fd, (uint64_t) buf, (uint64_t) len, (uint64_t) flags, NOTUSED, NOTUSED);
 }
 weak_alias (__libc_recv, recv)

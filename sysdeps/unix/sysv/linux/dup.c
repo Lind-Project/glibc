@@ -26,13 +26,9 @@
 int
 __dup (int fd)
 {
-
-  // return 0;
    return MAKE_SYSCALL(24, "syscall|dup", (uint64_t) fd, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 
 int dup (int fd) {
-
-  // return __dup(fd);
    return MAKE_SYSCALL(24, "syscall|dup", (uint64_t) fd, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }

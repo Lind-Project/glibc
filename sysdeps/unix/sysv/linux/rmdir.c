@@ -25,11 +25,6 @@
 int
 __rmdir (const char *path)
 {
-// #ifdef __NR_rmdir
-//   return INLINE_SYSCALL_CALL (rmdir, path);
-// #else
-//   return INLINE_SYSCALL_CALL (unlinkat, AT_FDCWD, path, AT_REMOVEDIR);
-// #endif
    return MAKE_SYSCALL(132, "syscall|rmdir", (uint64_t) path, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__rmdir, rmdir)

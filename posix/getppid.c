@@ -25,8 +25,6 @@ int
 __getppid (void)
 {
    return MAKE_SYSCALL(29, "syscall|getppid", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
-  // __set_errno (ENOSYS);
-  // return -1;
 }
 stub_warning (getppid)
 

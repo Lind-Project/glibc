@@ -24,13 +24,6 @@ ssize_t
 __libc_recvfrom (int fd, void *buf, size_t len, int flags,
 		 struct sockaddr *__restrict addr, socklen_t *addrlen)
 {
-// #ifdef __ASSUME_RECVFROM_SYSCALL
-//   return SYSCALL_CANCEL (recvfrom, fd, buf, len, flags, addr.__sockaddr__,
-//                          addrlen);
-// #else
-//   return SOCKETCALL_CANCEL (recvfrom, fd, buf, len, flags, addr.__sockaddr__,
-// 			    addrlen);
-// #endif
 	return MAKE_SYSCALL(37, "syscall|recvfrom", (uint64_t) fd, (uint64_t) buf, (uint64_t) len, (uint64_t) flags, (uint64_t) addr, (uint64_t) addrlen);
 }
 weak_alias (__libc_recvfrom, recvfrom)

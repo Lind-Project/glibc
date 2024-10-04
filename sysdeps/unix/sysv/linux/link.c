@@ -19,16 +19,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 /* Make a link to FROM called TO.  */
 int
 __link (const char *from, const char *to)
 {
-// #ifdef __NR_link
-//   return INLINE_SYSCALL_CALL (link, from, to);
-// #else
-//   return INLINE_SYSCALL_CALL (linkat, AT_FDCWD, from, AT_FDCWD, to, 0);
-// #endif
    return MAKE_SYSCALL(5, "syscall|link", (uint64_t) from, (uint64_t) to, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 

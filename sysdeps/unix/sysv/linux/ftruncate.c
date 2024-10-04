@@ -25,12 +25,6 @@
 int
 __ftruncate (int fd, off_t length)
 {
-// # ifndef __NR_ftruncate
-//   return INLINE_SYSCALL_CALL (ftruncate64, fd,
-// 			      __ALIGNMENT_ARG SYSCALL_LL (length));
-// # else
-//   return INLINE_SYSCALL_CALL (ftruncate, fd, length);
-// # endif
 	return MAKE_SYSCALL(18, "syscall|ftruncate", (uint64_t) fd, (uint64_t) length, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__ftruncate, ftruncate)

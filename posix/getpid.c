@@ -17,13 +17,13 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <syscall-template.h>
 
 /* Get the process ID of the calling process.  */
 int
 __getpid (void)
 {
-  __set_errno (ENOSYS);
-  return -1;
+  return MAKE_SYSCALL(31, "syscall|getpid", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__getpid)
 stub_warning (getpid)

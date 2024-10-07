@@ -32,6 +32,7 @@
 #include <sysdep.h>
 #include <time.h>
 #include <unistd.h>
+#include <syscall-template.h>
 
 #include "netlinkaccess.h"
 

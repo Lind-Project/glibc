@@ -18,18 +18,13 @@
 #include <sys/socket.h>
 #include <sysdep-cancel.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 ssize_t
 __libc_sendto (int fd, const void *buf, size_t len, int flags,
-	       __CONST_SOCKADDR_ARG addr, socklen_t addrlen)
+	       const struct sockaddr * addr, socklen_t addrlen)
 {
-#ifdef __ASSUME_SENDTO_SYSCALL
-  return SYSCALL_CANCEL (sendto, fd, buf, len, flags, addr.__sockaddr__,
-                         addrlen);
-#else
-  return SOCKETCALL_CANCEL (sendto, fd, buf, len, flags, addr.__sockaddr__,
-			    addrlen);
-#endif
+	return MAKE_SYSCALL(35, "syscall|sendto", (uint64_t) fd, (uint64_t) buf, (uint64_t) len, (uint64_t) flags, (uint64_t) addr, (uint64_t) addrlen);
 }
 weak_alias (__libc_sendto, sendto)
 weak_alias (__libc_sendto, __sendto)

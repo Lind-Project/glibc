@@ -16,8 +16,8 @@
 # License along with the GNU C Library; if not, see
 # <https://www.gnu.org/licenses/>.
 
-pcprofileso='/home/dennis/Documents/lind-wasm/glibc/target/\$LIB/libpcprofile.so'
-pcprofiledump='/home/dennis/Documents/lind-wasm/glibc/target/bin/pcprofiledump'
+pcprofileso='/home/lind-wasm/glibc/target/\$LIB/libpcprofile.so'
+pcprofiledump='/home/lind-wasm/glibc/target/bin/pcprofiledump'
 TEXTDOMAIN=libc
 
 # Print usage message.

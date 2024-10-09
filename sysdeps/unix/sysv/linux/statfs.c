@@ -27,7 +27,7 @@
 int
 __statfs (const char *file, struct statfs *buf)
 {
-	return MAKE_SYSCALL(26, "syscall|statfs", (uint64_t) file, (uint64_t buf) , NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+	return MAKE_SYSCALL(26, "syscall|statfs", (uint64_t) file, (uint64_t) buf , NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__statfs)
 weak_alias (__statfs, statfs)

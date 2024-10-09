@@ -12,7 +12,6 @@ set_stack_pointer:
 	.functype	set_stack_pointer (i32) -> ()
 
 	local.get   0  # start_arg
-	i32.load    0  # stack
 	global.set  __stack_pointer
 
 	end_function

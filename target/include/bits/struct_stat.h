@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
+#include <bits/types/struct_timespec.h>
 
 #if !defined _SYS_STAT_H && !defined _FCNTL_H
 # error "Never include <bits/struct_stat.h> directly; use <sys/stat.h> instead."

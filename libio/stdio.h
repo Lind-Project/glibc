@@ -144,6 +144,8 @@ typedef __fpos64_t fpos64_t;
 # define _PRINTF_NAN_LEN_MAX 4
 #endif
 
+extern void print_stack_pointer(void);
+extern void __myitoa(int num, char* str, int base);
 
 /* Standard streams.  */
 extern FILE *stdin;		/* Standard input stream.  */

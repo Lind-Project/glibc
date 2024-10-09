@@ -39,6 +39,7 @@ __pthread_clockjoin_ex (pthread_t threadid, void **thread_return,
                         clockid_t clockid,
                         const struct __timespec64 *abstime, bool block)
 {
+  printf("__pthread_clockjoin_ex!\n");
   struct pthread *pd = (struct pthread *) threadid;
 
   /* Make sure the descriptor is valid.  */
@@ -103,12 +104,14 @@ __pthread_clockjoin_ex (pthread_t threadid, void **thread_return,
 	    the clone terminates.  */
 	  int ret = __futex_abstimed_wait_cancelable64 (
 	    (unsigned int *) &pd->tid, tid, clockid, abstime, LLL_SHARED);
+    printf("pthread_join wake up from __futex_abstimed_wait_cancelable64\n");
 	  if (ret == ETIMEDOUT || ret == EOVERFLOW)
 	    {
 	      result = ret;
 	      break;
 	    }
 	}
+  printf("tid=%d\n", tid);
 
       pthread_cleanup_pop (0);
     }

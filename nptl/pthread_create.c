@@ -258,6 +258,9 @@ void *__dummy_reference = wasi_thread_start;
 void set_stack_pointer(int stack_addr);
 void *__dummy_reference3 = set_stack_pointer;
 
+void set_stack_start(int stack_addr);
+void *__dummy_reference4 = set_stack_start;
+
 struct start_args {
     /*
     * Note: the offset of the "stack" and "tls_base" members
@@ -342,14 +345,17 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-  struct clone_args *args = (void *)pd->stackblock;
+  // struct clone_args *args = (void *)pd->stackblock;
+  struct clone_args *args = (void *)pd->stackblock + pd->stackblock_size - sizeof(struct clone_args) - TLS_TCB_SIZE;
   memset(args, 0, sizeof(struct clone_args));
   args->flags = clone_flags;
   args->stack = stackaddr;
-  args->stack_size = 65664;
+  args->stack = stackaddr + pd->stackblock_size - sizeof(struct clone_args) - TLS_TCB_SIZE;
+  args->stack_size = 16416 - sizeof(struct clone_args) - TLS_TCB_SIZE;
   args->child_tid = &pd->tid;
 
   int ret = __clone_internal(args, &start_thread, pd);
+  printf("pthread_create, child tid=%d, pd=%d\n", pd->tid, pd);
   if (__glibc_unlikely (ret == -1))
     return errno;
 
@@ -416,7 +422,7 @@ start_thread (void *arg)
       if (setup_failed)
 	goto out;
     }
-
+  __libc_tsd_LOCALE = &_nl_global_locale;
   /* Initialize resolver state pointer.  */
   __resp = &pd->res;
 
@@ -645,9 +651,9 @@ out:
 
      The exit code is zero since in case all threads exit by calling
      'pthread_exit' the exit status must be 0 (zero).  */
-
+  
+  pd->tid = 0;
   MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
-	pd->tid = 0;
   while (1)
     // INTERNAL_SYSCALL_CALL (exit, 0);
     exit(0);
@@ -806,6 +812,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
 
   /* Pass the descriptor to the caller.  */
   *newthread = (pthread_t) pd;
+  printf("assign newthread: pd->tid=%d, pd=%d, newthread=%d\n", pd->tid, pd, *newthread);
 
   LIBC_PROBE (pthread_create, 4, newthread, attr, start_routine, arg);
 
@@ -947,7 +954,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
  out:
   if (destroy_default_attr)
     __pthread_attr_destroy (&default_attr.external);
-
+  printf("assign newthread end: pd->tid=%d (%d), pd=%d, newthread=%d\n", pd->tid, &pd->tid, pd, *newthread);
   return retval;
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);

@@ -10,13 +10,13 @@
  * are designed to be compatible with the legacy XFS ioctls.
  */
 struct space_resv {
-	__s16		l_type;
-	__s16		l_whence;
-	__s64		l_start;
-	__s64		l_len;		/* len == 0 means until end of file */
-	__s32		l_sysid;
-	__u32		l_pid;
-	__s32		l_pad[4];	/* reserved area */
+	short		l_type;
+	short		l_whence;
+	long long		l_start;
+	long long		l_len;		/* len == 0 means until end of file */
+	int		l_sysid;
+	unsigned int		l_pid;
+	int		l_pad[4];	/* reserved area */
 };
 
 #define FS_IOC_RESVSP		_IOW('X', 40, struct space_resv)

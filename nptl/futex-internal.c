@@ -64,9 +64,10 @@ __futex_abstimed_wait_common64 (unsigned int* futex_word,
 	// 			    abstime, NULL /* Unused.  */,
 	// 			    FUTEX_BITSET_MATCH_ANY);
   // else
-    return INTERNAL_SYSCALL_CALL (futex_time64, futex_word, op, expected,
-				  abstime, NULL /* Unused.  */,
-				  FUTEX_BITSET_MATCH_ANY);
+    return MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op, (uint64_t) expected, (uint64_t)abstime, 0, (uint64_t)FUTEX_BITSET_MATCH_ANY);
+    // return INTERNAL_SYSCALL_CALL (futex_time64, futex_word, op, expected,
+		// 		  abstime, NULL /* Unused.  */,
+				  // FUTEX_BITSET_MATCH_ANY);
 }
 
 static int
@@ -170,7 +171,8 @@ __futex_lock_pi64 (int *futex_word, clockid_t clockid,
 # else
   bool need_time64 = abstime != NULL && !in_int32_t_range (abstime->tv_sec);
   if (need_time64)
-    err = INTERNAL_SYSCALL_CALL (futex_time64, futex_word, op_pi, 0, abstime);
+    err = MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op_pi, (uint64_t) 0, (uint64_t)abstime, 0, (uint64_t)0);
+    // err = INTERNAL_SYSCALL_CALL (futex_time64, futex_word, op_pi, 0, abstime);
   else
     {
       struct timespec ts32, *pts32 = NULL;
@@ -179,7 +181,8 @@ __futex_lock_pi64 (int *futex_word, clockid_t clockid,
 	  ts32 = valid_timespec64_to_timespec (*abstime);
 	  pts32 = &ts32;
 	}
-      err = INTERNAL_SYSCALL_CALL (futex, futex_word, op_pi, 0, pts32);
+      err = MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op_pi, (uint64_t) 0, (uint64_t)pts32, 0, (uint64_t)0);
+      // err = INTERNAL_SYSCALL_CALL (futex, futex_word, op_pi, 0, pts32);
     }
 # endif	 /* __ASSUME_TIME64_SYSCALLS */
    /* FUTEX_LOCK_PI2 is not available on this kernel.  */

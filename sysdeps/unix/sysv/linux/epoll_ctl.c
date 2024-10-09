@@ -1,4 +1,5 @@
-/* Copyright (C) 2015-2024 Free Software Foundation, Inc.
+/* Open an epoll file descriptor.  Linux version.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -12,16 +13,19 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
+   License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sys/socket.h>
-#include <socketcall.h>
+#include <sys/epoll.h>
+#include <sysdep.h>
 #include <syscall-template.h>
 
+libc_hidden_proto (epoll_ctl)
+
 int
-__getpeername (int fd, struct sockaddr *__restrict addr, socklen_t *len)
+epoll_ctl (int __epfd, int __op, int __fd,
+		      struct epoll_event *__event)
 {
-   return MAKE_SYSCALL(145, "syscall|getpeername", (uint64_t) fd, (uint64_t) addr, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED);
+   return MAKE_SYSCALL(57, "syscall|epoll_ctl", (uint64_t) __epfd, (uint64_t) __op, (uint64_t) __fd, (uint64_t) __event, NOTUSED, NOTUSED);
 }
-weak_alias (__getpeername, getpeername)
+libc_hidden_def (epoll_ctl)

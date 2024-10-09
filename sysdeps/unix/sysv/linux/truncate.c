@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sysdep.h>
 #include <errno.h>
+#include <syscall-template.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 /* Truncate PATH to LENGTH bytes.  */

@@ -21,20 +21,21 @@
 #include <sysdep.h>
 #include <abort-instr.h>
 
+// Qianxi Edit: moved to stdlib/exit.c
+// void
+// _exit (int status)
+// {
+//   while (1)
+//     {
+//       // INLINE_SYSCALL (exit_group, 1, status);
+//       // Qianxi Edit: exit without doing any cleanup
+//       __wasi_exit(status);
 
-void
-_exit (int status)
-{
-  while (1)
-    {
-      // INLINE_SYSCALL (exit_group, 1, status);
-      exit(status);
-
-#ifdef ABORT_INSTRUCTION
-      ABORT_INSTRUCTION;
-#endif
-    }
-}
-libc_hidden_def (_exit)
-rtld_hidden_def (_exit)
-weak_alias (_exit, _Exit)
+// #ifdef ABORT_INSTRUCTION
+//       ABORT_INSTRUCTION;
+// #endif
+//     }
+// }
+// // libc_hidden_def (_exit)
+// rtld_hidden_def (_exit)
+// weak_alias (_exit, _Exit)

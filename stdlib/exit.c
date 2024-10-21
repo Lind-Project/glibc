@@ -32,6 +32,25 @@ void __wasi_exit(int status) {
     return __imported_wasi_exit(status);
 }
 
+void
+_exit (int status)
+{
+  while (1)
+    {
+      // INLINE_SYSCALL (exit_group, 1, status);
+      // Qianxi Edit: exit without doing any cleanup
+      __wasi_exit(status);
+
+#ifdef ABORT_INSTRUCTION
+      ABORT_INSTRUCTION;
+#endif
+    }
+}
+// libc_hidden_def (_exit)
+rtld_hidden_def (_exit)
+weak_alias (_exit, _Exit)
+
+
 /* Initialize the flag that indicates exit function processing
    is complete. See concurrency notes in stdlib/exit.h where
    __exit_funcs_lock is declared.  */
@@ -137,7 +156,7 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
   if (run_list_atexit)
     call_function_static_weak (_IO_cleanup);
 
-	__wasi_exit(status);
+	_exit(status);
 }
 
 

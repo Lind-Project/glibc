@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <dirent.h>
+#include <stdio.h>
 
 #if !_DIRENT_MATCHES_DIRENT64
 #include <dirstream.h>
@@ -25,16 +26,17 @@
 struct dirent *
 __readdir_unlocked (DIR *dirp)
 {
+  printf("readdir\n");
   struct dirent *dp;
   int saved_errno = errno;
 
+  printf("dirp->offset: %d, dirp->size: %d\n", dirp->offset, dirp->size);
   if (dirp->offset >= dirp->size)
     {
       /* We've emptied out our buffer.  Refill it.  */
 
       size_t maxread = dirp->allocation;
       ssize_t bytes;
-
       bytes = __getdents (dirp->fd, dirp->data, maxread);
       if (bytes <= 0)
 	{

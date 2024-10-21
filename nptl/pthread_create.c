@@ -958,7 +958,7 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   return retval;
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);
-libc_hidden_ver (__pthread_create_2_1, __pthread_create)
+weak_alias (__pthread_create_2_1, __pthread_create)
 #ifndef SHARED
 #endif
 

@@ -16,11 +16,10 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <unistd.h>
-#include <syscall-template.h>
 
 /* Execute PATH with arguments ARGV and environment from `environ'.  */
 int
 execv (const char *path, char *const argv[])
 {
-  return MAKE_SYSCALL(69, "syscall|execv", (uint64_t)path, (uint64_t)argv, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+  return __execve(path, argv, environ);
 }

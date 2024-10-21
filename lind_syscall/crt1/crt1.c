@@ -1,39 +1,117 @@
-#include <wasi/api.h>
 #include <stdlib.h>
 #include <sysexits.h>
 
-int32_t __imported_wasi_snapshot_preview1_args_sizes_get(int32_t arg0, int32_t arg1) __attribute__((
+// char** __wasilibc_environ;
+// weak_alias(__wasilibc_environ, _environ);
+// weak_alias(__wasilibc_environ, environ);
+extern char** environ;
+
+static char *empty_environ[1] = { NULL };
+
+signed int __imported_wasi_snapshot_preview1_args_sizes_get(signed int arg0, signed int arg1) __attribute__((
     __import_module__("wasi_snapshot_preview1"),
     __import_name__("args_sizes_get")
 ));
 
-__wasi_errno_t __wasi_args_sizes_get(
-    __wasi_size_t *retptr0,
-    __wasi_size_t *retptr1
+unsigned short __wasi_args_sizes_get(
+    unsigned long *retptr0,
+    unsigned long *retptr1
 ){
-    int32_t ret = __imported_wasi_snapshot_preview1_args_sizes_get((int32_t) retptr0, (int32_t) retptr1);
-    return (uint16_t) ret;
+    signed int ret = __imported_wasi_snapshot_preview1_args_sizes_get((signed int) retptr0, (signed int) retptr1);
+    return (unsigned short) ret;
 }
 
-int32_t __imported_wasi_snapshot_preview1_args_get(int32_t arg0, int32_t arg1) __attribute__((
+signed int __imported_wasi_snapshot_preview1_args_get(signed int arg0, signed int arg1) __attribute__((
     __import_module__("wasi_snapshot_preview1"),
     __import_name__("args_get")
 ));
 
-__wasi_errno_t __wasi_args_get(
-    uint8_t * * argv,
-    uint8_t * argv_buf
+unsigned short __wasi_args_get(
+    unsigned char * * argv,
+    unsigned char * argv_buf
 ){
-    int32_t ret = __imported_wasi_snapshot_preview1_args_get((int32_t) argv, (int32_t) argv_buf);
-    return (uint16_t) ret;
+    signed int ret = __imported_wasi_snapshot_preview1_args_get((signed int) argv, (signed int) argv_buf);
+    return (unsigned short) ret;
+}
+
+signed int __imported_wasi_snapshot_preview1_environ_get(signed int arg0, signed int arg1) __attribute__((
+    __import_module__("wasi_snapshot_preview1"),
+    __import_name__("environ_get")
+));
+
+unsigned short __wasi_environ_get(
+    unsigned char * * environ,
+    unsigned char * environ_buf
+){
+    signed int ret = __imported_wasi_snapshot_preview1_environ_get((signed int) environ, (signed int) environ_buf);
+    return (unsigned short) ret;
+}
+
+signed int __imported_wasi_snapshot_preview1_environ_sizes_get(signed int arg0, signed int arg1) __attribute__((
+    __import_module__("wasi_snapshot_preview1"),
+    __import_name__("environ_sizes_get")
+));
+
+unsigned short __wasi_environ_sizes_get(
+    unsigned long *retptr0,
+    unsigned long *retptr1
+){
+    signed int ret = __imported_wasi_snapshot_preview1_environ_sizes_get((signed int) retptr0, (signed int) retptr1);
+    return (unsigned short) ret;
 }
 
 void __libc_setup_tls();
 void __wasi_init_tp();
 
+
+void __wasi_initialize_environ(void) {
+    // Get the sizes of the arrays we'll have to create to copy in the environment.
+    size_t environ_count;
+    size_t environ_buf_size;
+    __wasi_environ_sizes_get(&environ_count, &environ_buf_size);
+    
+    if (environ_count == 0) {
+        environ = empty_environ;
+        return;
+    }
+
+    // Add 1 for the NULL pointer to mark the end, and check for overflow.
+    size_t num_ptrs = environ_count + 1;
+    if (num_ptrs == 0) {
+        goto software;
+    }
+
+    // Allocate memory for storing the environment chars.
+    char *environ_buf = malloc(environ_buf_size);
+    if (environ_buf == NULL) {
+        goto software;
+    }
+
+    // Allocate memory for the array of pointers. This uses `calloc` both to
+    // handle overflow and to initialize the NULL pointer at the end.
+    char **environ_ptrs = calloc(num_ptrs, sizeof(char *));
+    if (environ_ptrs == NULL) {
+        free(environ_buf);
+        goto software;
+    }
+
+    // Fill the environment chars, and the `__wasilibc_environ` array with
+    // pointers into those chars.
+    // TODO: Remove the casts on `environ_ptrs` and `environ_buf` once the witx is updated with char8 support.
+    __wasi_environ_get((unsigned char **)environ_ptrs, (unsigned char *)environ_buf);
+
+    environ = environ_ptrs;
+    return;
+oserr:
+    _Exit(EX_OSERR);
+software:
+    _Exit(EX_SOFTWARE);
+}
+
 int _start() {
     __libc_setup_tls();
     __wasi_init_tp();
+    __wasi_initialize_environ();
     return __main_void();
 }
 
@@ -64,8 +142,6 @@ int __main_argc_argv(int argc, char *argv[]);
 // (e.g. crt0.o or crtend.o) and teach Clang to use it when needed.
 __attribute__((__weak__, nodebug))
 int __main_void(void) {
-    __wasi_errno_t err;
-
     // Get the sizes of the arrays we'll have to create to copy in the args.
     size_t argv_buf_size;
     size_t argc;
@@ -93,7 +169,7 @@ int __main_void(void) {
 
     // Fill the argument chars, and the argv array with pointers into those chars.
     // TODO: Remove the casts on `argv_ptrs` and `argv_buf` once the witx is updated with char8 support.
-    __wasi_args_get((uint8_t **)argv, (uint8_t *)argv_buf);
+    __wasi_args_get((unsigned char **)argv, (unsigned char *)argv_buf);
 
     // Call `__main_argc_argv` with the arguments!
     return __main_argc_argv(argc, argv);

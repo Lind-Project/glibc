@@ -35,7 +35,6 @@
 #include <tls-internal.h>
 #include <intprops.h>
 #include <setvmaname.h>
-#include <stdio.h>
 
 /* Default alignment of stack.  */
 #ifndef STACK_ALIGN
@@ -361,7 +360,6 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 
       if (pd == NULL)
 	{
-    printf("allocate stack 1: pd=%d\n", pd);
 	  /* If a guard page is required, avoid committing memory by first
 	     allocate with PROT_NONE and then reserve with required permission
 	     excluding the guard page.  */
@@ -369,11 +367,15 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 		// 	MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
 
     // Dennis Edit: Replacement mmap with malloc
+    // Qianxi Edit: changed the malloc size to 16416 (1/4 of the original)
+    //              since currently there is an issue on malloc that it cannot
+    //              automatically grow the memory if memory is running out.
+    //              Once the issue is fixed, we might be able to change the size
+    //              back
     // size = 65664;
     // size = 32832;
     size = 16416;
     void* mem = malloc(size);
-    printf("mem=%d\n", mem);
 
     if (mem == NULL) {
         // Handle memory allocation failure
@@ -398,18 +400,13 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  pd = (struct pthread *) ((((uintptr_t) mem + size)
 				    - TLS_TCB_SIZE)
 				   & ~tls_static_align_m1);
-    printf("allocate stack 2: pd=%d\n", pd);
 #elif TLS_DTV_AT_TP
 	  pd = (struct pthread *) ((((uintptr_t) mem + size
 				    - tls_static_size_for_stack)
 				    & ~tls_static_align_m1)
 				   - TLS_PRE_TCB_SIZE);
-    printf("allocate stack 3: pd=%d\n", pd);
 #endif
-    // mem += size;
-    // printf("mem2=%d\n", mem);
 
-    printf("allocate stack 4: pd=%d\n", pd);
 	  /* Now mprotect the required region excluding the guard area.  */
 	  if (__glibc_likely (guardsize > 0))
 	    {

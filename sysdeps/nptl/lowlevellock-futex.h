@@ -62,13 +62,6 @@
      ? -INTERNAL_SYSCALL_ERRNO (__ret) : 0);                     	\
   })
 
-// # define lll_futex_syscall(nargs, futexp, op, ...)                      \
-//   ({                                                                    \
-//     long int __res = MAKE_SYSCALL (98, "syscall|futex", (uint64_t) futexp, (uint64_t) op, __VA_ARGS__);
-//     (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (__ret))         	\
-//      ? -INTERNAL_SYSCALL_ERRNO (__ret) : 0);                     	\
-//   })
-
 /* For most of these macros, the return value is never really used.
    Nevertheless, the protocol is that each one returns a negated errno
    code for failure or zero for success.  (Note that the corresponding

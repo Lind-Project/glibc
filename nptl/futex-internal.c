@@ -40,6 +40,7 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
       pts32 = &ts32;
     }
 
+  // Qianxi Edit: replace with lind syscall
   // if (cancel)
   //   return INTERNAL_SYSCALL_CANCEL (futex, futex_word, op, expected,
   //                                   pts32, NULL /* Unused.  */,

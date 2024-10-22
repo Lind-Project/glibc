@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <sysexits.h>
 
-// char** __wasilibc_environ;
-// weak_alias(__wasilibc_environ, _environ);
-// weak_alias(__wasilibc_environ, environ);
 extern char** environ;
 
 static char *empty_environ[1] = { NULL };

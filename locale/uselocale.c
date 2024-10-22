@@ -19,7 +19,6 @@
 #include <locale.h>
 #include "localeinfo.h"
 #include <ctype.h>
-#include <stdio.h>
 
 /* Switch the current thread's locale to DATASET.
    If DATASET is null, instead just return the current setting.
@@ -29,6 +28,10 @@
 locale_t
 __uselocale (locale_t newloc)
 {
+   // Qianxi Edit: locale related stuff is not working currently
+   // this feature is not important so we might look into this later
+   // if we want to support it in the future
+
 //   locale_t oldloc = _NL_CURRENT_LOCALE;
 
 //   if (newloc != NULL)

@@ -24,6 +24,9 @@ copy_file_range (int infd, __off64_t *pinoff,
                  int outfd, __off64_t *poutoff,
                  size_t length, unsigned int flags)
 {
+  // Qianxi Edit: we currently cannot support this syscall
+  //              so instead of letting it crash directly,
+  //              let's just set the errno and return
   __set_errno (ENOSYS);
   return -1;
 }

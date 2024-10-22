@@ -26,7 +26,6 @@
 
 #include <shlib-compat.h>
 #include <stap-probe.h>
-#include <stdio.h>
 
 #include "pthread_cond_common.c"
 

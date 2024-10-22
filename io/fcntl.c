@@ -27,10 +27,6 @@ __fcntl (int fd, int cmd, ...)
       __set_errno (EBADF);
       return -1;
     }
-  
-  va_list args;
-  va_start(args, cmd);
-  int arg = va_arg(args, int);
 
   __set_errno (ENOSYS);
   return -1;

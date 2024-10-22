@@ -507,7 +507,6 @@ FLOAT
 ____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
 		     locale_t loc)
 {
-	printf("1\n");
   int negative;			/* The sign of the number.  */
   MPN_VAR (num);		/* MP representation of the number.  */
   intmax_t exponent;		/* Exponent of the number.  */
@@ -588,7 +587,6 @@ ____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
   else
     grouping = NULL;
 
-	printf("2\n");
   /* Find the locale's decimal point character.  */
 #ifdef USE_WIDE_CHAR
   decimal = _NL_CURRENT_WORD (LC_NUMERIC, _NL_NUMERIC_DECIMAL_POINT_WC);
@@ -729,7 +727,6 @@ ____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
 	}
     }
 #endif
-	printf("3\n");
 
   /* If no other digit but a '0' is found the result is 0.0.
      Return current read pointer.  */
@@ -879,7 +876,6 @@ ____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
 #if SIZE_MAX == UINTMAX_MAX
   assert (dig_no <= (uintmax_t) INTMAX_MAX);
 #endif
-	printf("4\n");
 
   /* Remember start of exponent (if any).  */
   expp = cp;
@@ -1028,7 +1024,6 @@ ____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
       else
 	cp = expp;
     }
-	printf("5\n");
 
   /* We don't want to have to work with trailing zeroes after the radix.  */
   if (dig_no > int_no)

@@ -209,7 +209,6 @@ futex_abstimed_supported_clockid (clockid_t clockid)
 static __always_inline void
 futex_wake (unsigned int* futex_word, int processes_to_wake, int private)
 {
-  printf("futex wake");
   int res = MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, FUTEX_WAKE, (uint64_t) processes_to_wake, (uint64_t)0, 0, (uint64_t)0);
   // int res = lll_futex_wake (futex_word, processes_to_wake, private);
   /* No error.  Ignore the number of woken processes.  */

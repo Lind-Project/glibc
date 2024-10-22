@@ -20,7 +20,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/param.h>
-#include <stdio.h>
 
 
 /* Make the process sleep for SECONDS seconds, or until a signal arrives

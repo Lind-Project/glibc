@@ -52,8 +52,8 @@ fresetlockfiles (void)
 pid_t
 __libc_fork (void)
 {
-  // printf("calling fork in glibc\n");
-  // int pid = __wasi_fork();
+  // Qianxi Edit: for fork, we just directly call clone from wasmtime,
+  //              so comment out the original code
   struct clone_args args;
   memset(&args, 0, sizeof(args));
   args.flags = 0;

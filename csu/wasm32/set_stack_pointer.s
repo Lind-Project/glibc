@@ -1,3 +1,5 @@
+# function to set the stack pointer
+# used by pthread to set thread stack pointer
 	.text
 
 	.export_name	set_stack_pointer, set_stack_pointer

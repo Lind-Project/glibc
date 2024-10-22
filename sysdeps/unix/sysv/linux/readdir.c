@@ -26,11 +26,9 @@
 struct dirent *
 __readdir_unlocked (DIR *dirp)
 {
-  printf("readdir\n");
   struct dirent *dp;
   int saved_errno = errno;
 
-  printf("dirp->offset: %d, dirp->size: %d\n", dirp->offset, dirp->size);
   if (dirp->offset >= dirp->size)
     {
       /* We've emptied out our buffer.  Refill it.  */

@@ -17,10 +17,10 @@
 
 #include <unistd.h>
 
+
 /* Execute PATH with arguments ARGV and environment from `environ'.  */
 int
 execv (const char *path, char *const argv[])
 {
-  // in crt1.c, environ is directly declared as "environ" instead of "__environ"
-  return __execve(path, argv, environ);
+  return __execve (path, argv, __environ);
 }

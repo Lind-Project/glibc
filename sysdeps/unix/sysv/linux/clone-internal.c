@@ -23,7 +23,6 @@
 #include <clone_internal.h>
 #include <libc-pointer-arith.h>	/* For cast_to_pointer.  */
 #include <stackinfo.h>		/* For _STACK_GROWS_{UP,DOWN}.  */
-#include "libioP.h"
 
 #define CLONE_ARGS_SIZE_VER0 64 /* sizeof first published struct */
 #define CLONE_ARGS_SIZE_VER1 80 /* sizeof second published struct */
@@ -107,8 +106,7 @@ __clone_internal (struct clone_args *cl_args,
   __set_errno (saved_errno);
 #endif
 
-  // return __clone_internal_fallback (cl_args, func, arg);
-  return 0;
+  return __clone_internal_fallback (cl_args, func, arg);
 }
 
 libc_hidden_def (__clone_internal)

@@ -21,7 +21,6 @@
 #include <errno.h>
 #include <limits.h>
 #include <syscall-template.h>
-#include <stdio.h>
 
 /* The kernel struct linux_dirent64 matches the 'struct dirent64' type.  */
 ssize_t

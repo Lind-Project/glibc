@@ -21,28 +21,50 @@
 
 #include <bits/types.h>
 
+// struct statfs
+//   {
+//     __fsword_t f_type;
+//     __fsword_t f_bsize;
+// #ifndef __USE_FILE_OFFSET64
+//     __fsblkcnt_t f_blocks;
+//     __fsblkcnt_t f_bfree;
+//     __fsblkcnt_t f_bavail;
+//     __fsfilcnt_t f_files;
+//     __fsfilcnt_t f_ffree;
+// #else
+//     __fsblkcnt64_t f_blocks;
+//     __fsblkcnt64_t f_bfree;
+//     __fsblkcnt64_t f_bavail;
+//     __fsfilcnt64_t f_files;
+//     __fsfilcnt64_t f_ffree;
+// #endif
+//     __fsid_t f_fsid;
+//     __fsword_t f_namelen;
+//     __fsword_t f_frsize;
+//     __fsword_t f_flags;
+//     __fsword_t f_spare[4];
+//   };
+
 struct statfs
   {
     __fsword_t f_type;
+    int: 32;
     __fsword_t f_bsize;
-#ifndef __USE_FILE_OFFSET64
-    __fsblkcnt_t f_blocks;
-    __fsblkcnt_t f_bfree;
-    __fsblkcnt_t f_bavail;
-    __fsfilcnt_t f_files;
-    __fsfilcnt_t f_ffree;
-#else
+    int: 32;
+    
     __fsblkcnt64_t f_blocks;
     __fsblkcnt64_t f_bfree;
     __fsblkcnt64_t f_bavail;
     __fsfilcnt64_t f_files;
     __fsfilcnt64_t f_ffree;
-#endif
+    
     __fsid_t f_fsid;
     __fsword_t f_namelen;
+    int: 32;
     __fsword_t f_frsize;
-    __fsword_t f_flags;
-    __fsword_t f_spare[4];
+    int: 32;
+    // __fsword_t f_flags;
+    __fsword_t f_spare[8];
   };
 
 #ifdef __USE_LARGEFILE64

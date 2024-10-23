@@ -19,12 +19,16 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <kernel_stat.h>
+#include <syscall-template.h>
 
 #if !XSTAT_IS_XSTAT64
 int
 __lstat (const char *file, struct stat *buf)
 {
-  return __fstatat (AT_FDCWD, file, buf, AT_SYMLINK_NOFOLLOW);
+  // return __fstatat (AT_FDCWD, file, buf, AT_SYMLINK_NOFOLLOW);
+  // Qianxi Edit: we do not have fstatat syscall in rawposix
+  // so let's just use xstat
+  return MAKE_SYSCALL(9, "syscall|xstat", (uint64_t) file, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED); 
 }
 
 weak_alias (__lstat, lstat)

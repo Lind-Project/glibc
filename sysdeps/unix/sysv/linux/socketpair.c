@@ -17,14 +17,11 @@
 
 #include <sys/socket.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
 __socketpair (int domain, int type, int protocol, int sv[2])
 {
-#ifdef __ASSUME_SOCKETPAIR_SYSCALL
-  return INLINE_SYSCALL_CALL (socketpair, domain, type, protocol, &sv[0]);
-#else
-  return SOCKETCALL (socketpair, domain, type, protocol, sv);
-#endif
+   return MAKE_SYSCALL(49, "syscall|socketpair", (uint64_t) domain, (uint64_t) type, (uint64_t) protocol, (uint64_t) sv, NOTUSED, NOTUSED);
 }
 weak_alias (__socketpair, socketpair)

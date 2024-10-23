@@ -19,6 +19,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <syscall-template.h>
 
 /* Put the name of the current host in no more than LEN bytes of NAME.
    The result is null-terminated if LEN is large enough for the full
@@ -26,21 +27,7 @@
 int
 __gethostname (char *name, size_t len)
 {
-  struct utsname buf;
-  size_t node_len;
-
-  if (__uname (&buf))
-    return -1;
-
-  node_len = strlen (buf.nodename) + 1;
-  memcpy (name, buf.nodename, len < node_len ? len : node_len);
-
-  if (node_len > len)
-    {
-      __set_errno (ENAMETOOLONG);
-      return -1;
-    }
-  return 0;
+	return MAKE_SYSCALL(125, "syscall|gethostname", (uint64_t) name, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 
 weak_alias (__gethostname, gethostname)

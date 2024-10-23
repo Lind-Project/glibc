@@ -4,9 +4,12 @@
 src_dir="./build"
 
 # Define paths for copying additional resources
-include_source_dir="/home/dennis/Documents/lind-wasm/glibc/target/include"
-crt1_source_path="/home/dennis/Documents/Just-One-Turtle/lind-glibc/replace-sysroot/replace/sysroot/lib/wasm32-wasi/crt1.o"
-lind_syscall_path="/home/dennis/Documents/lind-wasm/glibc/lind_syscall/lind_syscall.o" # Path to the lind_syscall.o file
+include_source_dir="/home/lind-wasm/glibc/target/include"
+crt1_source_path="/home/lind-wasm/glibc/lind_syscall/crt1.o"
+lind_syscall_path="/home/lind-wasm/glibc/lind_syscall/lind_syscall.o" # Path to the lind_syscall.o file
+
+# TARGET_TRIPLE = wasm32-wasi
+TARGET_TRIPLE=wasm32-wasi-threads
 
 # Define the output archive and sysroot directory
 output_archive="sysroot/lib/wasm32-wasi/libc.a"
@@ -16,7 +19,7 @@ sysroot_dir="sysroot"
 rm -rf "$sysroot_dir"
 
 # Find all .o files recursively in the source directory, ignoring stamp.o
-object_files=$(find "$src_dir" -type f -name "*.o" ! \( -name "stamp.o" -o -name "argp-pvh.o" -o -name "repertoire.o" \))
+object_files=$(find "$src_dir" -type f -name "*.o" ! \( -name "stamp.o" -o -name "argp-pvh.o" -o -name "repertoire.o" -o -name "static-stubs.o" \))
 
 # Add the lind_syscall.o file to the list of object files
 object_files="$object_files $lind_syscall_path"
@@ -31,7 +34,8 @@ fi
 mkdir -p "$sysroot_dir/include/wasm32-wasi" "$sysroot_dir/lib/wasm32-wasi"
 
 # Pack all found .o files into a single .a archive
-/home/dennis/Documents/Just-One-Turtle/clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04/bin/llvm-ar rcs "$output_archive" $object_files
+/home/clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04/bin/llvm-ar rcs "$output_archive" $object_files
+/home/clang+llvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04/bin/llvm-ar crs "sysroot/lib/wasm32-wasi/libpthread.a"
 
 # Check if llvm-ar succeeded
 if [ $? -eq 0 ]; then

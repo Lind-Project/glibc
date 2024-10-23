@@ -34,7 +34,39 @@
 
 #include <stdlib.h>
 #include <dso_handle.h>
+#include <assert.h>
+#include <stdint.h>
+
+#include <libc-lock.h>
 #include "exit.h"
+#include <pointer_guard.h>
+
+int
+attribute_hidden
+__internal_atexit_2 (void (*func) (void),
+		   struct exit_function_list **listp)
+{
+  struct exit_function *new;
+
+  /* As a QoI issue we detect NULL early with an assertion instead
+     of a SIGSEGV at program exit when the handler is run (bug 20544).  */
+  assert (func != NULL);
+
+  __libc_lock_lock (__exit_funcs_lock);
+  new = __new_exitfn (listp);
+
+  if (new == NULL)
+    {
+      __libc_lock_unlock (__exit_funcs_lock);
+      return -1;
+    }
+
+  PTR_MANGLE (func);
+  new->func.at = func;
+  new->flavor = ef_at;
+  __libc_lock_unlock (__exit_funcs_lock);
+  return 0;
+}
 
 /* Register FUNC to be executed by `exit'.  */
 int
@@ -43,5 +75,11 @@ attribute_hidden
 #endif
 atexit (void (*func) (void))
 {
-  return __cxa_atexit ((void (*) (void *)) func, NULL, __dso_handle);
+  // return __cxa_atexit ((void (*) (void *)) func, NULL, __dso_handle);
+  // Qianxi Edit: glibc's implementation of atexit is a calling down to __cxa_atexit
+  // which is a extension of normal atexit. This involves change the signature of the exit function.
+  // This could work in c if you know exactly what you are doing. However, wasm apparently does not
+  // allow to change function signature as it will cause function type mismatch error when invoke the function
+  // So modifying its original __internal_atexit to allow it to handle normal atexit function
+  return __internal_atexit_2 (func, &__exit_funcs);
 }

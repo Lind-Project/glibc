@@ -20,6 +20,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 
@@ -43,7 +44,7 @@ __libc_fcntl (int fd, int cmd, ...)
     {
       case F_SETLKW:
       case F_SETLKW64:
-	return SYSCALL_CANCEL (fcntl64, fd, cmd, arg);
+		return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) arg, NOTUSED, NOTUSED, NOTUSED);
       case F_OFD_SETLKW:
 	{
 	  struct flock *flk = (struct flock *) arg;
@@ -55,7 +56,7 @@ __libc_fcntl (int fd, int cmd, ...)
 	    .l_len = flk->l_len,
 	    .l_pid = flk->l_pid
 	  };
-	  return SYSCALL_CANCEL (fcntl64, fd, cmd, &flk64);
+		return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) &flk64, NOTUSED, NOTUSED, NOTUSED);
 	}
       case F_OFD_GETLK:
       case F_OFD_SETLK:
@@ -69,7 +70,7 @@ __libc_fcntl (int fd, int cmd, ...)
 	    .l_len = flk->l_len,
 	    .l_pid = flk->l_pid
 	  };
-	  int ret = INLINE_SYSCALL_CALL (fcntl64, fd, cmd, &flk64);
+	  int ret = MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) &flk64, NOTUSED, NOTUSED, NOTUSED);
 	  if (ret == -1)
 	    return -1;
 	  if ((off_t) flk64.l_start != flk64.l_start
@@ -102,16 +103,7 @@ libc_hidden_weak (__fcntl)
 int
 __old_libc_fcntl64 (int fd, int cmd, ...)
 {
-  va_list ap;
-  void *arg;
-
-  va_start (ap, cmd);
-  arg = va_arg (ap, void *);
-  va_end (ap);
-
-  /* Previous versions called __NR_fcntl64 for fcntl (which did not handle
-     OFD locks in LFS mode).  */
-  return __libc_fcntl64 (fd, cmd, arg);
+	return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 compat_symbol (libc, __old_libc_fcntl64, fcntl, GLIBC_2_0);
 versioned_symbol (libc, __libc_fcntl, fcntl, GLIBC_2_28);

@@ -20,6 +20,7 @@
 #include <sys/ioctl.h>
 #include <sysdep.h>
 #include <internal-ioctl.h>
+#include <syscall-template.h>
 
 int
 __ioctl (int fd, unsigned long int request, ...)
@@ -29,17 +30,7 @@ __ioctl (int fd, unsigned long int request, ...)
   void *arg = va_arg (args, void *);
   va_end (args);
 
-  int r;
-  if (!__ioctl_arch (&r, fd, request, arg))
-    {
-      r = INTERNAL_SYSCALL_CALL (ioctl, fd, request, arg);
-      if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (r)))
-	{
-	  __set_errno (-r);
-	  return -1;
-	}
-    }
-  return r;
+	return MAKE_SYSCALL(15, "syscall|ioctl", (uint64_t) fd, (uint64_t) request, (uint64_t) arg, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__ioctl)
 weak_alias (__ioctl, ioctl)

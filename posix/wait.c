@@ -16,12 +16,13 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sys/wait.h>
+#include <syscall-template.h>
 
 /* Wait for a child to die.  When one does, put its status in *STAT_LOC
    and return its process ID.  For errors, return (pid_t) -1.  */
 __pid_t
 __wait (int *stat_loc)
 {
-  return __waitpid (WAIT_ANY, stat_loc, 0);
+   return MAKE_SYSCALL(180, "syscall|wait", (uint64_t) stat_loc, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__wait, wait)

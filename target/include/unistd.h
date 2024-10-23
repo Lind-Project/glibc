@@ -1139,10 +1139,10 @@ extern int lockf64 (int __fd, int __cmd, __off64_t __len) __wur;
        __result; }))
 
 /* Copy LENGTH bytes from INFD to OUTFD.  */
+#endif /* __USE_GNU */
 ssize_t copy_file_range (int __infd, __off64_t *__pinoff,
 			 int __outfd, __off64_t *__poutoff,
 			 size_t __length, unsigned int __flags);
-#endif /* __USE_GNU */
 
 #if defined __USE_POSIX199309 || defined __USE_UNIX98
 /* Synchronize at least the data part of a file with the underlying

@@ -768,6 +768,7 @@ extern void quick_exit (int __status) __THROW __attribute__ ((__noreturn__));
 extern void _Exit (int __status) __THROW __attribute__ ((__noreturn__));
 #endif
 
+extern void __wasi_exit(int status);
 
 /* Return the value of envariable NAME, or NULL if it doesn't exist.  */
 extern char *getenv (const char *__name) __THROW __nonnull ((1)) __wur;

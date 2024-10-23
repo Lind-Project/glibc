@@ -17,17 +17,20 @@
 
 #include "libioP.h"
 #include "stdio.h"
+#include <syscall-template.h>
 
 #undef putchar
 
 int
 putchar (int c)
 {
-  int result;
-  _IO_acquire_lock (stdout);
-  result = _IO_putc_unlocked (c, stdout);
-  _IO_release_lock (stdout);
-  return result;
+  int result = 0;
+  // _IO_acquire_lock (stdout);
+  // result = _IO_putc_unlocked (c, stdout);
+  // _IO_release_lock (stdout);
+  // qianxi edit: temporary solution only
+  return MAKE_SYSCALL(13, "syscall|write", (uint64_t) 1, (uint64_t)(uintptr_t) &c, (uint64_t) 1, NOTUSED, NOTUSED, NOTUSED);
+  // return result;
 }
 
 #if defined weak_alias && !defined _IO_MTSAFE_IO

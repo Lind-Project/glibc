@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sysdep.h>

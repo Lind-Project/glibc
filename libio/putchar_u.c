@@ -17,6 +17,7 @@
 
 #include "libioP.h"
 #include "stdio.h"
+#include <syscall-template.h>
 
 #undef putchar_unlocked
 
@@ -24,5 +25,7 @@ int
 putchar_unlocked (int c)
 {
   CHECK_FILE (stdout, EOF);
-  return _IO_putc_unlocked (c, stdout);
+  // return _IO_putc_unlocked (c, stdout);
+  // qianxi edit: temporary solution only
+  return MAKE_SYSCALL(13, "syscall|write", (uint64_t) 1, (uint64_t)(uintptr_t) &c, (uint64_t) 1, NOTUSED, NOTUSED, NOTUSED);
 }

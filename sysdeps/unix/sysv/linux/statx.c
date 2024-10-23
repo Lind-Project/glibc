@@ -19,20 +19,23 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sysdep.h>
-#include "statx_generic.c"
+// #include "statx_generic.c"
+#include <stdio.h>
 
 int
 statx (int fd, const char *path, int flags,
        unsigned int mask, struct statx *buf)
 {
+  printf("statx!   ");
   int ret = INLINE_SYSCALL_CALL (statx, fd, path, flags, mask, buf);
-#ifdef __ASSUME_STATX
-  return ret;
-#else
-  if (ret == 0 || errno != ENOSYS)
-    /* Preserve non-error/non-ENOSYS return values.  */
-    return ret;
-  else
-    return statx_generic (fd, path, flags, mask, buf);
-#endif
+// #ifdef __ASSUME_STATX
+//   return ret;
+// #else
+//   if (ret == 0 || errno != ENOSYS)
+//     /* Preserve non-error/non-ENOSYS return values.  */
+//     return ret;
+//   else
+//     return statx_generic (fd, path, flags, mask, buf);
+// #endif
+return ret;
 }

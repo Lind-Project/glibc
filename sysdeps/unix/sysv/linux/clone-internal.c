@@ -23,7 +23,6 @@
 #include <clone_internal.h>
 #include <libc-pointer-arith.h>	/* For cast_to_pointer.  */
 #include <stackinfo.h>		/* For _STACK_GROWS_{UP,DOWN}.  */
-#include "libioP.h"
 
 #define CLONE_ARGS_SIZE_VER0 64 /* sizeof first published struct */
 #define CLONE_ARGS_SIZE_VER1 80 /* sizeof second published struct */

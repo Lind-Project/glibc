@@ -146,7 +146,6 @@ static __always_inline int
 futex_wait (unsigned int *futex_word, unsigned int expected, int private)
 {
   int err = MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) FUTEX_WAIT, (uint64_t) expected, (uint64_t)0, 0, (uint64_t)0);
-  // int err = lll_futex_timed_wait (futex_word, expected, NULL, private);
   switch (err)
     {
     case 0:
@@ -210,7 +209,6 @@ static __always_inline void
 futex_wake (unsigned int* futex_word, int processes_to_wake, int private)
 {
   int res = MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, FUTEX_WAKE, (uint64_t) processes_to_wake, (uint64_t)0, 0, (uint64_t)0);
-  // int res = lll_futex_wake (futex_word, processes_to_wake, private);
   /* No error.  Ignore the number of woken processes.  */
   if (res >= 0)
     return;

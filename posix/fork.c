@@ -27,17 +27,6 @@
 #include <unwind-link.h>
 #include <clone3.h>
 #include <clone_internal.h>
-#include "libioP.h"
-#include <syscall-template.h>
-
-int32_t __imported_wasi_fork() __attribute__((
-    __import_module__("wasix"),
-    __import_name__("lind-fork")
-));
-
-int32_t __wasi_fork() {
-    return __imported_wasi_fork(0);
-}
 
 static void
 fresetlockfiles (void)
@@ -59,7 +48,6 @@ __libc_fork (void)
   args.flags = 0;
 
   int pid = __clone_internal(&args, NULL, NULL);
-  // int pid = MAKE_SYSCALL(171, "syscall|clone3", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
   return pid;
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in

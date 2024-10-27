@@ -342,7 +342,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-  // struct clone_args *args = (void *)pd->stackblock;
   struct clone_args *args = (void *)pd->stackblock + pd->stackblock_size - sizeof(struct clone_args) - TLS_TCB_SIZE;
   memset(args, 0, sizeof(struct clone_args));
   args->flags = clone_flags;

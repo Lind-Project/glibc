@@ -372,8 +372,6 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
     //              automatically grow the memory if memory is running out.
     //              Once the issue is fixed, we might be able to change the size
     //              back
-    // size = 65664;
-    // size = 32832;
     size = 16416;
     void* mem = malloc(size);
 

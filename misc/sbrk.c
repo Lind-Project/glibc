@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <stdio.h>
 
 /* Defined in brk.c.  */
 // This is the "virtual brk" exposed to the caller
@@ -65,7 +66,8 @@ __sbrk (intptr_t increment)
     }
 
     // Now we need to grow linear mem
-    int new_pages = (new_break - linear_mem_end) / PAGESIZE;
+    // int new_pages = (new_break - linear_mem_end) / PAGESIZE;
+    int new_pages = (new_break - linear_mem_end + PAGESIZE - 1) / PAGESIZE;
 
     if (__builtin_wasm_memory_grow(0, new_pages) < 0) {
         errno = ENOMEM;

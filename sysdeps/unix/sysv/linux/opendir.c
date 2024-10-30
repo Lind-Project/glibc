@@ -68,6 +68,7 @@ opendir_tail (int fd)
 DIR *
 __opendirat (int dfd, const char *name)
 {
+  printf("__opendirat\n");
   if (__glibc_unlikely (invalid_name (name)))
     return NULL;
 

@@ -37,7 +37,6 @@ _exit (int status)
 {
   while (1)
     {
-      // INLINE_SYSCALL (exit_group, 1, status);
       // Qianxi Edit: exit without doing any cleanup
       __wasi_exit(status);
 
@@ -46,7 +45,6 @@ _exit (int status)
 #endif
     }
 }
-// libc_hidden_def (_exit)
 rtld_hidden_def (_exit)
 weak_alias (_exit, _Exit)
 

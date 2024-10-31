@@ -82,10 +82,6 @@ __fstat64 (int fd, struct stat64 *buf)
       __set_errno (EBADF);
       return -1;
     }
-
-  // struct __stat64_t64 st_t64;
-  // return __fstat64_time64 (fd, &st_t64)
-	//  ?: __cp_stat64_t64_stat64 (&st_t64, buf);
   // Qianxi Edit: pass down to rawposix
 	return MAKE_SYSCALL(17, "syscall|fstat", (uint64_t) fd, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }

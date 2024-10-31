@@ -27,7 +27,6 @@
 int
 __lstat64_time64 (const char *file, struct __stat64_t64 *buf)
 {
-  // return __fstatat64_time64 (AT_FDCWD, file, buf, AT_SYMLINK_NOFOLLOW);
   // Qianxi Edit: we do not have fstatat syscall in rawposix
   // so let's just use xstat
   return MAKE_SYSCALL(9, "syscall|xstat", (uint64_t) file, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED); 

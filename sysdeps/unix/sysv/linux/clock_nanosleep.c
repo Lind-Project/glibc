@@ -35,4 +35,3 @@ __clock_nanosleep_time64 (clockid_t clock_id, int flags,
 {
   return MAKE_SYSCALL(181, "syscall|nanosleep", (uint64_t) clock_id, (uint64_t) flags, (uint64_t)req, (uint64_t)rem, NOTUSED, NOTUSED);
 }
-

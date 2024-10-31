@@ -23,26 +23,6 @@
 #include <mmap_internal.h>
 #include <syscall-template.h>
 
-// #ifdef __NR_mmap2
-// /* To avoid silent truncation of offset when using mmap2, do not accept
-//    offset larger than 1 << (page_shift + off_t bits).  For archictures with
-//    32 bits off_t and page size of 4096 it would be 1^44.  */
-// # define MMAP_OFF_HIGH_MASK \
-//   ((-(MMAP2_PAGE_UNIT << 1) << (8 * sizeof (off_t) - 1)))
-// #else
-// /* Some ABIs might use __NR_mmap while having sizeof (off_t) smaller than
-//    sizeof (off64_t) (currently only MIPS64n32).  For this case just set
-//    zero the higher bits so mmap with large offset does not fail.  */
-// # define MMAP_OFF_HIGH_MASK  0x0
-// #endif
-
-// #define MMAP_OFF_MASK (MMAP_OFF_HIGH_MASK | MMAP_OFF_LOW_MASK)
-
-// /* An architecture may override this.  */
-// #ifndef MMAP_PREPARE
-// # define MMAP_PREPARE(addr, len, prot, flags, fd, offset)
-// #endif
-
 void *
 __mmap64 (void *addr, size_t len, int prot, int flags, int fd, off64_t offset)
 {

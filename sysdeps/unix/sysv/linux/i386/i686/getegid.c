@@ -8,4 +8,3 @@ __getegid (void)
 }
 
 weak_alias (__getegid, getegid)
-

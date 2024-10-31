@@ -365,9 +365,6 @@ extern int printf (const char *__restrict __format, ...);
 extern int sprintf (char *__restrict __s,
 		    const char *__restrict __format, ...) __THROWNL;
 
-extern void print_stack_pointer(void);
-extern void __myitoa(int num, char* str, int base);
-
 /* Write formatted output to S from argument list ARG.
 
    This function is a possible cancellation point and therefore not

@@ -22,14 +22,10 @@
 #include <libc-lock.h>
 #include <set-freeres.h>
 #include "exit.h"
+#include <syscall-template.h>
 
-void __imported_wasi_exit() __attribute__((
-    __import_module__("wasix"),
-    __import_name__("lind-exit")
-));
-
-void __wasi_exit(int status) {
-    return __imported_wasi_exit(status);
+void __lind_exit(int status) {
+	MAKE_SYSCALL(30, "syscall|exit", (uint64_t) status, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 
 void
@@ -38,7 +34,7 @@ _exit (int status)
   while (1)
     {
       // Qianxi Edit: exit without doing any cleanup
-      __wasi_exit(status);
+      __lind_exit(status);
 
 #ifdef ABORT_INSTRUCTION
       ABORT_INSTRUCTION;

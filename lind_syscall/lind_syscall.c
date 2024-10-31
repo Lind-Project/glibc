@@ -17,17 +17,23 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-//Entry point for wasmtime
+// Entry point for wasmtime, lind_syscall is an imported function from wasmtime
 int __imported_wasi_snapshot_preview1_lind_syscall(unsigned int callnumber, unsigned long long callname, unsigned long long arg1, unsigned long long arg2, unsigned long long arg3, unsigned long long arg4, unsigned long long arg5, unsigned long long arg6) __attribute__((
     __import_module__("lind"),
     __import_name__("lind-syscall")
 ));
 
 
-//Part of Marco MAKE_SYSCALL, take in the number of the syscall and the name of the syscall and 6 argument.
+// Part of Macro MAKE_SYSCALL, take in the number of the syscall and the name of the syscall and 6 argument.
+// callnumber: is the syscall number used in rawposix/rustposix
+// callname: a legacy argument, will be changed after 3i has integrated
+// arg1-arg6: actual argument of the syscall, note that all the pointers passed here is 32-bit virtual wasm address
+//            and should be handled appropriately. This might be changed later and the address translation might be
+//            handled here instead
 int lind_syscall (unsigned int callnumber, unsigned long long callname, unsigned long long arg1, unsigned long long arg2, unsigned long long arg3, unsigned long long arg4, unsigned long long arg5, unsigned long long arg6)
 {
   int ret = __imported_wasi_snapshot_preview1_lind_syscall(callnumber, callname, arg1, arg2, arg3, arg4, arg5, arg6);
+  // handle the errno
   if(ret < 0)
   {
     errno = -ret;

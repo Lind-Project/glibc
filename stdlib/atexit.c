@@ -75,10 +75,10 @@ attribute_hidden
 #endif
 atexit (void (*func) (void))
 {
-  // Qianxi Edit: glibc's implementation of atexit is a calling down to __cxa_atexit
+  // glibc's implementation of atexit is a calling down to __cxa_atexit
   // which is a extension of normal atexit. This involves change the signature of the exit function.
   // This could work in c if you know exactly what you are doing. However, wasm apparently does not
   // allow to change function signature as it will cause function type mismatch error when invoke the function
-  // So modifying its original __internal_atexit to allow it to handle normal atexit function
+  // So modifying its original __internal_atexit to allow it to handle normal atexit function - Qianxi Chen
   return __internal_atexit_2 (func, &__exit_funcs);
 }

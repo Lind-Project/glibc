@@ -82,7 +82,7 @@ __fstat64 (int fd, struct stat64 *buf)
       __set_errno (EBADF);
       return -1;
     }
-  // Qianxi Edit: pass down to rawposix
+  // Added MAKE_SYSCALL macro to interface with Lind - Qianxi Chen
 	return MAKE_SYSCALL(17, "syscall|fstat", (uint64_t) fd, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 #endif

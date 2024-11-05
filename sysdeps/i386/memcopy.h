@@ -19,7 +19,7 @@
 #include <sysdeps/generic/memcopy.h>
 #include <string.h>  // For memcpy
 
-// Dennis Edit: fixing the infinite loop error in printf
+// fixing the infinite loop error in printf - Dennis
 #undef BYTE_COPY_FWD
 #define BYTE_COPY_FWD(dst_bp, src_bp, nbytes)				      \
   do									      \

@@ -33,7 +33,7 @@ _exit (int status)
 {
   while (1)
     {
-      // Qianxi Edit: exit without doing any cleanup
+      // exit without doing any cleanup
       __lind_exit(status);
 
 #ifdef ABORT_INSTRUCTION

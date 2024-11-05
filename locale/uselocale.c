@@ -28,13 +28,13 @@
 locale_t
 __uselocale (locale_t newloc)
 {
-   // Qianxi Edit: locale related stuff is not working currently
+   // BUG: locale related stuff is not working currently
    // this feature is not important so we might look into this later
-   // if we want to support it in the future
+   // if we want to support it in the future - Qianxi Chen
 
-  // Lind-Wasm: Original glibc code removed for compatibility
-  // to find original source code refer to (2.39.9000) at (locale/uselocale.c):(LINE 31-72)
-      return _NL_CURRENT_LOCALE;
+   // Lind-Wasm: Original glibc code removed for compatibility
+   // to find original source code refer to (2.39.9000) at (locale/uselocale.c):(LINE 31-72)
+   return _NL_CURRENT_LOCALE;
 }
 libc_hidden_def (__uselocale)
 weak_alias (__uselocale, uselocale)

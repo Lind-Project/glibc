@@ -25,9 +25,9 @@ __localeconv (void)
 {
   static struct lconv result;
 
-  // Qianxi Edit: locale related stuff is not working currently
+  // BUG: locale related stuff is not working currently
   // this feature is not important so we might look into this later
-  // if we want to support it in the future
+  // if we want to support it in the future - Qianxi Chen
 
   // Lind-Wasm: Original glibc code removed for compatibility
   // to find original source code refer to (2.39.9000) at (locale/localeconv.c):(LINE 28-32)

@@ -30,9 +30,8 @@ __getdents64 (int fd, void *buf, size_t nbytes)
      checks in the kernel use an int type.  */
   if (nbytes > INT_MAX)
     nbytes = INT_MAX;
-  // Qianxi Edit: pass down to rawposix instead
+  // Added MAKE_SYSCALL macro to interface with Lind - Qianxi Chen
 	return MAKE_SYSCALL(23, "syscall|getdents", (uint64_t) fd, (uint64_t) buf, (uint64_t) nbytes, NOTUSED, NOTUSED, NOTUSED);
-  // return INLINE_SYSCALL_CALL (getdents64, fd, buf, nbytes);
 }
 libc_hidden_def (__getdents64)
 weak_alias (__getdents64, getdents64)

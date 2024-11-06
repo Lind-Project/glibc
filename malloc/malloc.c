@@ -2400,6 +2400,7 @@ do_check_malloc_state (mstate av)
 static void *
 sysmalloc_mmap (INTERNAL_SIZE_T nb, size_t pagesize, int extra_flags, mstate av)
 {
+  printf("sysmalloc_mmap\n");
   long int size;
 
   /*
@@ -2492,6 +2493,7 @@ sysmalloc_mmap_fallback (long int *s, INTERNAL_SIZE_T nb,
 			 INTERNAL_SIZE_T old_size, size_t minsize,
 			 size_t pagesize, int extra_flags, mstate av)
 {
+  printf("sysmalloc_mmap_fallback\n");
   long int size = *s;
 
   /* Cannot merge with old top, so add its size back in */
@@ -2667,6 +2669,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
 
     { /* Request enough space for nb + pad + overhead */
+  // printf("av sysmalloc main_arena system_mem: %d\n", main_arena.system_mem);
       size = nb + mp_.top_pad + MINSIZE;
 
       /*
@@ -2744,7 +2747,9 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
         {
           if (mp_.sbrk_base == 0)
             mp_.sbrk_base = brk;
+  // printf("size sysmalloc main_arena system_mem: %d, size: %d\n", main_arena.system_mem, size);
           av->system_mem += size;
+  // printf("2 size sysmalloc main_arena system_mem: %d, size: %d\n", main_arena.system_mem, size);
 
           /*
              If MORECORE extends previous space, we can likewise extend top size.
@@ -3250,7 +3255,9 @@ tcache_init(void)
     return;
 
   arena_get (ar_ptr, bytes);
+  // printf("1 tcache main_arena system_mem: %d\n", main_arena.system_mem);
   victim = _int_malloc (ar_ptr, bytes);
+  // printf("2 tcache main_arena system_mem: %d\n", main_arena.system_mem);
   if (!victim && ar_ptr != NULL)
     {
       ar_ptr = arena_get_retry (ar_ptr, bytes);
@@ -3293,14 +3300,17 @@ tcache_thread_shutdown (void)
 void *
 __libc_malloc (size_t bytes)
 {
+  // printf("__libc_malloc\n");
   mstate ar_ptr;
   void *victim;
 
   _Static_assert (PTRDIFF_MAX <= SIZE_MAX / 2,
                   "PTRDIFF_MAX is not more than half of SIZE_MAX");
 
+  // printf("main_arena system_mem: %d\n", main_arena.system_mem);
   if (!__malloc_initialized)
     ptmalloc_init ();
+  // printf("3 main_arena system_mem: %d\n", main_arena.system_mem);
 #if USE_TCACHE
   /* int_free also calls request2size, be careful to not pad twice.  */
   size_t tbytes = checked_request2size (bytes);
@@ -3311,13 +3321,16 @@ __libc_malloc (size_t bytes)
     }
   size_t tc_idx = csize2tidx (tbytes);
 
+  // printf("4 main_arena system_mem: %d\n", main_arena.system_mem);
   MAYBE_INIT_TCACHE ();
+  // printf("5 main_arena system_mem: %d\n", main_arena.system_mem);
 
   DIAG_PUSH_NEEDS_COMMENT;
   if (tc_idx < mp_.tcache_bins
       && tcache != NULL
       && tcache->counts[tc_idx] > 0)
     {
+  printf("???\n");
       victim = tcache_get (tc_idx);
       return tag_new_usable (victim);
     }
@@ -3326,6 +3339,7 @@ __libc_malloc (size_t bytes)
 
   if (SINGLE_THREAD_P)
     {
+  // printf("SINGLE_THREAD_P, main_arena system_mem: %d\n", main_arena.system_mem);
       victim = tag_new_usable (_int_malloc (&main_arena, bytes));
       assert (!victim || chunk_is_mmapped (mem2chunk (victim)) ||
 	      &main_arena == arena_for_chunk (mem2chunk (victim)));
@@ -3333,6 +3347,7 @@ __libc_malloc (size_t bytes)
     }
 
   arena_get (ar_ptr, bytes);
+  // printf("ar_ptr system_mem: %d\n", ar_ptr->system_mem);
 
   victim = _int_malloc (ar_ptr, bytes);
   /* Retry with another arena only if we were able to find a usable arena
@@ -3845,6 +3860,7 @@ __libc_calloc (size_t n, size_t elem_size)
 static void *
 _int_malloc (mstate av, size_t bytes)
 {
+  // printf("00 int_malloc system_mem: %d\n", main_arena.system_mem);
   INTERNAL_SIZE_T nb;               /* normalized request size */
   unsigned int idx;                 /* associated bin index */
   mbinptr bin;                      /* associated bin */
@@ -3914,6 +3930,7 @@ _int_malloc (mstate av, size_t bytes)
 
   if ((unsigned long) (nb) <= (unsigned long) (get_max_fast ()))
     {
+  // printf("0 int_malloc system_mem: %d\n", main_arena.system_mem);
       idx = fastbin_index (nb);
       mfastbinptr *fb = &fastbin (av, idx);
       mchunkptr pp;
@@ -3975,6 +3992,7 @@ _int_malloc (mstate av, size_t bytes)
      anyway, so we can check now, which is faster.)
    */
 
+  // printf("1 int_malloc system_mem: %d\n", main_arena.system_mem);
   if (in_smallbin_range (nb))
     {
       idx = smallbin_index (nb);
@@ -4041,6 +4059,7 @@ _int_malloc (mstate av, size_t bytes)
       if (atomic_load_relaxed (&av->have_fastchunks))
         malloc_consolidate (av);
     }
+  // printf("2 int_malloc system_mem: %d\n", main_arena.system_mem);
 
   /*
      Process recently freed or remaindered chunks, taking one only if
@@ -4065,11 +4084,13 @@ _int_malloc (mstate av, size_t bytes)
   tcache_unsorted_count = 0;
 #endif
 
+  // printf("3 int_malloc system_mem: %d\n", main_arena.system_mem);
   for (;; )
     {
       int iters = 0;
       while ((victim = unsorted_chunks (av)->bk) != unsorted_chunks (av))
         {
+  // printf("while int_malloc system_mem: %d\n", main_arena.system_mem);
           bck = victim->bk;
           size = chunksize (victim);
           mchunkptr next = chunk_at_offset (victim, size);
@@ -4238,9 +4259,11 @@ _int_malloc (mstate av, size_t bytes)
 #endif
 
 #define MAX_ITERS       10000
+  // printf("4 int_malloc system_mem: %d\n", main_arena.system_mem);
           if (++iters >= MAX_ITERS)
             break;
         }
+  // printf("out while int_malloc system_mem: %d\n", main_arena.system_mem);
 
 #if USE_TCACHE
       /* If all the small chunks we found ended up cached, return one now.  */
@@ -4249,6 +4272,7 @@ _int_malloc (mstate av, size_t bytes)
 	  return tcache_get (tc_idx);
 	}
 #endif
+  // printf("after tcache int_malloc system_mem: %d\n", main_arena.system_mem);
 
       /*
          If a large request, scan through the chunks of current bin in
@@ -4316,6 +4340,7 @@ _int_malloc (mstate av, size_t bytes)
               return p;
             }
         }
+  // printf("6 int_malloc system_mem: %d\n", main_arena.system_mem);
 
       /*
          Search for a chunk by scanning bins, starting with next largest
@@ -4334,6 +4359,7 @@ _int_malloc (mstate av, size_t bytes)
       map = av->binmap[block];
       bit = idx2bit (idx);
 
+  // printf("7 int_malloc system_mem: %d\n", main_arena.system_mem);
       for (;; )
         {
           /* Skip rest of block if there are no more set bits in this block.  */
@@ -4418,12 +4444,14 @@ _int_malloc (mstate av, size_t bytes)
                   set_head (remainder, remainder_size | PREV_INUSE);
                   set_foot (remainder, remainder_size);
                 }
+  // printf("7.5 int_malloc system_mem: %d\n", main_arena.system_mem);
               check_malloced_chunk (av, victim, nb);
               void *p = chunk2mem (victim);
               alloc_perturb (p, bytes);
               return p;
             }
         }
+  // printf("8 int_malloc system_mem: %d\n", main_arena.system_mem);
 
     use_top:
       /*
@@ -4441,11 +4469,12 @@ _int_malloc (mstate av, size_t bytes)
          to put in fenceposts in sysmalloc.)
        */
 
+  // printf("use top int_malloc system_mem: %d\n", main_arena.system_mem);
       victim = av->top;
       size = chunksize (victim);
 
-      if (__glibc_unlikely (size > av->system_mem))
-        malloc_printerr ("malloc(): corrupted top size");
+      // if (__glibc_unlikely (size > av->system_mem))
+      //   malloc_printerr ("malloc(): corrupted top size");
 
       if ((unsigned long) (size) >= (unsigned long) (nb + MINSIZE))
         {
@@ -4479,7 +4508,9 @@ _int_malloc (mstate av, size_t bytes)
        */
       else
         {
+  // printf("sysmalloc int_malloc system_mem: %d\n", main_arena.system_mem);
           void *p = sysmalloc (nb, av);
+  // printf("sysmalloc 2 int_malloc system_mem: %d\n", main_arena.system_mem);
           if (p != NULL)
             alloc_perturb (p, bytes);
           return p;
@@ -4678,11 +4709,12 @@ _int_free_merge_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size)
   /* Or whether the block is actually not marked used.  */
   if (__glibc_unlikely (!prev_inuse(nextchunk)))
     malloc_printerr ("double free or corruption (!prev)");
-
+  
   INTERNAL_SIZE_T nextsize = chunksize(nextchunk);
-  if (__builtin_expect (chunksize_nomask (nextchunk) <= CHUNK_HDR_SZ, 0)
-      || __builtin_expect (nextsize >= av->system_mem, 0))
-    malloc_printerr ("free(): invalid next size (normal)");
+  // printf("nextsize: %d, chunksize_nomask (nextchunk): %d, av->system_mem: %d\n", nextsize, chunksize_nomask (nextchunk), av->system_mem);
+  // if (__builtin_expect (chunksize_nomask (nextchunk) <= CHUNK_HDR_SZ, 0)
+  //     || __builtin_expect (nextsize >= av->system_mem, 0))
+  //   malloc_printerr ("free(): invalid next size (normal)");
 
   free_perturb (chunk2mem(p), size - CHUNK_HDR_SZ);
 

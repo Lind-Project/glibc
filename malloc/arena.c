@@ -296,6 +296,7 @@ ptmalloc_init (void)
   thread_arena = &main_arena;
 
   malloc_init_state (&main_arena);
+  // printf("2 main_arena system_mem: %d\n", main_arena.system_mem);
 
   TUNABLE_GET (top_pad, size_t, TUNABLE_CALLBACK (set_top_pad));
   TUNABLE_GET (perturb, int32_t, TUNABLE_CALLBACK (set_perturb_byte));

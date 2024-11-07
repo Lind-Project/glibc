@@ -35,7 +35,11 @@ _IO_puts (const char *str)
   size_t len = strlen (str);
   _IO_acquire_lock (stdout);
 
-  write(STDIN_FILENO, str, len);
+  if ((_IO_vtable_offset (stdout) != 0
+      || _IO_fwide (stdout, -1) == -1)
+    && _IO_sputn (stdout, str, len) == len
+    && _IO_putc_unlocked ('\n', stdout) != EOF)
+  result = MIN (INT_MAX, len + 1);
 
   _IO_release_lock (stdout);
   return result;

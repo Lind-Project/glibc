@@ -366,7 +366,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  // mem = __mmap (NULL, size, (guardsize == 0) ? prot : PROT_NONE,
 		// 	MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
 
-    // Dennis Edit: Replacement mmap with malloc
+    // Replacement mmap with malloc - Dennis
     size = 65664;
     void* mem = malloc(size);
 

@@ -20,13 +20,8 @@
 #include <syscall-template.h>
 
 int
-__bind (int fd, __CONST_SOCKADDR_ARG addr, socklen_t len)
+__bind (int fd, const struct sockaddr * addr, socklen_t len)
 {
-// #ifdef __ASSUME_BIND_SYSCALL
-//   return INLINE_SYSCALL_CALL (bind, fd, addr.__sockaddr__, len);
-// #else
-//   return SOCKETCALL (bind, fd, addr.__sockaddr__, len, 0, 0, 0);
-// #endif
   // Dennis Edit
   return MAKE_SYSCALL(33, "syscall|bind", (uint64_t) fd, (uint64_t)(uintptr_t) addr, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED);
 }

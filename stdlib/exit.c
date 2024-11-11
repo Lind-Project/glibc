@@ -22,6 +22,28 @@
 #include <libc-lock.h>
 #include <set-freeres.h>
 #include "exit.h"
+#include <syscall-template.h>
+
+void __lind_exit(int status) {
+	MAKE_SYSCALL(30, "syscall|exit", (uint64_t) status, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+}
+
+void
+_exit (int status)
+{
+  while (1)
+    {
+      // exit without doing any cleanup
+      __lind_exit(status);
+
+#ifdef ABORT_INSTRUCTION
+      ABORT_INSTRUCTION;
+#endif
+    }
+}
+rtld_hidden_def (_exit)
+weak_alias (_exit, _Exit)
+
 
 /* Initialize the flag that indicates exit function processing
    is complete. See concurrency notes in stdlib/exit.h where
@@ -128,7 +150,7 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
   if (run_list_atexit)
     call_function_static_weak (_IO_cleanup);
 
-  _exit (status);
+	_exit(status);
 }
 
 

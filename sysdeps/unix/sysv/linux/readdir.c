@@ -34,7 +34,6 @@ __readdir_unlocked (DIR *dirp)
 
       size_t maxread = dirp->allocation;
       ssize_t bytes;
-
       bytes = __getdents (dirp->fd, dirp->data, maxread);
       if (bytes <= 0)
 	{

@@ -17,14 +17,11 @@
 
 #include <sys/socket.h>
 #include <socketcall.h>
+#include <syscall-template.h>
 
 int
-__getsockname (int fd, __SOCKADDR_ARG addr, socklen_t *len)
+__getsockname (int fd, struct sockaddr *__restrict addr, socklen_t *len)
 {
-#ifdef __ASSUME_GETSOCKNAME_SYSCALL
-  return INLINE_SYSCALL_CALL (getsockname, fd, addr.__sockaddr__, len);
-#else
-  return SOCKETCALL (getsockname, fd, addr.__sockaddr__, len);
-#endif
+   return MAKE_SYSCALL(144, "syscall|getsockname", (uint64_t) fd, (uint64_t) addr, (uint64_t) len, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__getsockname, getsockname)

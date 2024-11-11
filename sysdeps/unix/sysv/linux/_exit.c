@@ -21,19 +21,6 @@
 #include <sysdep.h>
 #include <abort-instr.h>
 
-
-void
-_exit (int status)
-{
-  while (1)
-    {
-      INLINE_SYSCALL (exit_group, 1, status);
-
-#ifdef ABORT_INSTRUCTION
-      ABORT_INSTRUCTION;
-#endif
-    }
-}
-libc_hidden_def (_exit)
-rtld_hidden_def (_exit)
-weak_alias (_exit, _Exit)
+// moved to stdlib/exit.c - Qianxi Chen
+// Lind-Wasm: Original glibc code removed for compatibility
+// to find original source code refer to (2.39.9000) at (glibc/sysdeps/unix/sysv/linux/_exit.c):(LINE 25-39)

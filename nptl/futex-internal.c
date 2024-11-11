@@ -26,7 +26,7 @@
 
 #ifndef __ASSUME_TIME64_SYSCALLS
 
-// Dennis Edit: disable syscal cancel
+// disable syscal cancel - Dennis
 static int
 __futex_abstimed_wait_common32 (unsigned int* futex_word,
                                 unsigned int expected, int op,
@@ -52,7 +52,7 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
 }
 #endif /* ! __ASSUME_TIME64_SYSCALLS */
 
-// Dennis Edit: disable syscal cancel
+// BUG: disable syscall cancel - Dennis
 static int
 __futex_abstimed_wait_common64 (unsigned int* futex_word,
                                 unsigned int expected, int op,

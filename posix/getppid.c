@@ -17,14 +17,14 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <syscall-template.h>
 
 
 /* Get the parent process ID of the calling process.  */
 int
 __getppid (void)
 {
-  __set_errno (ENOSYS);
-  return -1;
+   return MAKE_SYSCALL(29, "syscall|getppid", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 stub_warning (getppid)
 

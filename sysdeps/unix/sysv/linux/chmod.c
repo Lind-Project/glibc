@@ -18,16 +18,15 @@
 
 #include <fcntl.h>
 #include <sysdep.h>
+#include <unistd.h>
+#include <sysdep-cancel.h>
+#include <syscall-template.h>
 
 /* Change the protections of FILE to MODE.  */
 int
 __chmod (const char *file, mode_t mode)
 {
-#ifdef __NR_chmod
-  return INLINE_SYSCALL_CALL (chmod, file, mode);
-#else
-  return INLINE_SYSCALL_CALL (fchmodat, AT_FDCWD, file, mode);
-#endif
+   return MAKE_SYSCALL(133, "syscall|chmod", (uint64_t) file, (uint64_t) mode, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 
 libc_hidden_def (__chmod)

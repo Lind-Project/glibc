@@ -36,10 +36,10 @@ _IO_puts (const char *str)
   _IO_acquire_lock (stdout);
 
   if ((_IO_vtable_offset (stdout) != 0
-       || _IO_fwide (stdout, -1) == -1)
-      && _IO_sputn (stdout, str, len) == len
-      && _IO_putc_unlocked ('\n', stdout) != EOF)
-    result = MIN (INT_MAX, len + 1);
+      || _IO_fwide (stdout, -1) == -1)
+    && _IO_sputn (stdout, str, len) == len
+    && _IO_putc_unlocked ('\n', stdout) != EOF)
+  result = MIN (INT_MAX, len + 1);
 
   _IO_release_lock (stdout);
   return result;

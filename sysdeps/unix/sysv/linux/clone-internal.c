@@ -106,7 +106,6 @@ __clone_internal (struct clone_args *cl_args,
   __set_errno (saved_errno);
 #endif
 
-  // return __clone_internal_fallback (cl_args, func, arg);
   return 0;
 }
 

@@ -41,106 +41,103 @@ fresetlockfiles (void)
 pid_t
 __libc_fork (void)
 {
-  // Qianxi Edit: for fork, we just directly call clone from wasmtime,
-  //              so comment out the original code
-  struct clone_args args;
-  memset(&args, 0, sizeof(args));
-  args.flags = 0;
-
-  int pid = __clone_internal(&args, NULL, NULL);
-  return pid;
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in
      signal handlers.  Although POSIX has dropped async-signal-safe
      requirement for fork (Austin Group tracker issue #62) this is
      best effort to make is async-signal-safe at least for single-thread
      case.  */
-  // bool multiple_threads = !SINGLE_THREAD_P;
-  // uint64_t lastrun;
+  bool multiple_threads = !SINGLE_THREAD_P;
+  uint64_t lastrun;
 
-  // lastrun = __run_prefork_handlers (multiple_threads);
+  lastrun = __run_prefork_handlers (multiple_threads);
 
-  // struct nss_database_data nss_database_data;
+  struct nss_database_data nss_database_data;
 
-  // /* If we are not running multiple threads, we do not have to
-  //    preserve lock state.  If fork runs from a signal handler, only
-  //    async-signal-safe functions can be used in the child.  These data
-  //    structures are only used by unsafe functions, so their state does
-  //    not matter if fork was called from a signal handler.  */
-  // if (multiple_threads)
-  //   {
-  //     call_function_static_weak (__nss_database_fork_prepare_parent,
-	// 			 &nss_database_data);
+  /* If we are not running multiple threads, we do not have to
+     preserve lock state.  If fork runs from a signal handler, only
+     async-signal-safe functions can be used in the child.  These data
+     structures are only used by unsafe functions, so their state does
+     not matter if fork was called from a signal handler.  */
+  if (multiple_threads)
+    {
+      call_function_static_weak (__nss_database_fork_prepare_parent,
+				 &nss_database_data);
 
-  //     _IO_list_lock ();
+      _IO_list_lock ();
 
-  //     /* Acquire malloc locks.  This needs to come last because fork
-	//  handlers may use malloc, and the libio list lock has an
-	//  indirect malloc dependency as well (via the getdelim
-	//  function).  */
-  //     call_function_static_weak (__malloc_fork_lock_parent);
-  //   }
+      /* Acquire malloc locks.  This needs to come last because fork
+	 handlers may use malloc, and the libio list lock has an
+	 indirect malloc dependency as well (via the getdelim
+	 function).  */
+      call_function_static_weak (__malloc_fork_lock_parent);
+    }
 
-  // pid_t pid = _Fork ();
+  // directly call clone syscall from wasmtime
+  struct clone_args args;
+  memset(&args, 0, sizeof(args));
+  args.flags = 0;
 
-  // if (pid == 0)
-  //   {
-  //     fork_system_setup ();
+  int pid = __clone_internal(&args, NULL, NULL);
 
-  //     /* Reset the lock state in the multi-threaded case.  */
-  //     if (multiple_threads)
-	// {
-	//   __libc_unwind_link_after_fork ();
+  if (pid == 0)
+    {
+      fork_system_setup ();
 
-	//   fork_system_setup_after_fork ();
+      /* Reset the lock state in the multi-threaded case.  */
+      if (multiple_threads)
+	{
+	  __libc_unwind_link_after_fork ();
 
-	//   /* Release malloc locks.  */
-	//   call_function_static_weak (__malloc_fork_unlock_child);
+	  fork_system_setup_after_fork ();
 
-	//   /* Reset the file list.  These are recursive mutexes.  */
-	//   fresetlockfiles ();
+	  /* Release malloc locks.  */
+	  call_function_static_weak (__malloc_fork_unlock_child);
 
-	//   /* Reset locks in the I/O code.  */
-	//   _IO_list_resetlock ();
+	  /* Reset the file list.  These are recursive mutexes.  */
+	  fresetlockfiles ();
 
-	//   call_function_static_weak (__nss_database_fork_subprocess,
-	// 			     &nss_database_data);
-	// }
+	  /* Reset locks in the I/O code.  */
+	  _IO_list_resetlock ();
 
-  //     /* Reset the lock the dynamic loader uses to protect its data.  */
-  //     __rtld_lock_initialize (GL(dl_load_lock));
+	  call_function_static_weak (__nss_database_fork_subprocess,
+				     &nss_database_data);
+	}
 
-  //     /* Reset the lock protecting dynamic TLS related data.  */
-  //     __rtld_lock_initialize (GL(dl_load_tls_lock));
+      /* Reset the lock the dynamic loader uses to protect its data.  */
+      __rtld_lock_initialize (GL(dl_load_lock));
 
-  //     reclaim_stacks ();
+      /* Reset the lock protecting dynamic TLS related data.  */
+      __rtld_lock_initialize (GL(dl_load_tls_lock));
 
-  //     /* Run the handlers registered for the child.  */
-  //     __run_postfork_handlers (atfork_run_child, multiple_threads, lastrun);
-  //   }
-  // else
-  //   {
-  //     /* If _Fork failed, preserve its errno value.  */
-  //     int save_errno = errno;
+      reclaim_stacks ();
 
-  //     /* Release acquired locks in the multi-threaded case.  */
-  //     if (multiple_threads)
-	// {
-	//   /* Release malloc locks, parent process variant.  */
-	//   call_function_static_weak (__malloc_fork_unlock_parent);
+      /* Run the handlers registered for the child.  */
+      __run_postfork_handlers (atfork_run_child, multiple_threads, lastrun);
+    }
+  else
+    {
+      /* If _Fork failed, preserve its errno value.  */
+      int save_errno = errno;
 
-	//   /* We execute this even if the 'fork' call failed.  */
-	//   _IO_list_unlock ();
-	// }
+      /* Release acquired locks in the multi-threaded case.  */
+      if (multiple_threads)
+	{
+	  /* Release malloc locks, parent process variant.  */
+	  call_function_static_weak (__malloc_fork_unlock_parent);
 
-  //     /* Run the handlers registered for the parent.  */
-  //     __run_postfork_handlers (atfork_run_parent, multiple_threads, lastrun);
+	  /* We execute this even if the 'fork' call failed.  */
+	  _IO_list_unlock ();
+	}
 
-  //     if (pid < 0)
-	// __set_errno (save_errno);
-  //   }
+      /* Run the handlers registered for the parent.  */
+      __run_postfork_handlers (atfork_run_parent, multiple_threads, lastrun);
 
-  // return pid;
+      if (pid < 0)
+	__set_errno (save_errno);
+    }
+
+  return pid;
 }
 weak_alias (__libc_fork, __fork)
 libc_hidden_def (__fork)

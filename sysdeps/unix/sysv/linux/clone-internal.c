@@ -106,7 +106,10 @@ __clone_internal (struct clone_args *cl_args,
   __set_errno (saved_errno);
 #endif
 
-  return 0;
+  // remove __clone_internal_fallback since it could crash for some reason
+  // and this branch should not normally be reached since we have clone3 syscall
+  // and it is not supposed to fail
+  return -1;
 }
 
 libc_hidden_def (__clone_internal)

@@ -1,9 +1,10 @@
 #include <unistd.h>
+#include <syscall-template.h>
 
 __gid_t
 __getegid (void)
 {
-  return -1;
+	return MAKE_SYSCALL(53, "syscall|getegid", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 
-
+weak_alias (__getegid, getegid)

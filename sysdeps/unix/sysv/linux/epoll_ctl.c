@@ -1,5 +1,5 @@
-/* Linux implementation for access function.
-   Copyright (C) 2016-2024 Free Software Foundation, Inc.
+/* Open an epoll file descriptor.  Linux version.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,15 +16,16 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <sysdep-cancel.h>
+#include <sys/epoll.h>
+#include <sysdep.h>
 #include <syscall-template.h>
 
+libc_hidden_proto (epoll_ctl)
+
 int
-__access (const char *file, int type)
+epoll_ctl (int __epfd, int __op, int __fd,
+		      struct epoll_event *__event)
 {
-   return MAKE_SYSCALL(2, "syscall|access", (uint64_t) file, (uint64_t) type, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+   return MAKE_SYSCALL(57, "syscall|epoll_ctl", (uint64_t) __epfd, (uint64_t) __op, (uint64_t) __fd, (uint64_t) __event, NOTUSED, NOTUSED);
 }
-libc_hidden_def (__access)
-weak_alias (__access, access)
+libc_hidden_def (epoll_ctl)

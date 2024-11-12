@@ -19,15 +19,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 /* Remove the link named NAME.  */
 int
 __unlink (const char *name)
 {
-#ifdef __NR_unlink
-  return INLINE_SYSCALL_CALL (unlink, name);
-#else
-  return INLINE_SYSCALL_CALL (unlinkat, AT_FDCWD, name, 0);
-#endif
+   return MAKE_SYSCALL(4, "syscall|unlink", (uint64_t) name, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__unlink, unlink)

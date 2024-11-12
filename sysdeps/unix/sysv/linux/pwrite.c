@@ -18,13 +18,14 @@
 #include <unistd.h>
 #include <sysdep-cancel.h>
 #include <shlib-compat.h>
+#include <syscall-template.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 
 ssize_t
 __libc_pwrite (int fd, const void *buf, size_t count, off_t offset)
 {
-  return SYSCALL_CANCEL (pwrite64, fd, buf, count, SYSCALL_LL_PRW (offset));
+   return MAKE_SYSCALL(127, "syscall|pwrite", (uint64_t) fd, (uint64_t) buf, (uint64_t) count, (uint64_t) offset, NOTUSED, NOTUSED);
 }
 
 strong_alias (__libc_pwrite, __pwrite)

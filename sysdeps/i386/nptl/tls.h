@@ -140,7 +140,7 @@ union user_desc_init
 //   ({ int __seg; __asm ("movw %%gs, %w0" : "=q" (__seg)); __seg & 0xffff; })
 // # endif
 
-// Dennis Edit: remove asm part, but still need a way to extract value from %gs reg
+// remove asm part, but still need a way to extract value from %gs reg - Dennis
 #ifndef TLS_GET_GS
 #define TLS_GET_GS() \
   ({ int __seg = 0; /* Assuming __seg can be retrieved in some platform-specific manner */ \

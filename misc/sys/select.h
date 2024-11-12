@@ -46,7 +46,8 @@ typedef __suseconds_t suseconds_t;
 
 
 /* The fd_set member is required to be an array of longs.  */
-typedef long int __fd_mask;
+// Repalced long int to __int64_t to be compatible for 64-bit in rawposix - Qianxi Chen
+typedef __int64_t __fd_mask;
 
 /* Some versions of <linux/posix_types.h> define this macros.  */
 #undef	__NFDBITS

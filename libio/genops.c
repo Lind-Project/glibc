@@ -344,7 +344,7 @@ _IO_doallocbuf (FILE *fp)
   if (fp->_IO_buf_base)
     return;
   if (!(fp->_flags & _IO_UNBUFFERED) || fp->_mode > 0)
-    if (_IO_DOALLOCATE (fp) != EOF)
+    if (_IO_file_doallocate(fp) != EOF)
       return;
   _IO_setb (fp, fp->_shortbuf, fp->_shortbuf+1, 0);
 }

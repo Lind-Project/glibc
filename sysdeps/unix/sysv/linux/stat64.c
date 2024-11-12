@@ -39,8 +39,8 @@ int
 __stat64 (const char *file, struct stat64 *buf)
 {
   struct __stat64_t64 st_t64;
-  return __stat64_time64 (file, &st_t64)
-	 ?: __cp_stat64_t64_stat64 (&st_t64, buf);
+  return __stat64_time64 (file, &st_t64);
+	//  ?: __cp_stat64_t64_stat64 (&st_t64, buf);
 }
 #endif
 

@@ -78,7 +78,7 @@ __libc_fork (void)
   memset(&args, 0, sizeof(args));
   args.flags = 0;
 
-  int pid = __clone_internal(&args, NULL, NULL);
+  pid_t pid = __clone_internal(&args, NULL, NULL);
 
   if (pid == 0)
     {

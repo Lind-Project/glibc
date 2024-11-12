@@ -40,7 +40,7 @@ __futex_abstimed_wait_common32 (unsigned int* futex_word,
       pts32 = &ts32;
     }
 
-    // Qianxi Edit: replace with lind syscall
+    // replace with lind syscall
     return MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op, (uint64_t) expected, (uint64_t)pts32, 0, (uint64_t)0);
 }
 #endif /* ! __ASSUME_TIME64_SYSCALLS */
@@ -52,7 +52,7 @@ __futex_abstimed_wait_common64 (unsigned int* futex_word,
                                 const struct __timespec64* abstime,
                                 int private, bool cancel)
 {
-    // Qianxi Edit: replace with lind syscall
+    // replace with lind syscall
     return MAKE_SYSCALL(98, "syscall|futex", (uint64_t) futex_word, (uint64_t) op, (uint64_t) expected, (uint64_t)abstime, 0, (uint64_t)FUTEX_BITSET_MATCH_ANY);
 }
 

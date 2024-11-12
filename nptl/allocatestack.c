@@ -366,12 +366,12 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  // mem = __mmap (NULL, size, (guardsize == 0) ? prot : PROT_NONE,
 		// 	MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
 
-    // Dennis Edit: Replacement mmap with malloc
-    // Qianxi Edit: changed the malloc size to 16416 (1/4 of the original)
-    //              since currently there is an issue on malloc that it cannot
-    //              automatically grow the memory if memory is running out.
-    //              Once the issue is fixed, we might be able to change the size
-    //              back
+    // Replacement mmap with malloc - Dennis
+    // BUG: changed the malloc size to 16416 (1/4 of the original)
+    //     since currently there is an issue on malloc that it cannot
+    //     automatically grow the memory if memory is running out.
+    //     Once the issue is fixed, we might be able to change the size
+    //     back - Qianxi Chen
     size = 16416;
     void* mem = malloc(size);
 

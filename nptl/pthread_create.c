@@ -256,7 +256,7 @@ void wasi_thread_start(int tid, void *p);
 void *__dummy_reference = wasi_thread_start;
 
 void set_stack_pointer(int stack_addr);
-void *__dummy_reference3 = set_stack_pointer;
+void *__dummy_reference2 = set_stack_pointer;
 
 struct start_args {
     /*
@@ -504,16 +504,11 @@ start_thread (void *arg)
       THREAD_SETMEM (pd, result, ret);
     }
 
-  // Qianxi Edit: thread local variable is a half-broken feature right now
-  //              have to comment these out so that no error is raising
-  /* Call destructors for the thread_local TLS variables.  */
-  // call_function_static_weak (__call_tls_dtors);
-
-  /* Run the destructor for the thread-local data.  */
-  // __nptl_deallocate_tsd ();
-
-  /* Clean up any state libc stored in thread-local variables.  */
-  // __libc_thread_freeres ();
+  // BUG: thread local variable is a half-broken feature right now
+  //      have to comment these out so that no error is raising - Qianxi Chen
+  
+  // Lind-Wasm: Original glibc code removed for compatibility
+  // to find original source code refer to (2.39.9000) at (nptl/pthread_create.c):(LINE 451-458)
 
   /* Report the death of the thread if this is wanted.  */
   if (__glibc_unlikely (pd->report_events))
@@ -650,11 +645,11 @@ out:
      The exit code is zero since in case all threads exit by calling
      'pthread_exit' the exit status must be 0 (zero).  */
   
+  // signal other threads that the thread has exited
   pd->tid = 0;
   MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
   while (1)
     // replacing with lind exit
-    // INTERNAL_SYSCALL_CALL (exit, 0);
     exit(0);
 
   /* NOTREACHED */

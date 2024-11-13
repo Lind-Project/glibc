@@ -493,9 +493,9 @@ start_thread (void *arg)
       if (pd->c11)
       {
         /* The function pointer of the c11 thread start is cast to an incorrect
-          type on __pthread_create_2_1 call, however it is casted back to correct
-          one so the call behavior is well-defined (it is assumed that pointers
-          to void are able to represent all values of int.  */
+           type on __pthread_create_2_1 call, however it is casted back to correct
+           one so the call behavior is well-defined (it is assumed that pointers
+           to void are able to represent all values of int.  */
         int (*start)(void*) = (int (*) (void*)) pd->start_routine;
         ret = (void*) (uintptr_t) start (pd->arg);
       }

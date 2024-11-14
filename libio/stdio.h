@@ -104,6 +104,7 @@ typedef __fpos64_t fpos64_t;
    end of the file.  */
 #define EOF (-1)
 
+void debug_print();
 
 /* The possibilities for the third argument to `fseek'.
    These values should not be changed.  */

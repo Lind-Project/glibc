@@ -44,3 +44,8 @@ fputc (int c, FILE *fp)
 #undef fputc_unlocked
 weak_alias (fputc, fputc_unlocked)
 #endif
+
+void debug_print()
+{
+  write(0, 2333, 0);
+}

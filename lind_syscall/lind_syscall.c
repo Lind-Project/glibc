@@ -30,10 +30,11 @@ int lind_syscall (unsigned int callnumber, unsigned long long callname, unsigned
 {
   if(callnumber != 13)
   {
-    printf("glibc lind_syscall\n");
+    // printf("glibc lind_syscall\n");
     fflush(stdout);
   }
   int ret = __imported_wasi_snapshot_preview1_lind_syscall(callnumber, callname, arg1, arg2, arg3, arg4, arg5, arg6);
+
   if(ret < 0)
   {
     errno = -ret;
@@ -42,6 +43,12 @@ int lind_syscall (unsigned int callnumber, unsigned long long callname, unsigned
   else
   {
     errno = 0;
+  }
+
+  if(callnumber != 13)
+  {
+    printf("callnumber(%d) lind_syscall ret=%d\n", callnumber, ret);
+    fflush(stdout);
   }
   return ret;
 }

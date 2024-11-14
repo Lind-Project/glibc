@@ -60,6 +60,8 @@ __libc_fork (void)
 
   int pid = __clone_internal(&args, NULL, NULL);
   // int pid = MAKE_SYSCALL(171, "syscall|clone3", NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
+  printf("fork returns %d\n", pid);
+  fflush(stdout);
   return pid;
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in

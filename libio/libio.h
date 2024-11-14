@@ -222,6 +222,7 @@ extern off64_t _IO_seekpos (FILE *, off64_t, int);
 
 extern void _IO_free_backup_area (FILE *) __THROW;
 
+extern void debug_print();
 
 extern wint_t _IO_getwc (FILE *__fp);
 extern wint_t _IO_putwc (wchar_t __wc, FILE *__fp);

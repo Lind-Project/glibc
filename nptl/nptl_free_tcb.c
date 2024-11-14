@@ -27,14 +27,11 @@ __nptl_free_tcb (struct pthread *pd)
   if ((atomic_fetch_or_relaxed (&pd->cancelhandling, TERMINATED_BITMASK)
       & TERMINATED_BITMASK) == 0)
     {
-      /* Free TPP data.  */
-      if (pd->tpp != NULL)
-        {
-          struct priority_protection_data *tpp = pd->tpp;
-
-          pd->tpp = NULL;
-          free (tpp);
-        }
+      // BUG: Thread Local storage is not supported yet
+      // so we do not need to free it - Qianxi Chen
+      
+      // Lind-Wasm: Original glibc code removed for compatibility
+      // to find original source code refer to (2.39.9000) at (nptl/nptl_free_tcb.c):(LINE 27-37)
 
       /* Queue the stack memory block for reuse and exit the process.  The
          kernel will signal via writing to the address returned by

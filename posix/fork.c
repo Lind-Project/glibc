@@ -25,6 +25,8 @@
 #include <stdio-lock.h>
 #include <sys/single_threaded.h>
 #include <unwind-link.h>
+#include <clone3.h>
+#include <clone_internal.h>
 
 static void
 fresetlockfiles (void)
@@ -71,7 +73,12 @@ __libc_fork (void)
       call_function_static_weak (__malloc_fork_lock_parent);
     }
 
-  pid_t pid = _Fork ();
+  // directly call clone syscall from wasmtime
+  struct clone_args args;
+  memset(&args, 0, sizeof(args));
+  args.flags = 0;
+
+  pid_t pid = __clone_internal(&args, NULL, NULL);
 
   if (pid == 0)
     {

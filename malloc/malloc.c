@@ -3247,16 +3247,26 @@ tcache_thread_shutdown (void)
 static void
 tcache_init(void)
 {
+  printf("tcache_init\n");
+  fflush(stdout);
   mstate ar_ptr;
   void *victim = 0;
   const size_t bytes = sizeof (tcache_perthread_struct);
 
   if (tcache_shutting_down)
+  {
+  printf("tcache_shutting_down\n");
+  fflush(stdout);
     return;
+  }
 
   arena_get (ar_ptr, bytes);
+  printf("before _int_malloc\n");
+  fflush(stdout);
   // printf("1 tcache main_arena system_mem: %d\n", main_arena.system_mem);
   victim = _int_malloc (ar_ptr, bytes);
+  printf("after _int_malloc\n");
+  fflush(stdout);
   // printf("2 tcache main_arena system_mem: %d\n", main_arena.system_mem);
   if (!victim && ar_ptr != NULL)
     {
@@ -3264,6 +3274,8 @@ tcache_init(void)
       victim = _int_malloc (ar_ptr, bytes);
     }
 
+  printf("2\n");
+  fflush(stdout);
 
   if (ar_ptr != NULL)
     __libc_lock_unlock (ar_ptr->mutex);
@@ -3276,9 +3288,15 @@ tcache_init(void)
   if (victim)
     {
       tcache = (tcache_perthread_struct *) victim;
+  printf("before memset: tcache=%d, size: %d\n", tcache, sizeof (tcache_perthread_struct));
+  fflush(stdout);
       memset (tcache, 0, sizeof (tcache_perthread_struct));
+  printf("after memset\n");
+  fflush(stdout);
     }
 
+  printf("tcache_init return\n");
+  fflush(stdout);
 }
 
 # define MAYBE_INIT_TCACHE() \

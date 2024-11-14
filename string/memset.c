@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <memcopy.h>
+#include <stdio.h>
 
 #ifndef MEMSET
 # define MEMSET memset

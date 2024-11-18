@@ -28,11 +28,11 @@ int __imported_wasi_snapshot_preview1_lind_syscall(unsigned int callnumber, unsi
 //Part of Marco MAKE_SYSCALL, take in the number of the syscall and the name of the syscall and 6 argument.
 int lind_syscall (unsigned int callnumber, unsigned long long callname, unsigned long long arg1, unsigned long long arg2, unsigned long long arg3, unsigned long long arg4, unsigned long long arg5, unsigned long long arg6)
 {
-  if(callnumber != 13)
-  {
-    // printf("glibc lind_syscall\n");
-    fflush(stdout);
-  }
+  // if(callnumber != 13)
+  // {
+  //   // printf("glibc lind_syscall\n");
+  //   fflush(stdout);
+  // }
   int ret = __imported_wasi_snapshot_preview1_lind_syscall(callnumber, callname, arg1, arg2, arg3, arg4, arg5, arg6);
 
   if(ret < 0)
@@ -45,10 +45,10 @@ int lind_syscall (unsigned int callnumber, unsigned long long callname, unsigned
     errno = 0;
   }
 
-  if(callnumber != 13)
-  {
-    printf("callnumber(%d) lind_syscall ret=%d\n", callnumber, ret);
-    fflush(stdout);
-  }
+  // if(callnumber != 13)
+  // {
+  //   printf("callnumber(%d) lind_syscall ret=%d\n", callnumber, ret);
+  //   fflush(stdout);
+  // }
   return ret;
 }

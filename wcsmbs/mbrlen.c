@@ -16,6 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <wchar.h>
+#include <string.h>
 
 /* The mbrlen function has an internal shift state which gets used if
    the PS parameter is NULL.  */
@@ -25,7 +26,10 @@ static mbstate_t internal;
 size_t
 __mbrlen (const char *s, size_t n, mbstate_t *ps)
 {
-  return __mbrtowc (NULL, s, n, ps ?: &internal);
+   size_t len = strlen(s);
+   if(len < n) return len;
+   return n;
+//   return __mbrtowc (NULL, s, n, ps ?: &internal);
 }
 libc_hidden_def (__mbrlen)
 weak_alias (__mbrlen, mbrlen)

@@ -34,88 +34,10 @@ __select64 (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	    struct __timeval64 *timeout)
 {
 		return MAKE_SYSCALL(46, "syscall|select", (uint64_t) nfds, (uint64_t) readfds, (uint64_t) writefds, (uint64_t) exceptfds, (uint64_t) timeout, NOTUSED);
-//   __time64_t s = timeout != NULL ? timeout->tv_sec : 0;
-//   int32_t us = timeout != NULL ? timeout->tv_usec : 0;
-//   int32_t ns;
 
-//   if (s < 0 || us < 0)
-//     return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+// Lind-Wasm: Original glibc code removed for compatibility
+// to find original source code refer to (2.39.9000) at (/home/lind-wasm/glibc/sysdeps/unix/sysv/linux/select.c):(35-138)
 
-//   /* Normalize the timeout, as legacy Linux __NR_select and __NR__newselect.
-//      Different than syscall, it also handle possible overflow.  */
-//   if (us / USEC_PER_SEC > INT64_MAX - s)
-//     {
-//       s = INT64_MAX;
-//       ns = NSEC_PER_SEC - 1;
-//     }
-//   else
-//     {
-//       s += us / USEC_PER_SEC;
-//       us = us % USEC_PER_SEC;
-//       ns = us * NSEC_PER_USEC;
-//     }
-
-//   struct __timespec64 ts64, *pts64 = NULL;
-//    if (timeout != NULL)
-//      {
-//        ts64.tv_sec = s;
-//        ts64.tv_nsec = ns;
-//        pts64 = &ts64;
-//      }
-
-// #ifndef __NR_pselect6_time64
-// # define __NR_pselect6_time64 __NR_pselect6
-// #endif
-
-// #ifdef __ASSUME_TIME64_SYSCALLS
-//   int r = SYSCALL_CANCEL (pselect6_time64, nfds, readfds, writefds, exceptfds,
-// 			  pts64, NULL);
-//   if (timeout != NULL)
-//     TIMESPEC_TO_TIMEVAL (timeout, pts64);
-//   return r;
-// #else
-//   bool need_time64 = timeout != NULL && !in_int32_t_range (timeout->tv_sec);
-//   if (need_time64)
-//     {
-//       int r = SYSCALL_CANCEL (pselect6_time64, nfds, readfds, writefds,
-// 			      exceptfds, pts64, NULL);
-//       if ((r >= 0 || errno != ENOSYS) && timeout != NULL)
-// 	{
-// 	  TIMESPEC_TO_TIMEVAL (timeout, &ts64);
-// 	}
-//       else
-// 	__set_errno (EOVERFLOW);
-//       return r;
-//     }
-
-// # ifdef __ASSUME_PSELECT
-//   struct timespec ts32, *pts32 = NULL;
-//   if (pts64 != NULL)
-//     {
-//       ts32.tv_sec = pts64->tv_sec;
-//       ts32.tv_nsec = pts64->tv_nsec;
-//       pts32 = &ts32;
-//     }
-
-//   int r = SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds, pts32,
-// 			  NULL);
-//   if (timeout != NULL)
-//     TIMESPEC_TO_TIMEVAL (timeout, pts32);
-//   return r;
-// # else
-//   struct timeval tv32, *ptv32 = NULL;
-//   if (pts64 != NULL)
-//     {
-//       tv32 = valid_timespec64_to_timeval (*pts64);
-//       ptv32 = &tv32;
-//     }
-
-//   int r = SYSCALL_CANCEL (_newselect, nfds, readfds, writefds, exceptfds, ptv32);
-//   if (timeout != NULL)
-//     *timeout = valid_timeval_to_timeval64 (tv32);
-//   return r;
-// # endif /* __ASSUME_PSELECT  */
-// #endif
 }
 
 #if __TIMESIZE != 64

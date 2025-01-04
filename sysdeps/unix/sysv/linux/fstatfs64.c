@@ -21,6 +21,7 @@
 #include <sys/statfs.h>
 #include <sysdep.h>
 #include <kernel_stat.h>
+#include <syscall-template.h>
 #undef __fstatfs
 #undef fstatfs
 
@@ -28,11 +29,7 @@
 int
 __fstatfs64 (int fd, struct statfs64 *buf)
 {
-#ifdef __NR_fstatfs64
-  return INLINE_SYSCALL_CALL (fstatfs64, fd, sizeof (*buf), buf);
-#else
-  return INLINE_SYSCALL_CALL (fstatfs, fd, buf);
-#endif
+  return MAKE_SYSCALL(19, "syscall|fstatfs", (uint64_t) fd, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__fstatfs64, fstatfs64)
 

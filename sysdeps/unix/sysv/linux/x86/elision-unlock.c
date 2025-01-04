@@ -20,7 +20,7 @@
 #include "lowlevellock.h"
 // #include "hle.h"
 
-// Dennis Edit: disable the hardware lock
+// BUG: disable the hardware lock - Dennis
 int
 __lll_unlock_elision(int *lock, int private)
 {

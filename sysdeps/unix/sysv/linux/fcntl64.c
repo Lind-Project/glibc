@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <sysdep-cancel.h>
 
+
 #ifndef __NR_fcntl64
 # define __NR_fcntl64 __NR_fcntl
 #endif
@@ -32,6 +33,8 @@
 #ifndef FCNTL_ADJUST_CMD
 # define FCNTL_ADJUST_CMD(__cmd) __cmd
 #endif
+
+#include <syscall-template.h>
 
 int
 __libc_fcntl64 (int fd, int cmd, ...)
@@ -46,9 +49,9 @@ __libc_fcntl64 (int fd, int cmd, ...)
   cmd = FCNTL_ADJUST_CMD (cmd);
 
   if (cmd == F_SETLKW || cmd == F_SETLKW64 || cmd == F_OFD_SETLKW)
-    return SYSCALL_CANCEL (fcntl64, fd, cmd, arg);
+    return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) arg, NOTUSED, NOTUSED, NOTUSED);
 
-  return __fcntl64_nocancel_adjusted (fd, cmd, arg);
+  return MAKE_SYSCALL(28, "syscall|fcntl", (uint64_t) fd, (uint64_t) cmd, (uint64_t) arg, NOTUSED, NOTUSED, NOTUSED);
 }
 libc_hidden_def (__libc_fcntl64)
 weak_alias (__libc_fcntl64, __fcntl64)

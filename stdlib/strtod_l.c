@@ -17,7 +17,6 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <bits/floatn.h>
-#include <stdio.h>
 
 #ifdef FLOAT
 # define BUILD_DOUBLE 0

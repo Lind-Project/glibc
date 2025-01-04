@@ -256,7 +256,7 @@ void wasi_thread_start(int tid, void *p);
 void *__dummy_reference = wasi_thread_start;
 
 void set_stack_pointer(int stack_addr);
-void *__dummy_reference3 = set_stack_pointer;
+void *__dummy_reference2 = set_stack_pointer;
 
 struct start_args {
     /*
@@ -342,7 +342,6 @@ static int create_thread (struct pthread *pd, const struct pthread_attr *attr,
 
   unsigned char *stack = 0;
 
-  // struct clone_args *args = (void *)pd->stackblock;
   struct clone_args *args = (void *)pd->stackblock + pd->stackblock_size - sizeof(struct clone_args) - TLS_TCB_SIZE;
   memset(args, 0, sizeof(struct clone_args));
   args->flags = clone_flags;
@@ -492,29 +491,24 @@ start_thread (void *arg)
       /* Run the code the user provided.  */
       void *ret;
       if (pd->c11)
-      {
-        /* The function pointer of the c11 thread start is cast to an incorrect
-          type on __pthread_create_2_1 call, however it is casted back to correct
-          one so the call behavior is well-defined (it is assumed that pointers
-          to void are able to represent all values of int.  */
-        int (*start)(void*) = (int (*) (void*)) pd->start_routine;
-        ret = (void*) (uintptr_t) start (pd->arg);
-      }
+        {
+          /* The function pointer of the c11 thread start is cast to an incorrect
+             type on __pthread_create_2_1 call, however it is casted back to correct
+             one so the call behavior is well-defined (it is assumed that pointers
+             to void are able to represent all values of int.  */
+          int (*start)(void*) = (int (*) (void*)) pd->start_routine;
+          ret = (void*) (uintptr_t) start (pd->arg);
+        }
       else
         ret = pd->start_routine (pd->arg);
       THREAD_SETMEM (pd, result, ret);
     }
 
-  // Qianxi Edit: thread local variable is a half-broken feature right now
-  //              have to comment these out so that no error is raising
-  /* Call destructors for the thread_local TLS variables.  */
-  // call_function_static_weak (__call_tls_dtors);
-
-  /* Run the destructor for the thread-local data.  */
-  // __nptl_deallocate_tsd ();
-
-  /* Clean up any state libc stored in thread-local variables.  */
-  // __libc_thread_freeres ();
+  // BUG: thread local variable is a half-broken feature right now
+  //      have to comment these out so that no error is raising - Qianxi Chen
+  
+  // Lind-Wasm: Original glibc code removed for compatibility
+  // to find original source code refer to (2.39.9000) at (nptl/pthread_create.c):(LINE 451-458)
 
   /* Report the death of the thread if this is wanted.  */
   if (__glibc_unlikely (pd->report_events))
@@ -651,11 +645,11 @@ out:
      The exit code is zero since in case all threads exit by calling
      'pthread_exit' the exit status must be 0 (zero).  */
   
+  // signal other threads that the thread has exited
   pd->tid = 0;
   MAKE_SYSCALL(98, "syscall|futex", (uint64_t) &pd->tid, (uint64_t) FUTEX_WAKE, (uint64_t) 1, (uint64_t)0, 0, (uint64_t)0);
   while (1)
     // replacing with lind exit
-    // INTERNAL_SYSCALL_CALL (exit, 0);
     exit(0);
 
   /* NOTREACHED */

@@ -29,7 +29,7 @@
 char *
 __nl_langinfo_l (nl_item item, locale_t l)
 {
-  // Qianxi Edit: locale related stuff is not working currently
+  // Bug: locale related stuff is not working currently
   // this feature is not important so we might look into this later
   // if we want to support it in the future
     return (char *) "ANSI_X3.4-1968";

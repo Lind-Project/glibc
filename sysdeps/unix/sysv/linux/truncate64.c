@@ -17,6 +17,7 @@
 
 #include <unistd.h>
 #include <sysdep.h>
+#include <syscall-template.h>
 
 #ifndef __NR_truncate64
 # define __NR_truncate64 __NR_truncate
@@ -26,8 +27,7 @@
 int
 __truncate64 (const char *path, off64_t length)
 {
-  return INLINE_SYSCALL_CALL (truncate64, path,
-			      __ALIGNMENT_ARG SYSCALL_LL64 (length));
+return MAKE_SYSCALL(16, "syscall|truncate", (uint64_t) path, (uint64_t) length, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
 weak_alias (__truncate64, truncate64)
 

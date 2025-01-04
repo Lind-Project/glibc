@@ -27,11 +27,6 @@ setsockopt_syscall (int fd, int level, int optname, const void *optval,
 		    socklen_t len)
 {
   return MAKE_SYSCALL(44, "syscall|setsockopt", (uint64_t) fd, (uint64_t) level, (uint64_t) optname, (uint64_t)optval, len, (uint64_t)0);
-// #ifdef __ASSUME_SETSOCKOPT_SYSCALL
-//   return INLINE_SYSCALL_CALL (setsockopt, fd, level, optname, optval, len);
-// #else
-//   return SOCKETCALL (setsockopt, fd, level, optname, optval, len);
-// #endif
 }
 
 #ifndef __ASSUME_TIME64_SYSCALLS

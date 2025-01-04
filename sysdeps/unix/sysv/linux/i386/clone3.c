@@ -1,7 +1,6 @@
 #include <stddef.h>  // For size_t
 #include <sys/types.h>  // For other system types, if needed
 #include <syscall-template.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 int __imported_wasi_snapshot_preview1_lind_syscall(unsigned int callnumber, unsigned long long callname, unsigned long long arg1, unsigned long long arg2, unsigned long long arg3, unsigned long long arg4, unsigned long long arg5, unsigned long long arg6) __attribute__((

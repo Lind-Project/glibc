@@ -32,4 +32,3 @@ kill (__pid_t a,  int b)
 {
    return MAKE_SYSCALL(148, "syscall|kill", (uint64_t) a, (uint64_t) b, NOTUSED, NOTUSED, NOTUSED, NOTUSED);
 }
-

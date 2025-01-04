@@ -25,6 +25,7 @@
 #include <xstatconv.h>
 #include <statx_cp.h>
 #include <shlib-compat.h>
+#include <syscall-template.h>
 
 #if LIB_COMPAT(libc, GLIBC_2_0, GLIBC_2_33)
 
@@ -33,51 +34,7 @@
 int
 ___xstat64 (int vers, const char *name, struct stat64 *buf)
 {
-#if XSTAT_IS_XSTAT64
-# ifdef __NR_stat64
-  /* 64-bit kABI outlier, e.g. sparc64.  */
-  if (vers == _STAT_VER_KERNEL)
-    return INLINE_SYSCALL_CALL (stat, name, buf);
-  else
-    {
-      struct stat64 st64;
-      int r = INLINE_SYSCALL_CALL (stat64, name, &st64);
-      return r ?: __xstat32_conv (vers, &st64, (struct stat *) buf);
-    }
-# elif defined __NR_stat
-  /* Old 64-bit kABI, e.g. powerpc64*, s390x, and x86_64.  */
-  if (vers == _STAT_VER_KERNEL || vers == _STAT_VER_LINUX)
-    return INLINE_SYSCALL_CALL (stat, name, buf);
-# elif defined __NR_newfstatat
-  /* New kABIs which uses generic 64-bit Linux ABI, e.g. aarch64, riscv64.  */
-  if (vers == _STAT_VER_KERNEL)
-    return INLINE_SYSCALL_CALL (newfstatat, AT_FDCWD, name, buf, 0);
-# else
-  /* New 32-bit kABIs with only 64-bit time_t support, e.g. arc, riscv32.  */
-  if (vers == _STAT_VER_KERNEL)
-    {
-      struct statx tmp;
-      int r = INLINE_SYSCALL_CALL (statx, AT_FDCWD, name, AT_NO_AUTOMOUNT,
-				   STATX_BASIC_STATS, &tmp);
-      if (r == 0)
-	__cp_stat64_statx (buf, &tmp);
-      return r;
-     }
-# endif
-#else
-# if STAT_IS_KERNEL_STAT
-  /* New kABIs which uses generic pre 64-bit time Linux ABI,
-     e.g. csky, nios2  */
-  if (vers == _STAT_VER_KERNEL)
-    return INLINE_SYSCALL_CALL (fstatat64, AT_FDCWD, name, buf, 0);
-# else
-  /* Old kABIs with old non-LFS support, e.g. arm, i386, hppa, m68k,
-     microblaze, s390, sh, mips32, powerpc32, and sparc32.  */
-  return INLINE_SYSCALL_CALL (stat64, name, buf);
-# endif /* STAT_IS_KERNEL_STAT  */
-#endif /* XSTAT_IS_XSTAT64  */
-
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+   return MAKE_SYSCALL(9, "syscall|xstat", (uint64_t) vers, (uint64_t) name, (uint64_t) buf, NOTUSED, NOTUSED, NOTUSED);
 }
 
 #if XSTAT_IS_XSTAT64

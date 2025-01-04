@@ -12,5 +12,3 @@ getpid (void)
 {
   return __getpid();
 }
-
-
